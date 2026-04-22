@@ -75,12 +75,52 @@ struct ContentView: View {
                 }.padding(.bottom, 10)
                 
                 // BOX CONSERVA E PROSSIMO
-                HStack(spacing: 20) {
+                HStack(spacing: 30) {
+                    // Box Prossimo
+                    VStack {
+                        Text("PROSSIMO")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.gray)
+                        
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(0.6))
+                            .frame(width: 90, height: 90)
+                            .overlay(
+                                renderJelly(type: viewModel.nextJellyType)
+                                    .frame(width: 60, height: 60)
+                            )
+                    }
                     // Box Conserva
-                    HStack {
-                        // Box Prossimo
-                        BoxView(text: "PROSSIMO", color: viewModel.nextJellyType.color)
-                        BoxView(text: "CONSERVA", color: Color.gray.opacity(0.3))
+                    VStack {
+                        Text("CONSERVA")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.gray)
+                        
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(0.6))
+                            .frame(width: 90, height: 90)
+                            .overlay(
+                                Group {
+                                    if let held = viewModel.holdPiece {
+                                        // Visualizza la gelatina conservata
+                                        renderJelly(type: held)
+                                            .frame(width: 60, height: 60)
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.gray.opacity(0.2))
+                                            .frame(width: 60, height: 60)
+                                    }
+                                }
+                            )
+                            // Applichiamo un effetto visivo se è già stato usato in questo turno
+                            .opacity(viewModel.hasHeldThisTurn ? 0.5 : 1.0)
+                            .onTapGesture {
+                                withAnimation(.spring()) {
+                                    viewModel.toggleHold()
+                                }
+                            }
                     }
                 }
                 Spacer()
@@ -90,11 +130,9 @@ struct ContentView: View {
                     ForEach(0..<viewModel.totalCells, id: \.self) { index in
                         let jelly = viewModel.grid[index]
                         
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(jelly.type.color) // <--- Wiring qui
+                        renderJelly(type: jelly.type)
                             .frame(width: 60, height: 60)
                             .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
-                            // Aggiungiamo il gesto di tocco qui!
                             .onTapGesture {
                                 // Calcola riga e colonna dall'indice flat
                                 let row = index / viewModel.gridSize
@@ -113,6 +151,18 @@ struct ContentView: View {
 
             }
             .padding(.top, 20)
+        }
+    }
+    
+    // Helper per renderizzare il colore o il gradiente arcobaleno
+    @ViewBuilder
+    func renderJelly(type: ElementType) -> some View {
+        if type == .rainbow {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(AngularGradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red], center: .center))
+        } else {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(type.color)
         }
     }
 }

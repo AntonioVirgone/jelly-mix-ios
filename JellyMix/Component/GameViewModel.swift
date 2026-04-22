@@ -9,6 +9,20 @@ import Foundation
 import SwiftUI
 internal import Combine
 
+// MARK: - Modelli per gli Obiettivi
+enum ObjectiveType {
+    case jelly
+    case obstacle
+    case licorice
+}
+
+struct LevelObjective {
+    var type: ObjectiveType
+    var targetColor: ElementType // Usato solo se il tipo è .jelly
+    var required: Int
+    var current: Int = 0
+}
+
 class GameViewModel: ObservableObject {
     // Costanti della griglia
     let gridSize = 5
@@ -20,15 +34,25 @@ class GameViewModel: ObservableObject {
     @Published var holdPiece: ElementType? = nil // Pezzo conservato (opzionale)
     @Published var hasHeldThisTurn: Bool = false // Impedisce scambi infiniti nello stesso turno
     @Published var score: Int = 0
-    @Published var currentLevel: Int = 1
     
+    // Nuove variabili per i livelli
+    @Published var currentLevel: Int = 1
+    @Published var movesLeft: Int? = nil // Opzionale: nil significa mosse infinite
+    @Published var objective: LevelObjective = LevelObjective(type: .jelly, targetColor: .blue, required: 2)
+    @Published var isGameOver: Bool = false
+    @Published var isLevelCompleted: Bool = false
+
     init() {
         totalCells = gridSize * gridSize
-        resetGame()
+        resetGame(forLevel: 1)
     }
     
     // Inizia o ripristina la partita (equivalente a initStage di React)
-    func resetGame() {
+    func resetGame(forLevel level: Int) {
+        // Resetta statistiche
+        self.currentLevel = level
+        self.score = 0
+
         // Inizializza la griglia vuota
         self.grid = Array(repeating: Jelly(type: .empty), count: totalCells)
         
@@ -39,9 +63,14 @@ class GameViewModel: ObservableObject {
         self.holdPiece = nil
         self.hasHeldThisTurn = false
 
-        // Resetta statistiche
-        self.score = 0
-        self.currentLevel = 1
+        self.isGameOver = false
+        self.isLevelCompleted = false
+        
+        // Esempio di setup per il Livello 1
+        if level == 1 {
+            self.objective = LevelObjective(type: .jelly, targetColor: .blue, required: 2)
+            self.movesLeft = 15
+        }
     }
     
     // Genera un nuovo pezzo per il turno successivo (per ora randomico tra base)
@@ -58,8 +87,8 @@ class GameViewModel: ObservableObject {
     // MARK: - Funzione Conserva (Hold)
     func toggleHold() {
         // Possiamo scambiare solo se non lo abbiamo già fatto in questo turno
-        guard !hasHeldThisTurn else { return }
-        
+        guard !hasHeldThisTurn && !isGameOver && !isLevelCompleted else { return }
+
         if let currentlyHeld = holdPiece {
             // Se c'è già un pezzo, scambiamolo con quello attuale
             let temp = nextJellyType
@@ -78,10 +107,17 @@ class GameViewModel: ObservableObject {
     // Funzione chiamata quando l'utente tocca una cella (at row/col)
     // Sostituisce la complessa logica DFS/Merge di React per ora
     func posizionaGelatina(row: Int, col: Int) {
+        guard !isGameOver && !isLevelCompleted else { return }
+
         let index = getIndex(row: row, col: col)
 
         // Controlla che la cella sia vuota prima di piazzare
         guard grid[index].type == .empty else { return }
+
+        // Riduciamo le mosse se c'è un limite
+        if let moves = movesLeft {
+            movesLeft = moves - 1
+        }
         
         // Piazza la gelatina del prossimo turno
         grid[index].type = nextJellyType
@@ -95,6 +131,9 @@ class GameViewModel: ObservableObject {
         } else {
             nextJellyType = generaNuovoPezzo()
         }
+        
+        // Controlli di fine partita
+        checkWinLoseConditions()
     }
     
     // MARK: - Algoritmo di Fusione (Merge)
@@ -121,7 +160,9 @@ class GameViewModel: ObservableObject {
                 if targetType == .empty { break } // Nessun vicino colorato
             }
             
-            let requiredToMerge = grid[currentIndex].requirement
+            // Se è un rainbow, il requisito e il livello base sono quelli del targetType
+            let mergeBaseType = (currentType == .rainbow) ? targetType : currentType
+            let requiredToMerge = Jelly(type: mergeBaseType).requirement
             var connectedCells: [Int] = []
             var visited = Set<Int>()
             
@@ -164,12 +205,17 @@ class GameViewModel: ObservableObject {
                 }
                 
                 // 2. Crea la nuova gelatina evoluta nella posizione centrale
-                let nextLevelRaw = currentType.rawValue + 1
+                let nextLevelRaw = mergeBaseType.rawValue + 1
                 if let nextType = ElementType(rawValue: nextLevelRaw) {
                     grid[currentIndex].type = nextType
-                    
+
                     // 3. Aumenta il punteggio
-                    score += (currentType.rawValue * 10) * connectedCells.count
+                    score += (mergeBaseType.rawValue * 10) * connectedCells.count
+                    
+                    // AGGIORNAMENTO OBIETTIVI
+                    if objective.type == .jelly && nextType == objective.targetColor {
+                        objective.current += 1
+                    }
                     
                     // 4. Riattiva il ciclo per controllare eventuali Combo!
                     hasMerged = true
@@ -183,17 +229,30 @@ class GameViewModel: ObservableObject {
     // Helper per il Jolly: trova il colore di livello più alto tra i vicini
     private func trovaColoreMiglioreVicinanza(r: Int, c: Int) -> ElementType {
         let directions = [(0,1), (0,-1), (1,0), (-1,0)]
+        var bestRaw: Int = 0        // parte da 0 così qualsiasi colore reale (1-6) lo supera
         var bestType: ElementType = .empty
-        
+
         for dir in directions {
             let nr = r + dir.0, nc = c + dir.1
             if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
                 let type = grid[getIndex(row: nr, col: nc)].type
-                if type.rawValue > 0 && type.rawValue < 7 {
-                    if type.rawValue > bestType.rawValue { bestType = type }
+                if type.rawValue > 0 && type.rawValue < 7 && type.rawValue > bestRaw {
+                    bestRaw = type.rawValue
+                    bestType = type
                 }
             }
         }
         return bestType
+    }
+    
+    // Funzione che valuta se abbiamo vinto o perso dopo ogni mossa
+    private func checkWinLoseConditions() {
+        if objective.current >= objective.required {
+            isLevelCompleted = true
+        } else if let moves = movesLeft, moves <= 0 {
+            isGameOver = true
+        } else if !grid.contains(where: { $0.type == .empty }) {
+            isGameOver = true
+        }
     }
 }
