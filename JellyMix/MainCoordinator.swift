@@ -43,33 +43,32 @@ struct MainCoordinator: View {
                             .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
                             .shadow(radius: 2)
 
-                        Text("Mappa dei Mondi")
-                            .font(.largeTitle).bold()
-                        
-                        ForEach(1...4, id: \.self) { level in
-                            Button(action: {
-                                // Cliccando su un livello, prepariamo il gioco e cambiamo schermata
-                                gameEngine.resetGame(forLevel: level)
-                                withAnimation { currentScreen = .game }
-                            }) {
-                                Text("Gioca Livello \(level)")
-                                    .padding()
-                                    .background(level <= maxUnlockedLevel ? Color.blue : Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(12)
+                        // === LA NUOVA MAPPA SAGA ===
+                        SagaMapView(maxUnlockedLevel: maxUnlockedLevel) { levelToPlay in
+                            // Callback chiamato dalla mappa quando si preme "Gioca"
+                            gameEngine.resetGame(forLevel: levelToPlay)
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                currentScreen = .game
                             }
-                            .disabled(level > maxUnlockedLevel)
                         }
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 1.1)), removal: .opacity.combined(with: .scale(scale: 0.9))))
                     }
                 } else {
-                    // Passiamo una Closure (callback) a ContentView per fargli sapere quando deve chiudersi
+                    // === LA SCHERMATA DI GIOCO ===
                     ContentView(viewModel: gameEngine) {
-                        // Questa azione verrà chiamata quando l'utente clicca "Torna alla Mappa"
+                        // Callback chiamato da ContentView per tornare indietro
+                        
+                        // Se il livello è stato completato e era l'ultimo sbloccato, sblocca il prossimo!
                         if gameEngine.isLevelCompleted && gameEngine.currentLevel == maxUnlockedLevel {
-                            maxUnlockedLevel += 1 // Sblocca il livello successivo
+                            maxUnlockedLevel += 1
+                            //TODO: Qui potresti salvare maxUnlockedLevel nel localStorage (UserDefaults)
                         }
-                        withAnimation { currentScreen = .map }
+                        
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                            currentScreen = .map
+                        }
                     }
+                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.9)), removal: .opacity.combined(with: .scale(scale: 1.1))))
                 }
             }
         }

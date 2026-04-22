@@ -28,7 +28,10 @@ struct ContentView: View {
     
     // Azione da eseguire per tornare indietro
     var onReturnToMap: () -> Void
-    
+
+    // 1. Aggiungi questa riga anche qui
+    @Environment(\.colorScheme) var colorScheme
+
     // Definiamo 5 colonne flessibili per la nostra griglia
     let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 5)
     
@@ -95,7 +98,7 @@ struct ContentView: View {
                             .fill(Color.white.opacity(0.6))
                             .frame(width: 90, height: 90)
                             .overlay(
-                                renderJelly(type: viewModel.nextJellyType)
+                                ElementView(type: viewModel.nextJellyType, isDirty: false)
                                     .frame(width: 60, height: 60)
                             )
                     }
@@ -113,11 +116,11 @@ struct ContentView: View {
                                 Group {
                                     if let held = viewModel.holdPiece {
                                         // Visualizza la gelatina conservata
-                                        renderJelly(type: held)
+                                        ElementView(type: held, isDirty: false)
                                             .frame(width: 60, height: 60)
                                     } else {
                                         RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.gray.opacity(0.2))
+                                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.black.opacity(0.08))
                                             .frame(width: 60, height: 60)
                                     }
                                 }
@@ -138,7 +141,7 @@ struct ContentView: View {
                     ForEach(0..<viewModel.totalCells, id: \.self) { index in
                         let jelly = viewModel.grid[index]
                         
-                        renderJelly(type: jelly.type)
+                        ElementView(type: jelly.type, isDirty: jelly.isDirty)
                             .frame(width: 60, height: 60)
                             .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
                             .onTapGesture {
@@ -199,23 +202,11 @@ struct ContentView: View {
         let obj = viewModel.objective
         switch obj.type {
         case .jelly:
-            return "Crea \(obj.required) Jelly \(obj.targetColor.displayName) (\(obj.current)/\(obj.required))"
+            return "Crea \(obj.required) Jelly \(obj.targetColor.config.name) (\(obj.current)/\(obj.required))"
         case .obstacle:
             return "Distruggi \(obj.required) ostacoli (\(obj.current)/\(obj.required))"
         case .licorice:
             return "Distruggi \(obj.required) liquirizie (\(obj.current)/\(obj.required))"
-        }
-    }
-
-    // Helper per renderizzare il colore o il gradiente arcobaleno
-    @ViewBuilder
-    func renderJelly(type: ElementType) -> some View {
-        if type == .rainbow {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(AngularGradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red], center: .center))
-        } else {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(type.color)
         }
     }
 }

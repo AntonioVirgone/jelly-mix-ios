@@ -9,21 +9,24 @@ import Foundation
 // Jelly.swift
 import SwiftUI
 
-// MARK: - Modello Dati
+// MARK: - Configurazione di un Elemento
+// Questa struct contiene TUTTE le info di un elemento. Per aggiungere un nuovo pezzo in futuro, ti basterà configurare questo.
+struct ElementConfig {
+    var name: String
+    var color: Color
+    var requirement: Int // 0 per ostacoli
+    var isObstacle: Bool
+    var hasFace: Bool // True se vogliamo disegnare la faccina carina
+}
 
+// MARK: - Modello Dati
 // Stato dinamico di una singola gelatina (o ostacolo) sulla griglia
 struct Jelly: Identifiable, Equatable {
     let id = UUID() // Fondamentale per SwiftUI per tracciare ogni singolo oggetto
     var type: ElementType
     var isDirty: Bool = false
     
-    // Proprietà calcolata per ottenere il requisito di merge per un livello (da 1 a 6)
-    var requirement: Int {
-        // Mappatura dei requisiti di fusione (per ora fissa)
-        // Livello 1 -> unisci 2, Livello 2 -> unisci 3, ecc.
-        let mergeRequirements: [Int: Int] = [1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7]
-        return mergeRequirements[type.rawValue] ?? 0
-    }
+    var requirement: Int { type.config.requirement }
 }
 
 // Enum che definisce tutti i tipi di elementi possibili e la loro rappresentazione visiva
@@ -34,44 +37,33 @@ enum ElementType: Int, Equatable {
     case brokenWaffle = -3
     case waffle = -2
     case ice = -1
-    // Gelatine (valori da 0 a 7)
+    // Speciali
     case rainbow = 0
-    case red = 1
-    case blue = 2
-    case green = 3
-    case orange = 4
-    case yellow = 5
-    case brown = 6
-    case black = 7
-    case empty = 99 // Placeholder per cella vuota
-    
-    var displayName: String {
-        switch self {
-        case .red: return "Rossa"
-        case .blue: return "Blu"
-        case .green: return "Verde"
-        case .orange: return "Arancione"
-        case .yellow: return "Gialla"
-        case .brown: return "Viola"
-        case .black: return "Nera"
-        case .rainbow: return "Arcobaleno"
-        default: return ""
-        }
-    }
+    // Gelatine
+    case red = 1, blue = 2, green = 3, orange = 4, yellow = 5, brown = 6, black = 7
+    case empty = 99
 
-    // Assegnazione dei colori visivi nativi di SwiftUI per il rendering
-    var color: Color {
+    // IL CUORE DELLA SCALABILITÀ: Tutto è definito qui!
+    var config: ElementConfig {
         switch self {
-        case .empty: return Color.gray.opacity(0.15) // Vuoto
-        case .ice: return Color.cyan.opacity(0.5)   // Ghiaccio
-        case .red: return .red
-        case .blue: return .blue
-        case .green: return .green
-        case .orange: return .orange
-        case .yellow: return .yellow
-        case .brown: return .purple // Marrone temporaneo
-        case .black: return .black
-        default: return .clear
+        case .empty:        return ElementConfig(name: "Vuoto", color: Color.gray.opacity(0.15), requirement: 0, isObstacle: false, hasFace: false)
+        case .rainbow:      return ElementConfig(name: "Arcobaleno", color: .clear, requirement: 0, isObstacle: false, hasFace: true)
+        
+        // Gelatine
+        case .red:          return ElementConfig(name: "Rossa", color: .red, requirement: 2, isObstacle: false, hasFace: true)
+        case .blue:         return ElementConfig(name: "Blu", color: .blue, requirement: 3, isObstacle: false, hasFace: true)
+        case .green:        return ElementConfig(name: "Verde", color: .green, requirement: 4, isObstacle: false, hasFace: true)
+        case .orange:       return ElementConfig(name: "Arancione", color: .orange, requirement: 5, isObstacle: false, hasFace: true)
+        case .yellow:       return ElementConfig(name: "Gialla", color: .yellow, requirement: 6, isObstacle: false, hasFace: true)
+        case .brown:        return ElementConfig(name: "Viola", color: .purple, requirement: 7, isObstacle: false, hasFace: true)
+        case .black:        return ElementConfig(name: "Nera", color: .black, requirement: Int.max, isObstacle: false, hasFace: true)
+            
+        // Ostacoli
+        case .ice:          return ElementConfig(name: "Ghiaccio", color: Color.cyan.opacity(0.5), requirement: 0, isObstacle: true, hasFace: false)
+        case .waffle:       return ElementConfig(name: "Waffle", color: Color.yellow.opacity(0.8), requirement: 0, isObstacle: true, hasFace: false)
+        case .brokenWaffle: return ElementConfig(name: "Waffle Rotto", color: Color.orange.opacity(0.8), requirement: 0, isObstacle: true, hasFace: false)
+        case .licorice:     return ElementConfig(name: "Liquirizia", color: .gray, requirement: 0, isObstacle: true, hasFace: false)
+        case .honey:        return ElementConfig(name: "Miele", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
         }
     }
 }

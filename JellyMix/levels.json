@@ -11,9 +11,9 @@
       "grid": [
         ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
         ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"],
+        ["VUOTO", "VUOTO", "GHIACCIO", "VUOTO", "ROSSO"],
         ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
-        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"]
+        ["ROSSO", "VUOTO", "VUOTO", "GHIACCIO", "VUOTO"]
       ],
       "availablePieces": [
         { "type": "ROSSO" },
@@ -34,7 +34,7 @@
       "grid": [
         ["VUOTO", "VUOTO", "ROSSO", "VUOTO", "VUOTO"],
         ["VUOTO", "ROSSO", "VUOTO", "VUOTO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
+        ["VUOTO", "VUOTO", "WAFFLE", "ROSSO", "VUOTO"],
         ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
         ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"]
       ],

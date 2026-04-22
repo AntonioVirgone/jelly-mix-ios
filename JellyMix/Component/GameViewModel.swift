@@ -46,7 +46,8 @@ class GameViewModel: ObservableObject {
     private var currentLevelData: LevelData? = nil
     // Dizionario di tutti i livelli caricati dal JSON
     private var allLevels: [Int: LevelData] = [:]
-
+    private var licoriceDestroyedThisTurn: Bool = false
+    
     init() {
         totalCells = gridSize * gridSize
         loadLevelsFromJSON()
@@ -209,49 +210,39 @@ class GameViewModel: ObservableObject {
         checkWinLoseConditions()
     }
     
-    // MARK: - Algoritmo di Fusione (Merge)
-    // Restituisce 'true' se è stata effettuata una fusione N+1
+    // MARK: - Algoritmo di Fusione (Merge) e Ostacoli
     private func processMerges(startRow: Int, startCol: Int) -> Bool {
         let currentFocus = (r: startRow, c: startCol)
         var hasMerged = true
         var earnedRainbow = false
+        licoriceDestroyedThisTurn = false // Resettiamo ad ogni mossa
 
-        // Usiamo un ciclo while per gestire le reazioni a catena
         while hasMerged {
             hasMerged = false
             let currentIndex = getIndex(row: currentFocus.r, col: currentFocus.c)
             let currentType = grid[currentIndex].type
             
-            // Il Jolly (0) non può innescare un merge da solo, deve essere posizionato
-            // Quindi qui cerchiamo colori normali o la logica speciale del Jolly
             guard currentType != .empty && currentType.rawValue < 7 else { break }
             
-            // LOGICA JOLLY: Se posizioniamo un Jolly, deve capire a quale colore adiacente unirsi
             var targetType = currentType
             if currentType == .rainbow {
                 targetType = trovaColoreMiglioreVicinanza(r: currentFocus.r, c: currentFocus.c)
-                if targetType == .empty { break } // Nessun vicino colorato
+                if targetType == .empty { break }
             }
             
-            // Se è un rainbow, il requisito e il livello base sono quelli del targetType
             let mergeBaseType = (currentType == .rainbow) ? targetType : currentType
+            // Adesso leggiamo requirement dal modello fluido!
             let requiredToMerge = Jelly(type: mergeBaseType).requirement
             var connectedCells: [Int] = []
             var visited = Set<Int>()
             
-            // Funzione ricorsiva (Depth-First Search) per trovare i vicini uguali
             func findConnected(r: Int, c: Int) {
-                // Controllo dei bordi della griglia
                 if r < 0 || r >= gridSize || c < 0 || c >= gridSize { return }
-                
                 let idx = getIndex(row: r, col: c)
-                
-                // Se l'abbiamo già visitata o non è dello stesso colore, esci
                 if visited.contains(idx) { return }
                 
-                // Una cella è connessa se è del targetType O se è un Jolly
-                let cellType = grid[idx].type
-                if cellType == targetType || cellType == .rainbow {
+                let cell = grid[idx]
+                if cell.type == targetType || cell.type == .rainbow {
                     visited.insert(idx)
                     connectedCells.append(idx)
                     
@@ -262,41 +253,103 @@ class GameViewModel: ObservableObject {
                 }
             }
             
-            // Avviamo la ricerca
             findConnected(r: currentFocus.r, c: currentFocus.c)
             
-            // Se abbiamo abbastanza pezzi connessi, uniamoli!
+            // LA FUSIONE AVVIENE
             if connectedCells.count >= requiredToMerge {
-                // 1. Pulisci tutte le celle coinvolte nella fusione
-                // REGOLA N+1: se uniamo più del minimo, segnamo il premio
-                if connectedCells.count > requiredToMerge {
-                    earnedRainbow = true
+                if connectedCells.count > requiredToMerge { earnedRainbow = true }
+                
+                // 1. GESTIONE OSTACOLI ADIACENTI SOLO ALLA CELLA TOCCATA (currentFocus)
+                let focusNeighbors = [
+                    (currentFocus.r - 1, currentFocus.c),
+                    (currentFocus.r + 1, currentFocus.c),
+                    (currentFocus.r, currentFocus.c - 1),
+                    (currentFocus.r, currentFocus.c + 1)
+                ]
+
+                for (nr, nc) in focusNeighbors {
+                    if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
+                        let nIdx = getIndex(row: nr, col: nc)
+                        gestisciDistruzioneOstacolo(at: nIdx)
+                    }
                 }
                 
+                // 2. Svuota tutte le celle coinvolte nella fusione
                 for idx in connectedCells {
                     grid[idx].type = .empty
                 }
-                
-                // 2. Crea la nuova gelatina evoluta nella posizione centrale
+
+                // 3. Crea la nuova gelatina evoluta
                 let nextLevelRaw = mergeBaseType.rawValue + 1
                 if let nextType = ElementType(rawValue: nextLevelRaw) {
                     grid[currentIndex].type = nextType
-
-                    // 3. Aumenta il punteggio
                     score += (mergeBaseType.rawValue * 10) * connectedCells.count
                     
-                    // AGGIORNAMENTO OBIETTIVI
                     if objective.type == .jelly && nextType == objective.targetColor {
                         objective.current += 1
                     }
                     
-                    // 4. Riattiva il ciclo per controllare eventuali Combo!
                     hasMerged = true
                 }
             }
         }
         
+        processaFineTurno() // Chiamata per espandere la liquirizia
+        
         return earnedRainbow
+    }
+    
+    // Funzione Helper per rompere gli ostacoli
+    private func gestisciDistruzioneOstacolo(at index: Int) {
+        let type = grid[index].type
+        guard type.config.isObstacle else { return }
+        
+        switch type {
+        case .ice:
+            grid[index].type = .empty
+            score += 50
+            if objective.type == .obstacle { objective.current += 1 }
+        case .waffle:
+            grid[index].type = .brokenWaffle // Si rompe a metà
+            score += 20
+        case .brokenWaffle:
+            grid[index].type = .empty
+            score += 50
+            if objective.type == .obstacle { objective.current += 1 }
+        case .licorice:
+            grid[index].type = .empty
+            licoriceDestroyedThisTurn = true
+            score += 80
+            if objective.type == .licorice { objective.current += 1 }
+        case .honey:
+            grid[index].type = .empty
+            score += 60
+            if objective.type == .obstacle { objective.current += 1 }
+            // TODO: Aggiungeremo lo spargimento del miele
+        default:
+            break
+        }
+    }
+    
+    // Espansione Liquirizia a fine turno
+    private func processaFineTurno() {
+        guard !licoriceDestroyedThisTurn else { return }
+        
+        let licoriceIndices = grid.indices.filter { grid[$0].type == .licorice }
+        for idx in licoriceIndices {
+            if Double.random(in: 0...1) < 0.20 { // 20% di probabilità
+                let r = idx / gridSize
+                let c = idx % gridSize
+                let neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
+                let validEmpty = neighbors.filter { nr, nc in
+                    nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize && grid[getIndex(row: nr, col: nc)].type == .empty
+                }
+                
+                if let target = validEmpty.randomElement() {
+                    grid[getIndex(row: target.0, col: target.1)].type = .licorice
+                }
+            }
+        }
     }
     
     // Helper per il Jolly: trova il colore di livello più alto tra i vicini
