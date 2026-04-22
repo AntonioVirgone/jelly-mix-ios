@@ -1,0 +1,70 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "objective": {
+        "type": "JELLY",
+        "targetColor": "BLU",
+        "required": 5
+      },
+      "movesLimit": 18,
+      "grid": [
+        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"],
+        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
+        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"]
+      ],
+      "availablePieces": [
+        { "type": "ROSSO" },
+        {
+          "type": "BLU",
+          "point": 420
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "objective": {
+        "type": "JELLY",
+        "targetColor": "BLU",
+        "required": 3
+      },
+      "movesLimit": 20,
+      "grid": [
+        ["VUOTO", "VUOTO", "ROSSO", "VUOTO", "VUOTO"],
+        ["VUOTO", "ROSSO", "VUOTO", "VUOTO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
+        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"]
+      ],
+      "availablePieces": [
+        { "type": "ROSSO" },
+        { "type": "BLU", "point": 200 }
+      ]
+    },
+    {
+      "level": 3,
+      "objective": {
+        "type": "JELLY",
+        "targetColor": "GREEN",
+        "required": 3
+      },
+      "movesLimit": 18,
+      "grid": [
+        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
+        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"],
+        ["VUOTO", "BLU", "VUOTO", "ROSSO", "VUOTO"],
+        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"]
+      ],
+      "availablePieces": [
+        { "type": "ROSSO" },
+        {
+          "type": "BLU",
+          "point": 420
+        }
+      ]
+    }
+  ]
+}

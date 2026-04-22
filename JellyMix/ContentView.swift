@@ -24,7 +24,10 @@ enum JellyType {
 
 struct ContentView: View {
     // Inizializzazione del ViewModel (@StateObject lo mantiene in vita)
-    @StateObject var viewModel = GameViewModel()
+    @ObservedObject var viewModel = GameViewModel()
+    
+    // Azione da eseguire per tornare indietro
+    var onReturnToMap: () -> Void
     
     // Definiamo 5 colonne flessibili per la nostra griglia
     let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 5)
@@ -40,17 +43,22 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            // Sfondo sfumato
-            LinearGradient(
-                colors: [
-                    Color.yellow.opacity(0.2),
-                    Color.purple.opacity(0.2),
-                    Color.pink.opacity(0.2)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
-            
+            // Aggiungi un bottone "Indietro" in alto a sinistra (sopra l'header)
+            VStack {
+                HStack {
+                    Button(action: {
+                        onReturnToMap()
+                    }) {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.title)
+                            .foregroundColor(.white)
+                            .shadow(radius: 2)
+                    }
+                    Spacer()
+                }
+                .padding()
+                Spacer()
+            }
             VStack(spacing: 30) {
                 Text("JELLY MIX")
                     .font(.system(size: 40, weight: .black, design: .rounded))
@@ -64,8 +72,8 @@ struct ContentView: View {
                         .padding(.vertical, 8)
                         .padding(.horizontal, 20)
                         .background(Capsule().fill(Color.purple.opacity(0.8)))
-                    // Barra del livello (finta per ora)
-                    Text("LIVELLO 1 | Missione: Distruggi 5 Ostacoli")
+                    // Barra obiettivo con dati reali
+                    Text("LVL \(viewModel.currentLevel) | \(objectiveText)")
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -151,9 +159,54 @@ struct ContentView: View {
 
             }
             .padding(.top, 20)
+
+            // Overlay win / game-over
+            if viewModel.isLevelCompleted || viewModel.isGameOver {
+                Color.black.opacity(0.55).ignoresSafeArea()
+                VStack(spacing: 24) {
+                    Text(viewModel.isLevelCompleted ? "Livello Completato!" : "Game Over")
+                        .font(.system(size: 32, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
+                    Text(viewModel.isLevelCompleted
+                         ? "Ottimo lavoro! Torna alla mappa per continuare."
+                         : "Mosse esaurite. Riprova!")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                    if viewModel.isGameOver {
+                        Button("Riprova") {
+                            viewModel.resetGame(forLevel: viewModel.currentLevel)
+                        }
+                        .font(.headline)
+                        .padding(.horizontal, 32).padding(.vertical, 12)
+                        .background(Capsule().fill(Color.blue))
+                        .foregroundColor(.white)
+                    }
+                    Button("Torna alla Mappa") { onReturnToMap() }
+                        .font(.headline)
+                        .padding(.horizontal, 32).padding(.vertical, 12)
+                        .background(Capsule().fill(Color.purple))
+                        .foregroundColor(.white)
+                }
+                .padding(32)
+                .background(RoundedRectangle(cornerRadius: 24).fill(Color.white.opacity(0.15)))
+                .padding(40)
+            }
         }
     }
-    
+
+    private var objectiveText: String {
+        let obj = viewModel.objective
+        switch obj.type {
+        case .jelly:
+            return "Crea \(obj.required) Jelly \(obj.targetColor.displayName) (\(obj.current)/\(obj.required))"
+        case .obstacle:
+            return "Distruggi \(obj.required) ostacoli (\(obj.current)/\(obj.required))"
+        case .licorice:
+            return "Distruggi \(obj.required) liquirizie (\(obj.current)/\(obj.required))"
+        }
+    }
+
     // Helper per renderizzare il colore o il gradiente arcobaleno
     @ViewBuilder
     func renderJelly(type: ElementType) -> some View {
@@ -165,8 +218,4 @@ struct ContentView: View {
                 .fill(type.color)
         }
     }
-}
-
-#Preview {
-    ContentView()
 }

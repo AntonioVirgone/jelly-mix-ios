@@ -45,6 +45,20 @@ enum ElementType: Int, Equatable {
     case black = 7
     case empty = 99 // Placeholder per cella vuota
     
+    var displayName: String {
+        switch self {
+        case .red: return "Rossa"
+        case .blue: return "Blu"
+        case .green: return "Verde"
+        case .orange: return "Arancione"
+        case .yellow: return "Gialla"
+        case .brown: return "Viola"
+        case .black: return "Nera"
+        case .rainbow: return "Arcobaleno"
+        default: return ""
+        }
+    }
+
     // Assegnazione dei colori visivi nativi di SwiftUI per il rendering
     var color: Color {
         switch self {

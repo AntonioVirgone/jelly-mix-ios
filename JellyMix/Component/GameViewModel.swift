@@ -41,23 +41,41 @@ class GameViewModel: ObservableObject {
     @Published var objective: LevelObjective = LevelObjective(type: .jelly, targetColor: .blue, required: 2)
     @Published var isGameOver: Bool = false
     @Published var isLevelCompleted: Bool = false
+    
+    // Conserviamo i dati del livello corrente per generare i pezzi giusti
+    private var currentLevelData: LevelData? = nil
+    // Dizionario di tutti i livelli caricati dal JSON
+    private var allLevels: [Int: LevelData] = [:]
 
     init() {
         totalCells = gridSize * gridSize
+        loadLevelsFromJSON()
         resetGame(forLevel: 1)
     }
     
+    // Carica il file JSON (assicurati che il file si chiami "levels.json" nel progetto Xcode)
+    private func loadLevelsFromJSON() {
+        guard let url = Bundle.main.url(forResource: "levels", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else {
+            print("File JSON non trovato")
+            return
+        }
+        
+        do {
+            let collection = try JSONDecoder().decode(LevelCollection.self, from: data)
+            for lvl in collection.levels {
+                allLevels[lvl.level] = lvl
+            }
+        } catch {
+            print("Errore nel parsing del JSON: \(error)")
+        }
+    }
+
     // Inizia o ripristina la partita (equivalente a initStage di React)
     func resetGame(forLevel level: Int) {
         // Resetta statistiche
         self.currentLevel = level
         self.score = 0
-
-        // Inizializza la griglia vuota
-        self.grid = Array(repeating: Jelly(type: .empty), count: totalCells)
-        
-        // Genera il pezzo per il prossimo turno
-        self.nextJellyType = generaNuovoPezzo()
         
         // Resetta il salvataggio gelatina
         self.holdPiece = nil
@@ -65,18 +83,73 @@ class GameViewModel: ObservableObject {
 
         self.isGameOver = false
         self.isLevelCompleted = false
-        
-        // Esempio di setup per il Livello 1
-        if level == 1 {
-            self.objective = LevelObjective(type: .jelly, targetColor: .blue, required: 2)
-            self.movesLeft = 15
+        self.objective.current = 0 // Sempre azzerato prima di caricare i dati del livello
+
+        // Se il livello esiste nel JSON, usalo. Altrimenti fallback a griglia vuota.
+        if let levelData = allLevels[level] {
+            self.currentLevelData = levelData
+            self.movesLeft = levelData.movesLimit
+            
+            // Imposta obiettivo
+            let targetType = mapStringToElementType(levelData.objective.targetColor ?? "")
+            let objType: ObjectiveType = levelData.objective.type == "OBSTACLE" ? .obstacle : .jelly
+            self.objective = LevelObjective(type: objType, targetColor: targetType, required: levelData.objective.required)
+            
+            // Popola griglia
+            var newGrid: [Jelly] = []
+            for r in 0..<gridSize {
+                for c in 0..<gridSize {
+                    let cellString = levelData.grid[r][c]
+                    newGrid.append(Jelly(type: mapStringToElementType(cellString)))
+                }
+            }
+            self.grid = newGrid
+            
+        } else {
+            // Livello non presente nel JSON: Procedurale Base
+            self.currentLevelData = nil
+            self.movesLeft = nil
+            
+            // Inizializza la griglia vuota
+            self.grid = Array(repeating: Jelly(type: .empty), count: totalCells)
         }
+        self.nextJellyType = generaNuovoPezzo()
     }
     
     // Genera un nuovo pezzo per il turno successivo (per ora randomico tra base)
+    // Funzione aggiornata per usare i blocchi dinamici
     func generaNuovoPezzo() -> ElementType {
-        let options: [ElementType] = [.red, .blue, .green]
-        return options.randomElement() ?? .red
+        if let levelData = currentLevelData {
+            // Filtra solo i pezzi sbloccati (point <= score oppure point = nil)
+            let unlockedPieces = levelData.availablePieces.filter { pezzo in
+                let reqPoint = pezzo.point ?? 0
+                return score >= reqPoint
+            }
+            
+            if let randomPieceStr = unlockedPieces.randomElement()?.type {
+                return mapStringToElementType(randomPieceStr)
+            }
+        }
+        
+        // Fallback se non ci sono dati JSON
+        return [.red, .blue].randomElement() ?? .red
+    }
+    
+    // Helper per tradurre stringa JSON in enum
+    private func mapStringToElementType(_ str: String) -> ElementType {
+        switch str.uppercased() {
+        case "ROSSO": return .red
+        case "BLU": return .blue
+        case "GREEN", "VERDE": return .green
+        case "ARANCIONE": return .orange
+        case "GIALLO": return .yellow
+        case "GHIACCIO": return .ice
+        case "WAFFLE": return .waffle
+        case "LIQUIRIZIA": return .licorice
+        case "MIELE": return .honey
+        case "VUOTO": return .empty
+        default: return .empty
+        }
     }
     
     // Helper utilissimo per convertire le coordinate (riga, colonna) nell'indice dell'array piatto
