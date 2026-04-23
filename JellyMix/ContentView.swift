@@ -7,43 +7,22 @@
 
 import SwiftUI
 
-// Un piccolo enum temporaneo per dare colore alla nostra griglia di test
-enum JellyType {
-    case empty, red, blue, green, yellow
-    
-    var color: Color {
-        switch self {
-        case .empty: return Color.gray.opacity(0.2)
-        case .red: return .red
-        case .blue: return .blue
-        case .green: return .green
-        case .yellow: return .yellow
-        }
-    }
-}
-
 struct ContentView: View {
-    // Inizializzazione del ViewModel (@StateObject lo mantiene in vita)
-    @ObservedObject var viewModel = GameViewModel()
-    
-    // Azione da eseguire per tornare indietro
+    @ObservedObject var viewModel: GameViewModel
     var onReturnToMap: () -> Void
 
-    // 1. Aggiungi questa riga anche qui
-    @Environment(\.colorScheme) var colorScheme
-
-    // Definiamo 5 colonne flessibili per la nostra griglia
     let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 5)
-    
-    // Creiamo una griglia finta di 25 celle (@State è l'equivalente di useState in React)
-    @State private var grid: [JellyType] = [
-        .empty, .empty, .empty, .empty, .empty,
-        .empty, .yellow, .empty, .empty, .empty,
-        .empty, .empty, .empty, .empty, .empty,
-        .green, .green, .empty, .empty, .empty,
-        .empty, .green, .empty, .empty, .empty
-    ]
 
+    private func colorIntensity(maxMoves: Int, currentMoves: Int) -> [Color] {
+        if currentMoves >= maxMoves / 2 {
+            return [.orange]
+        } else if currentMoves >= maxMoves / 3 {
+            return [.red, .orange]
+        } else {
+            return [.red]
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Aggiungi un bottone "Indietro" in alto a sinistra (sopra l'header)
@@ -68,13 +47,24 @@ struct ContentView: View {
                     .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
                     .shadow(radius: 2)
                 VStack(spacing: 10) {
-                    Text("PUNTI: \(viewModel.score)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
-                        .background(Capsule().fill(Color.purple.opacity(0.8)))
+                    HStack {
+                        Text("PUNTI: \(viewModel.score)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                            .background(Capsule().fill(Color.purple.opacity(0.8)))
+                        if let moves = viewModel.movesLeft {
+                            Text("Mosse rimaste: \(moves)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 20)
+                                .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
+                        }
+                    }
                     // Barra obiettivo con dati reali
                     Text("LVL \(viewModel.currentLevel) | \(objectiveText)")
                         .font(.caption)
@@ -87,52 +77,13 @@ struct ContentView: View {
                 
                 // BOX CONSERVA E PROSSIMO
                 HStack(spacing: 30) {
-                    // Box Prossimo
-                    VStack {
-                        Text("PROSSIMO")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
-                        
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white.opacity(0.6))
-                            .frame(width: 90, height: 90)
-                            .overlay(
-                                ElementView(type: viewModel.nextJellyType, isDirty: false)
-                                    .frame(width: 60, height: 60)
-                            )
-                    }
-                    // Box Conserva
-                    VStack {
-                        Text("CONSERVA")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
-                        
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white.opacity(0.6))
-                            .frame(width: 90, height: 90)
-                            .overlay(
-                                Group {
-                                    if let held = viewModel.holdPiece {
-                                        // Visualizza la gelatina conservata
-                                        ElementView(type: held, isDirty: false)
-                                            .frame(width: 60, height: 60)
-                                    } else {
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.black.opacity(0.08))
-                                            .frame(width: 60, height: 60)
-                                    }
-                                }
-                            )
-                            // Applichiamo un effetto visivo se è già stato usato in questo turno
-                            .opacity(viewModel.hasHeldThisTurn ? 0.5 : 1.0)
-                            .onTapGesture {
-                                withAnimation(.spring()) {
-                                    viewModel.toggleHold()
-                                }
-                            }
-                    }
+                    PieceBoxView(label: "PROSSIMO", jellyType: viewModel.nextJellyType)
+
+                    PieceBoxView(label: "CONSERVA", jellyType: viewModel.holdPiece)
+                        .opacity(viewModel.hasHeldThisTurn ? 0.5 : 1.0)
+                        .onTapGesture {
+                            withAnimation(.spring()) { viewModel.toggleHold() }
+                        }
                 }
                 Spacer()
 

@@ -69,18 +69,6 @@ struct ElementView: View {
                     .shadow(radius: 2)
             }
             
-            // 2. Texture Ostacoli (se necessario in futuro, puoi aggiungere immagini qui)
-            if type == .waffle || type == .brokenWaffle {
-                Image(systemName: "square.grid.3x3.fill")
-                    .resizable()
-                    .padding(8)
-                    .foregroundColor(type == .brokenWaffle ? .brown : .orange)
-            } else if type == .licorice {
-                Image(systemName: "hurricane")
-                    .resizable()
-                    .padding(8)
-                    .foregroundColor(.black)
-            }
         }
         .aspectRatio(1, contentMode: .fit) // Mantiene la cella quadrata
     }

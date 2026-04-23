@@ -9,20 +9,6 @@ import Foundation
 import SwiftUI
 internal import Combine
 
-// MARK: - Modelli per gli Obiettivi
-enum ObjectiveType {
-    case jelly
-    case obstacle
-    case licorice
-}
-
-struct LevelObjective {
-    var type: ObjectiveType
-    var targetColor: ElementType // Usato solo se il tipo è .jelly
-    var required: Int
-    var current: Int = 0
-}
-
 class GameViewModel: ObservableObject {
     // Costanti della griglia
     let gridSize = 5
@@ -38,6 +24,7 @@ class GameViewModel: ObservableObject {
     // Nuove variabili per i livelli
     @Published var currentLevel: Int = 1
     @Published var movesLeft: Int? = nil // Opzionale: nil significa mosse infinite
+    @Published var maxMoves: Int? = nil // Opzionale: nil significa mosse infinite
     @Published var objective: LevelObjective = LevelObjective(type: .jelly, targetColor: .blue, required: 2)
     @Published var isGameOver: Bool = false
     @Published var isLevelCompleted: Bool = false
@@ -90,10 +77,21 @@ class GameViewModel: ObservableObject {
         if let levelData = allLevels[level] {
             self.currentLevelData = levelData
             self.movesLeft = levelData.movesLimit
+            self.maxMoves = levelData.movesLimit
             
             // Imposta obiettivo
             let targetType = mapStringToElementType(levelData.objective.targetColor ?? "")
-            let objType: ObjectiveType = levelData.objective.type == "OBSTACLE" ? .obstacle : .jelly
+            
+            var objType: ObjectiveType
+            
+            if levelData.objective.type == "OBSTACLE" {
+                objType = .obstacle
+            } else if levelData.objective.type == "LICORICE" {
+                objType = .licorice
+            } else {
+                objType = .jelly
+            }
+            
             self.objective = LevelObjective(type: objType, targetColor: targetType, required: levelData.objective.required)
             
             // Popola griglia
@@ -110,6 +108,7 @@ class GameViewModel: ObservableObject {
             // Livello non presente nel JSON: Procedurale Base
             self.currentLevelData = nil
             self.movesLeft = nil
+            self.maxMoves = nil
             
             // Inizializza la griglia vuota
             self.grid = Array(repeating: Jelly(type: .empty), count: totalCells)
@@ -224,78 +223,88 @@ class GameViewModel: ObservableObject {
             
             guard currentType != .empty && currentType.rawValue < 7 else { break }
             
-            var targetType = currentType
+            // 1. Troviamo i possibili "Target" per la fusione
+            var possibleTargets: [ElementType] = []
+
             if currentType == .rainbow {
-                targetType = trovaColoreMiglioreVicinanza(r: currentFocus.r, c: currentFocus.c)
-                if targetType == .empty { break }
+                // IL FIX: Il Jolly prova TUTTI i colori possibili, partendo dal livello più alto
+                // per cercare la combo migliore, ignorando i vicini per evitare blocchi.
+                possibleTargets = [.brown, .yellow, .orange, .green, .blue, .red]
+            } else {
+                possibleTargets = [currentType]
             }
-            
-            let mergeBaseType = (currentType == .rainbow) ? targetType : currentType
-            // Adesso leggiamo requirement dal modello fluido!
-            let requiredToMerge = Jelly(type: mergeBaseType).requirement
-            var connectedCells: [Int] = []
-            var visited = Set<Int>()
-            
-            func findConnected(r: Int, c: Int) {
-                if r < 0 || r >= gridSize || c < 0 || c >= gridSize { return }
-                let idx = getIndex(row: r, col: c)
-                if visited.contains(idx) { return }
-                
-                let cell = grid[idx]
-                if cell.type == targetType || cell.type == .rainbow {
-                    visited.insert(idx)
-                    connectedCells.append(idx)
-                    
-                    findConnected(r: r + 1, c: c)
-                    findConnected(r: r - 1, c: c)
-                    findConnected(r: r, c: c + 1)
-                    findConnected(r: r, c: c - 1)
-                }
-            }
-            
-            findConnected(r: currentFocus.r, c: currentFocus.c)
-            
-            // LA FUSIONE AVVIENE
-            if connectedCells.count >= requiredToMerge {
-                if connectedCells.count > requiredToMerge { earnedRainbow = true }
-                
-                // 1. GESTIONE OSTACOLI ADIACENTI SOLO ALLA CELLA TOCCATA (currentFocus)
-                let focusNeighbors = [
-                    (currentFocus.r - 1, currentFocus.c),
-                    (currentFocus.r + 1, currentFocus.c),
-                    (currentFocus.r, currentFocus.c - 1),
-                    (currentFocus.r, currentFocus.c + 1)
-                ]
 
-                for (nr, nc) in focusNeighbors {
-                    if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
-                        let nIdx = getIndex(row: nr, col: nc)
-                        gestisciDistruzioneOstacolo(at: nIdx)
+            // 2. Prova a fare la fusione per ogni colore target possibile
+            for targetType in possibleTargets {
+                let mergeBaseType = (currentType == .rainbow) ? targetType : currentType
+                let requiredToMerge = Jelly(type: mergeBaseType).requirement
+                var connectedCells: [Int] = []
+                var visited = Set<Int>()
+                
+                // DFS Ricerca
+                func findConnected(r: Int, c: Int) {
+                    if r < 0 || r >= gridSize || c < 0 || c >= gridSize { return }
+                    let idx = getIndex(row: r, col: c)
+                    if visited.contains(idx) { return }
+                    
+                    let cell = grid[idx]
+                    if cell.type == targetType || cell.type == .rainbow {
+                        visited.insert(idx)
+                        connectedCells.append(idx)
+                        
+                        findConnected(r: r + 1, c: c)
+                        findConnected(r: r - 1, c: c)
+                        findConnected(r: r, c: c + 1)
+                        findConnected(r: r, c: c - 1)
                     }
                 }
                 
-                // 2. Svuota tutte le celle coinvolte nella fusione
-                for idx in connectedCells {
-                    grid[idx].type = .empty
-                }
-
-                // 3. Crea la nuova gelatina evoluta
-                let nextLevelRaw = mergeBaseType.rawValue + 1
-                if let nextType = ElementType(rawValue: nextLevelRaw) {
-                    grid[currentIndex].type = nextType
-                    score += (mergeBaseType.rawValue * 10) * connectedCells.count
+                findConnected(r: currentFocus.r, c: currentFocus.c)
+                
+                // FIX DI SICUREZZA: Controlliamo che nel gruppo ci sia ALMENO una gelatina del colore vero.
+                // Evita che 3 o 4 Jolly si uniscano tra loro senza un colore bersaglio
+                let containsActualTarget = connectedCells.contains { grid[$0].type == targetType }
+                
+                // LA FUSIONE AVVIENE
+                if connectedCells.count >= requiredToMerge && containsActualTarget {
+                    if connectedCells.count > requiredToMerge { earnedRainbow = true }
                     
-                    if objective.type == .jelly && nextType == objective.targetColor {
-                        objective.current += 1
+                    // A. Rompi ostacoli adiacenti SOLO al focus
+                    let focusNeighbors = [
+                        (currentFocus.r - 1, currentFocus.c), (currentFocus.r + 1, currentFocus.c),
+                        (currentFocus.r, currentFocus.c - 1), (currentFocus.r, currentFocus.c + 1)
+                    ]
+                    for (nr, nc) in focusNeighbors {
+                        if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
+                            let nIdx = getIndex(row: nr, col: nc)
+                            gestisciDistruzioneOstacolo(at: nIdx)
+                        }
                     }
                     
-                    hasMerged = true
+                    // B. Rimuovi le gelatine unite
+                    for idx in connectedCells {
+                        grid[idx].type = .empty
+                    }
+                    
+                    // C. Crea la nuova gelatina evoluta
+                    let nextLevelRaw = mergeBaseType.rawValue + 1
+                    if let nextType = ElementType(rawValue: nextLevelRaw) {
+                        grid[currentIndex].type = nextType
+                        score += (mergeBaseType.rawValue * 10) * connectedCells.count
+                        
+                        if objective.type == .jelly && nextType == objective.targetColor {
+                            objective.current += 1
+                        }
+                        
+                        hasMerged = true
+                        break // IMPORTANTE: Interrompiamo il for-loop perché abbiamo trovato una fusione valida!
+                    }
                 }
             }
         }
         
-        processaFineTurno() // Chiamata per espandere la liquirizia
-        
+        processaFineTurno() // Espansione liquirizia
+
         return earnedRainbow
     }
     
@@ -351,26 +360,7 @@ class GameViewModel: ObservableObject {
             }
         }
     }
-    
-    // Helper per il Jolly: trova il colore di livello più alto tra i vicini
-    private func trovaColoreMiglioreVicinanza(r: Int, c: Int) -> ElementType {
-        let directions = [(0,1), (0,-1), (1,0), (-1,0)]
-        var bestRaw: Int = 0        // parte da 0 così qualsiasi colore reale (1-6) lo supera
-        var bestType: ElementType = .empty
-
-        for dir in directions {
-            let nr = r + dir.0, nc = c + dir.1
-            if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
-                let type = grid[getIndex(row: nr, col: nc)].type
-                if type.rawValue > 0 && type.rawValue < 7 && type.rawValue > bestRaw {
-                    bestRaw = type.rawValue
-                    bestType = type
-                }
-            }
-        }
-        return bestType
-    }
-    
+        
     // Funzione che valuta se abbiamo vinto o perso dopo ogni mossa
     private func checkWinLoseConditions() {
         if objective.current >= objective.required {

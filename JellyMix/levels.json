@@ -2,69 +2,353 @@
   "levels": [
     {
       "level": 1,
-      "objective": {
-        "type": "JELLY",
-        "targetColor": "BLU",
-        "required": 5
-      },
-      "movesLimit": 18,
-      "grid": [
-        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
-        ["VUOTO", "VUOTO", "GHIACCIO", "VUOTO", "ROSSO"],
-        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
-        ["ROSSO", "VUOTO", "VUOTO", "GHIACCIO", "VUOTO"]
-      ],
-      "availablePieces": [
-        { "type": "ROSSO" },
-        {
-          "type": "BLU",
-          "point": 420
-        }
-      ]
+      "objective": { "type": "JELLY", "targetColor": "BLU", "required": 5 },
+      "movesLimit": 10,
+      "grid": [["ROSSO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","GHIACCIO","VUOTO","ROSSO"],["VUOTO","VUOTO","VUOTO","ROSSO","VUOTO"],["ROSSO","VUOTO","VUOTO","GHIACCIO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 420 } ]
     },
     {
       "level": 2,
-      "objective": {
-        "type": "JELLY",
-        "targetColor": "BLU",
-        "required": 3
-      },
-      "movesLimit": 20,
-      "grid": [
-        ["VUOTO", "VUOTO", "ROSSO", "VUOTO", "VUOTO"],
-        ["VUOTO", "ROSSO", "VUOTO", "VUOTO", "VUOTO"],
-        ["VUOTO", "VUOTO", "WAFFLE", "ROSSO", "VUOTO"],
-        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"]
-      ],
-      "availablePieces": [
-        { "type": "ROSSO" },
-        { "type": "BLU", "point": 200 }
-      ]
+      "objective": { "type": "JELLY", "targetColor": "BLU", "required": 3 },
+      "movesLimit": 10,
+      "grid": [["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","ROSSO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","WAFFLE","ROSSO","VUOTO"],["ROSSO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","ROSSO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
     },
     {
       "level": 3,
-      "objective": {
-        "type": "JELLY",
-        "targetColor": "GREEN",
-        "required": 3
-      },
+      "objective": { "type": "JELLY", "targetColor": "GREEN", "required": 3 },
       "movesLimit": 18,
-      "grid": [
-        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "ROSSO", "VUOTO"],
-        ["VUOTO", "VUOTO", "VUOTO", "VUOTO", "ROSSO"],
-        ["VUOTO", "BLU", "VUOTO", "ROSSO", "VUOTO"],
-        ["ROSSO", "VUOTO", "VUOTO", "VUOTO", "VUOTO"]
-      ],
-      "availablePieces": [
-        { "type": "ROSSO" },
-        {
-          "type": "BLU",
-          "point": 420
-        }
-      ]
+      "grid": [["ROSSO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","ROSSO"],["VUOTO","BLU","VUOTO","ROSSO","VUOTO"],["ROSSO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 800 } ]
+    },
+    {
+      "level": 4,
+      "objective": { "type": "OBSTACLE", "required": 4 },
+      "movesLimit": 15,
+      "grid": [["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 100 } ]
+    },
+    {
+      "level": 5,
+      "objective": { "type": "OBSTACLE", "required": 3 },
+      "movesLimit": 12,
+      "grid": [["VUOTO","VUOTO","WAFFLE","VUOTO","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 6,
+      "objective": { "type": "JELLY", "targetColor": "GREEN", "required": 4 },
+      "movesLimit": 20,
+      "grid": [["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["ROSSO","GHIACCIO","VUOTO","GHIACCIO","ROSSO"],["VUOTO","VUOTO","BLU","VUOTO","VUOTO"],["ROSSO","GHIACCIO","VUOTO","GHIACCIO","ROSSO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 400 }, { "type": "GREEN", "point": 1000 } ]
+    },
+    {
+      "level": 7,
+      "objective": { "type": "LICORICE", "required": 2 },
+      "movesLimit": 15,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 150 } ]
+    },
+    {
+      "level": 8,
+      "objective": { "type": "OBSTACLE", "required": 6 },
+      "movesLimit": 18,
+      "grid": [["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 9,
+      "objective": { "type": "JELLY", "targetColor": "GREEN", "required": 5 },
+      "movesLimit": 22,
+      "grid": [["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["ROSSO","VUOTO","VUOTO","VUOTO","ROSSO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 900 } ]
+    },
+    {
+      "level": 10,
+      "objective": { "type": "OBSTACLE", "required": 5 },
+      "movesLimit": 15,
+      "grid": [["GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 150 } ]
+    },
+    {
+      "level": 11,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 2 },
+      "movesLimit": 25,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","GREEN","VUOTO","GREEN","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 800 } ]
+    },
+    {
+      "level": 12,
+      "objective": { "type": "LICORICE", "required": 4 },
+      "movesLimit": 16,
+      "grid": [["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 100 } ]
+    },
+    {
+      "level": 13,
+      "objective": { "type": "OBSTACLE", "required": 4 },
+      "movesLimit": 14,
+      "grid": [["VUOTO","VUOTO","WAFFLE","VUOTO","VUOTO"],["VUOTO","ROSSO","WAFFLE","ROSSO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","BLU","WAFFLE","BLU","VUOTO"],["VUOTO","VUOTO","WAFFLE","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 100 } ]
+    },
+    {
+      "level": 14,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 3 },
+      "movesLimit": 22,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","GHIACCIO","GHIACCIO","GHIACCIO","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 600 } ]
+    },
+    {
+      "level": 15,
+      "objective": { "type": "OBSTACLE", "required": 8 },
+      "movesLimit": 20,
+      "grid": [["GHIACCIO","VUOTO","GHIACCIO","VUOTO","GHIACCIO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["WAFFLE","VUOTO","ROSSO","VUOTO","WAFFLE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["GHIACCIO","VUOTO","GHIACCIO","VUOTO","GHIACCIO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 } ]
+    },
+    {
+      "level": 16,
+      "objective": { "type": "LICORICE", "required": 5 },
+      "movesLimit": 20,
+      "grid": [["VUOTO","LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["LIQUIRIZIA","VUOTO","ROSSO","VUOTO","LIQUIRIZIA"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","LIQUIRIZIA","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 17,
+      "objective": { "type": "JELLY", "targetColor": "GREEN", "required": 6 },
+      "movesLimit": 24,
+      "grid": [["ROSSO","VUOTO","BLU","VUOTO","ROSSO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["BLU","VUOTO","WAFFLE","VUOTO","BLU"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["ROSSO","VUOTO","BLU","VUOTO","ROSSO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 100 }, { "type": "GREEN", "point": 500 } ]
+    },
+    {
+      "level": 18,
+      "objective": { "type": "OBSTACLE", "required": 3 },
+      "movesLimit": 12,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","MIELE","VUOTO","MIELE","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
+    },
+    {
+      "level": 19,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 4 },
+      "movesLimit": 25,
+      "grid": [["VUOTO","VUOTO","GHIACCIO","VUOTO","VUOTO"],["VUOTO","GREEN","VUOTO","GREEN","VUOTO"],["GHIACCIO","VUOTO","ROSSO","VUOTO","GHIACCIO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","GHIACCIO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 600 } ]
+    },
+    {
+      "level": 20,
+      "objective": { "type": "OBSTACLE", "required": 9 },
+      "movesLimit": 22,
+      "grid": [["WAFFLE","WAFFLE","WAFFLE","WAFFLE","WAFFLE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["GHIACCIO","VUOTO","ROSSO","VUOTO","GHIACCIO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["GHIACCIO","VUOTO","ROSSO","VUOTO","GHIACCIO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 21,
+      "objective": { "type": "JELLY", "targetColor": "GIALLO", "required": 2 },
+      "movesLimit": 28,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","ARANCIONE","VUOTO","ARANCIONE","VUOTO"],["VUOTO","VUOTO","GREEN","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 600 } ]
+    },
+    {
+      "level": 22,
+      "objective": { "type": "LICORICE", "required": 6 },
+      "movesLimit": 20,
+      "grid": [["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"],["VUOTO","LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO"],["LIQUIRIZIA","VUOTO","ROSSO","VUOTO","LIQUIRIZIA"],["VUOTO","LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
+    },
+    {
+      "level": 23,
+      "objective": { "type": "OBSTACLE", "required": 5 },
+      "movesLimit": 16,
+      "grid": [["VUOTO","MIELE","VUOTO","MIELE","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["MIELE","VUOTO","VUOTO","VUOTO","MIELE"],["VUOTO","VUOTO","BLU","VUOTO","VUOTO"],["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 150 } ]
+    },
+    {
+      "level": 24,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 5 },
+      "movesLimit": 25,
+      "grid": [["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","WAFFLE","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 500 } ]
+    },
+    {
+      "level": 25,
+      "objective": { "type": "OBSTACLE", "required": 10 },
+      "movesLimit": 24,
+      "grid": [["GHIACCIO","GHIACCIO","VUOTO","GHIACCIO","GHIACCIO"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["WAFFLE","WAFFLE","VUOTO","WAFFLE","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 26,
+      "objective": { "type": "JELLY", "targetColor": "GIALLO", "required": 3 },
+      "movesLimit": 26,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","GREEN","VUOTO","GREEN","VUOTO"],["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 700 } ]
+    },
+    {
+      "level": 27,
+      "objective": { "type": "LICORICE", "required": 4 },
+      "movesLimit": 15,
+      "grid": [["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["VUOTO","MIELE","VUOTO","MIELE","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
+    },
+    {
+      "level": 28,
+      "objective": { "type": "OBSTACLE", "required": 8 },
+      "movesLimit": 20,
+      "grid": [["WAFFLE","VUOTO","GHIACCIO","VUOTO","WAFFLE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["GHIACCIO","VUOTO","ROSSO","VUOTO","GHIACCIO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["WAFFLE","VUOTO","GHIACCIO","VUOTO","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 29,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 6 },
+      "movesLimit": 28,
+      "grid": [["ROSSO","VUOTO","VUOTO","VUOTO","ROSSO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["ROSSO","VUOTO","VUOTO","VUOTO","ROSSO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 }, { "type": "GREEN", "point": 600 } ]
+    },
+    {
+      "level": 30,
+      "objective": { "type": "OBSTACLE", "required": 12 },
+      "movesLimit": 25,
+      "grid": [["GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["WAFFLE","VUOTO","ROSSO","VUOTO","WAFFLE"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 400 } ]
+    },
+    {
+      "level": 31,
+      "objective": { "type": "JELLY", "targetColor": "GIALLO", "required": 4 },
+      "movesLimit": 30,
+      "grid": [["VUOTO","ARANCIONE","VUOTO","ARANCIONE","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["ROSSO","VUOTO","WAFFLE","VUOTO","ROSSO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","ARANCIONE","VUOTO","ARANCIONE","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 800 } ]
+    },
+    {
+      "level": 32,
+      "objective": { "type": "LICORICE", "required": 7 },
+      "movesLimit": 22,
+      "grid": [["LIQUIRIZIA","LIQUIRIZIA","LIQUIRIZIA","LIQUIRIZIA","LIQUIRIZIA"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
+    },
+    {
+      "level": 33,
+      "objective": { "type": "OBSTACLE", "required": 6 },
+      "movesLimit": 18,
+      "grid": [["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"],["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"],["MIELE","MIELE","ROSSO","MIELE","MIELE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 34,
+      "objective": { "type": "JELLY", "targetColor": "BROWN", "required": 2 },
+      "movesLimit": 35,
+      "grid": [["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","GIALLO","VUOTO","GIALLO","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","GREEN","VUOTO","GREEN","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 }, { "type": "GREEN", "point": 1000 } ]
+    },
+    {
+      "level": 35,
+      "objective": { "type": "OBSTACLE", "required": 14 },
+      "movesLimit": 28,
+      "grid": [["WAFFLE","GHIACCIO","WAFFLE","GHIACCIO","WAFFLE"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["WAFFLE","VUOTO","ROSSO","VUOTO","WAFFLE"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["WAFFLE","GHIACCIO","WAFFLE","GHIACCIO","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 400 } ]
+    },
+    {
+      "level": 36,
+      "objective": { "type": "LICORICE", "required": 8 },
+      "movesLimit": 25,
+      "grid": [["LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO","LIQUIRIZIA"],["VUOTO","LIQUIRIZIA","VUOTO","LIQUIRIZIA","VUOTO"],["LIQUIRIZIA","VUOTO","ROSSO","VUOTO","LIQUIRIZIA"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 } ]
+    },
+    {
+      "level": 37,
+      "objective": { "type": "JELLY", "targetColor": "GIALLO", "required": 5 },
+      "movesLimit": 32,
+      "grid": [["VUOTO","MIELE","VUOTO","MIELE","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["VUOTO","VUOTO","GREEN","VUOTO","VUOTO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","MIELE","VUOTO","MIELE","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 }, { "type": "GREEN", "point": 800 } ]
+    },
+    {
+      "level": 38,
+      "objective": { "type": "OBSTACLE", "required": 7 },
+      "movesLimit": 20,
+      "grid": [["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"],["VUOTO","WAFFLE","VUOTO","WAFFLE","VUOTO"],["MIELE","VUOTO","ROSSO","VUOTO","MIELE"],["VUOTO","WAFFLE","VUOTO","WAFFLE","VUOTO"],["VUOTO","VUOTO","MIELE","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 200 } ]
+    },
+    {
+      "level": 39,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 8 },
+      "movesLimit": 35,
+      "grid": [["ROSSO","VUOTO","BLU","VUOTO","ROSSO"],["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"],["BLU","VUOTO","ROSSO","VUOTO","BLU"],["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"],["ROSSO","VUOTO","BLU","VUOTO","ROSSO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 750 } ]
+    },
+    {
+      "level": 40,
+      "objective": { "type": "OBSTACLE", "required": 16 },
+      "movesLimit": 30,
+      "grid": [["GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO","GHIACCIO"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["WAFFLE","VUOTO","ROSSO","VUOTO","WAFFLE"],["WAFFLE","VUOTO","VUOTO","VUOTO","WAFFLE"],["WAFFLE","WAFFLE","WAFFLE","WAFFLE","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 400 } ]
+    },
+    {
+      "level": 41,
+      "objective": { "type": "JELLY", "targetColor": "BROWN", "required": 3 },
+      "movesLimit": 38,
+      "grid": [["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"],["VUOTO","ARANCIONE","VUOTO","ARANCIONE","VUOTO"],["LIQUIRIZIA","VUOTO","GREEN","VUOTO","LIQUIRIZIA"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","LIQUIRIZIA","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 }, { "type": "GREEN", "point": 900 } ]
+    },
+    {
+      "level": 42,
+      "objective": { "type": "LICORICE", "required": 10 },
+      "movesLimit": 28,
+      "grid": [["LIQUIRIZIA","LIQUIRIZIA","VUOTO","LIQUIRIZIA","LIQUIRIZIA"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["LIQUIRIZIA","LIQUIRIZIA","VUOTO","LIQUIRIZIA","LIQUIRIZIA"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 } ]
+    },
+    {
+      "level": 43,
+      "objective": { "type": "OBSTACLE", "required": 8 },
+      "movesLimit": 22,
+      "grid": [["MIELE","VUOTO","VUOTO","VUOTO","MIELE"],["VUOTO","WAFFLE","VUOTO","WAFFLE","VUOTO"],["VUOTO","VUOTO","ROSSO","VUOTO","VUOTO"],["VUOTO","WAFFLE","VUOTO","WAFFLE","VUOTO"],["MIELE","VUOTO","VUOTO","VUOTO","MIELE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 350 } ]
+    },
+    {
+      "level": 44,
+      "objective": { "type": "JELLY", "targetColor": "GIALLO", "required": 6 },
+      "movesLimit": 34,
+      "grid": [["VUOTO","VUOTO","GHIACCIO","VUOTO","VUOTO"],["VUOTO","ROSSO","VUOTO","ROSSO","VUOTO"],["GHIACCIO","VUOTO","GREEN","VUOTO","GHIACCIO"],["VUOTO","BLU","VUOTO","BLU","VUOTO"],["VUOTO","VUOTO","GHIACCIO","VUOTO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 800 } ]
+    },
+    {
+      "level": 45,
+      "objective": { "type": "OBSTACLE", "required": 18 },
+      "movesLimit": 35,
+      "grid": [["WAFFLE","GHIACCIO","MIELE","GHIACCIO","WAFFLE"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["MIELE","VUOTO","ROSSO","VUOTO","MIELE"],["GHIACCIO","VUOTO","VUOTO","VUOTO","GHIACCIO"],["WAFFLE","GHIACCIO","MIELE","GHIACCIO","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 450 } ]
+    },
+    {
+      "level": 46,
+      "objective": { "type": "LICORICE", "required": 12 },
+      "movesLimit": 30,
+      "grid": [["VUOTO","LIQUIRIZIA","LIQUIRIZIA","LIQUIRIZIA","VUOTO"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["LIQUIRIZIA","VUOTO","ROSSO","VUOTO","LIQUIRIZIA"],["LIQUIRIZIA","VUOTO","VUOTO","VUOTO","LIQUIRIZIA"],["VUOTO","LIQUIRIZIA","LIQUIRIZIA","LIQUIRIZIA","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 300 } ]
+    },
+    {
+      "level": 47,
+      "objective": { "type": "JELLY", "targetColor": "BROWN", "required": 4 },
+      "movesLimit": 40,
+      "grid": [["ROSSO","VUOTO","VUOTO","VUOTO","ROSSO"],["VUOTO","ARANCIONE","VUOTO","ARANCIONE","VUOTO"],["VUOTO","VUOTO","WAFFLE","VUOTO","VUOTO"],["VUOTO","GREEN","VUOTO","GREEN","VUOTO"],["ROSSO","VUOTO","VUOTO","VUOTO","ROSSO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 350 }, { "type": "GREEN", "point": 900 } ]
+    },
+    {
+      "level": 48,
+      "objective": { "type": "OBSTACLE", "required": 10 },
+      "movesLimit": 25,
+      "grid": [["MIELE","VUOTO","MIELE","VUOTO","MIELE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["MIELE","VUOTO","ROSSO","VUOTO","MIELE"],["VUOTO","VUOTO","VUOTO","VUOTO","VUOTO"],["MIELE","VUOTO","MIELE","VUOTO","MIELE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 400 } ]
+    },
+    {
+      "level": 49,
+      "objective": { "type": "JELLY", "targetColor": "ARANCIONE", "required": 10 },
+      "movesLimit": 38,
+      "grid": [["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"],["GHIACCIO","ROSSO","VUOTO","ROSSO","GHIACCIO"],["VUOTO","VUOTO","BLU","VUOTO","VUOTO"],["GHIACCIO","ROSSO","VUOTO","ROSSO","GHIACCIO"],["VUOTO","GHIACCIO","VUOTO","GHIACCIO","VUOTO"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 250 }, { "type": "GREEN", "point": 850 } ]
+    },
+    {
+      "level": 50,
+      "objective": { "type": "OBSTACLE", "required": 24 },
+      "movesLimit": 45,
+      "grid": [["WAFFLE","MIELE","GHIACCIO","MIELE","WAFFLE"],["MIELE","WAFFLE","VUOTO","WAFFLE","MIELE"],["GHIACCIO","VUOTO","ROSSO","VUOTO","GHIACCIO"],["MIELE","WAFFLE","VUOTO","WAFFLE","MIELE"],["WAFFLE","MIELE","GHIACCIO","MIELE","WAFFLE"]],
+      "availablePieces": [ { "type": "ROSSO" }, { "type": "BLU", "point": 500 } ]
     }
   ]
 }
