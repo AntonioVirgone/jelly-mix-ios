@@ -101,13 +101,24 @@ struct ElementView: View {
                     .padding(8)
                     .foregroundColor(.black)
                     .opacity(0.5)
+            } else if type == .treasure {
+                Image(systemName: "bitcoinsign.ring")
+                    .resizable()
+                    .padding(8)
+                    .foregroundColor(.black)
+                    .opacity(0.5)
+            } else if type == .key  {
+                Image(systemName: "key.fill")
+                    .resizable()
+                    .padding(8)
+                    .foregroundColor(.yellow)
+                    .opacity(0.5)
             }
         }
     }
 }
 
 // MARK: - Forme Vettoriali e Sub-Views
-
 // Una forma arrotondata speciale, leggermente più "morbida" di un semplice RoundedRectangle
 struct JellyBodyShape: Shape {
     func path(in rect: CGRect) -> Path {

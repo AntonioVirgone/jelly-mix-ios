@@ -20,6 +20,8 @@ class GameViewModel: ObservableObject {
     @Published var holdPiece: ElementType? = nil // Pezzo conservato (opzionale)
     @Published var hasHeldThisTurn: Bool = false // Impedisce scambi infiniti nello stesso turno
     @Published var score: Int = 0
+    @Published var money: Int = 0
+    @Published var keysCollected: Int = 0
     
     // Nuove variabili per i livelli
     @Published var currentLevel: Int = 1
@@ -69,6 +71,7 @@ class GameViewModel: ObservableObject {
         // Resetta statistiche
         self.currentLevel = level
         self.score = 0
+        self.keysCollected = 0
         
         // Resetta il salvataggio gelatina
         self.holdPiece = nil
@@ -152,6 +155,8 @@ class GameViewModel: ObservableObject {
         case "WAFFLE": return .waffle
         case "LIQUIRIZIA": return .licorice
         case "MIELE": return .honey
+        case "TESORO": return .treasure
+        case "CHIAVE": return .key
         case "VUOTO": return .empty
         default: return .empty
         }
@@ -340,6 +345,15 @@ class GameViewModel: ObservableObject {
             score += 60
             if objective.type == .obstacle { objective.current += 1 }
             // TODO: Aggiungeremo lo spargimento del miele
+        case .treasure:
+            if keysCollected > 0 {
+                grid[index].type = .empty
+                money += 250 // Non è considerato un ostacolo
+                keysCollected -= 1
+            }
+        case .key:
+            grid[index].type = .empty
+            keysCollected += 1
         default:
             break
         }

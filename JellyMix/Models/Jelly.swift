@@ -17,6 +17,7 @@ struct ElementConfig {
     var requirement: Int // 0 per ostacoli
     var isObstacle: Bool
     var hasFace: Bool // True se vogliamo disegnare la faccina carina
+    var requireKeys: Int? // serve per aprire le casse
 }
 
 // MARK: - Modello Dati
@@ -32,6 +33,8 @@ struct Jelly: Identifiable, Equatable {
 // Enum che definisce tutti i tipi di elementi possibili e la loro rappresentazione visiva
 enum ElementType: Int, Equatable {
     // Ostacoli (valori negativi)
+    case treasure = -7
+    case key = -8
     case honey = -5
     case licorice = -4
     case brokenWaffle = -3
@@ -64,6 +67,8 @@ enum ElementType: Int, Equatable {
         case .brokenWaffle: return ElementConfig(name: "Waffle Rotto", color: Color.orange.opacity(0.8), requirement: 0, isObstacle: true, hasFace: false)
         case .licorice:     return ElementConfig(name: "Liquirizia", color: .gray, requirement: 0, isObstacle: true, hasFace: false)
         case .honey:        return ElementConfig(name: "Miele", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
+        case .treasure:     return ElementConfig(name: "Tesoto", color: .indigo, requirement: 0, isObstacle: true, hasFace: false, requireKeys: 1)
+        case .key:          return ElementConfig(name: "Chiave", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
         }
     }
 }

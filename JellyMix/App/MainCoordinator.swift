@@ -42,20 +42,9 @@ struct MainCoordinator: View {
                             .font(.system(size: 40, weight: .black, design: .rounded))
                             .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
                             .shadow(radius: 2)
-/*
-                        // === LA NUOVA MAPPA SAGA ===
-                        SagaMapView(maxUnlockedLevel: maxUnlockedLevel) { levelToPlay in
-                            // Callback chiamato dalla mappa quando si preme "Gioca"
-                            gameEngine.resetGame(forLevel: levelToPlay)
-                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                currentScreen = .game
-                            }
-                        }
-                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 1.1)), removal: .opacity.combined(with: .scale(scale: 0.9))))
-                        */
                         SagaMapView(
                             worlds: gameEngine.worlds, // Usiamo i dati dal motore
-                            maxUnlockedLevel: maxUnlockedLevel,
+                            maxUnlockedLevel: UserDefaults.standard.integer(forKey: "maxUnlockedLevel") != 0 ? UserDefaults.standard.integer(forKey: "maxUnlockedLevel") : maxUnlockedLevel,
                             getColor: gameEngine.getColor // Passiamo la funzione per i colori
                         ) { levelToPlay in
                             gameEngine.resetGame(forLevel: levelToPlay)
@@ -69,11 +58,10 @@ struct MainCoordinator: View {
                     // === LA SCHERMATA DI GIOCO ===
                     ContentView(viewModel: gameEngine) {
                         // Callback chiamato da ContentView per tornare indietro
-                        
                         // Se il livello è stato completato e era l'ultimo sbloccato, sblocca il prossimo!
                         if gameEngine.isLevelCompleted && gameEngine.currentLevel == maxUnlockedLevel {
                             maxUnlockedLevel += 1
-                            //TODO: Qui potresti salvare maxUnlockedLevel nel localStorage (UserDefaults)
+                            UserDefaults.standard.set(maxUnlockedLevel, forKey: "maxUnlockedLevel")
                         }
                         
                         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {

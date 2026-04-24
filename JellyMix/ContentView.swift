@@ -17,7 +17,7 @@ struct ContentView: View {
         if currentMoves >= maxMoves / 2 {
             return [.orange]
         } else if currentMoves >= maxMoves / 3 {
-            return [.red, .orange]
+            return [.orange, .red]
         } else {
             return [.red]
         }
@@ -55,16 +55,33 @@ struct ContentView: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 20)
                             .background(Capsule().fill(Color.purple.opacity(0.8)))
-                        if let moves = viewModel.movesLeft {
-                            Text("Mosse rimaste: \(moves)")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 20)
-                                .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
-                        }
+                        Text("MONETE: \(viewModel.money)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                            .background(Capsule().fill(Color.purple.opacity(0.8)))
                     }
+                    if let moves = viewModel.movesLeft {
+                        Text("Mosse rimaste: \(moves)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                            .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
+                    }
+                    if viewModel.keysCollected > 0 {
+                        Text("Chiavi prese: \(viewModel.keysCollected)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                            .background(Capsule().fill(Color.purple.opacity(0.8)))
+                    }
+
                     // Barra obiettivo con dati reali
                     Text("LVL \(viewModel.currentLevel) | \(objectiveText)")
                         .font(.caption)
