@@ -55,7 +55,7 @@ struct ContentView: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 20)
                             .background(Capsule().fill(Color.purple.opacity(0.8)))
-                        Text("MONETE: \(viewModel.money)")
+                        Text("MONETE: \(viewModel.coins)")
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.white)

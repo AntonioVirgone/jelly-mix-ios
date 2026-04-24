@@ -20,9 +20,12 @@ class GameViewModel: ObservableObject {
     @Published var holdPiece: ElementType? = nil // Pezzo conservato (opzionale)
     @Published var hasHeldThisTurn: Bool = false // Impedisce scambi infiniti nello stesso turno
     @Published var score: Int = 0
-    @Published var money: Int = 0
     @Published var keysCollected: Int = 0
     
+    // Nuove variabili per lo shop
+    @Published var unlockedJellies: Set<ElementType> = [.red, .blue, .green] // Gelatine base già sbloccate
+    @Published var coins: Int = 0
+
     // Nuove variabili per i livelli
     @Published var currentLevel: Int = 1
     @Published var movesLeft: Int? = nil // Opzionale: nil significa mosse infinite
@@ -348,7 +351,7 @@ class GameViewModel: ObservableObject {
         case .treasure:
             if keysCollected > 0 {
                 grid[index].type = .empty
-                money += 250 // Non è considerato un ostacolo
+                coins += 250 // Non è considerato un ostacolo
                 keysCollected -= 1
             }
         case .key:
@@ -424,5 +427,53 @@ class GameViewModel: ObservableObject {
         case "blue": return .blue
         default: return .gray
         }
+    }
+    
+    // MARK: - Logica Pacchetti Carte
+    // Restituisce un array di carte pescate, oppure nil se non ci sono abbastanza monete
+    func buyAndOpenPack(cost: Int = 100) -> [ElementType]? {
+        guard coins >= cost else { return nil } // Controllo fondi
+        
+        coins -= cost // Paga il costo
+        
+        // Il "Pool" da cui pescare (escludiamo le base e gli ostacoli)
+        // Puoi modificare le probabilità inserendo più copie delle comuni e meno copie delle rare!
+        let pullRates: [ElementType] = getPullRates()
+        
+        var pulledCards: [ElementType] = []
+        
+        // Peschiamo 3 carte per bustina
+        for _ in 0..<3 {
+            if let randomCard = pullRates.randomElement() {
+                pulledCards.append(randomCard)
+                // Aggiungiamo la carta alla collezione del giocatore
+                unlockedJellies.insert(randomCard)
+            }
+        }
+        
+        return pulledCards
+    }
+    
+    func getPullRates() -> [ElementType] {
+        var pullRates: [ElementType] = []
+        
+        for i in 0...100 {
+            pullRates.append(.ice)
+            if i <= 5 {
+                pullRates.append(.black)
+            } else if i <= 10 {
+                pullRates.append(.brown)
+            } else if i <= 25 {
+                pullRates.append(.yellow)
+            } else if i <= 40 {
+                pullRates.append(.orange)
+            } else if i <= 80 {
+                pullRates.append(.yellow)
+            } else if i <= 100 {
+                pullRates.append(.orange)
+            }
+        }
+        
+        return pullRates
     }
 }

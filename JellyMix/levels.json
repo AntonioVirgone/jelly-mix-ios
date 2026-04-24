@@ -937,66 +937,365 @@
       ]
     },
     {
-      "id": 6,
-      "name": "Il regno dei funghi",
-      "color": "purple",
-      "icon": "🍄",
-      "levels": [
-        {
-          "level": 17,
-          "objective": {
-            "type": "OBSTACLE",
-            "required": 3
-          },
-          "movesLimit": 12,
-          "grid": [
-            [
-              "VUOTO",
-              "VUOTO",
-              "VUOTO",
-              "VUOTO",
-              "VUOTO"
-            ],
-            [
-              "VUOTO",
-              "MIELE",
-              "VUOTO",
-              "MIELE",
-              "VUOTO"
-            ],
-            [
-              "VUOTO",
-              "VUOTO",
-              "ROSSO",
-              "VUOTO",
-              "VUOTO"
-            ],
-            [
-              "VUOTO",
-              "VUOTO",
-              "MIELE",
-              "VUOTO",
-              "VUOTO"
-            ],
-            [
-              "VUOTO",
-              "VUOTO",
-              "VUOTO",
-              "VUOTO",
-              "VUOTO"
-            ]
-          ],
-          "availablePieces": [
+          "id": 6,
+          "name": "Il giardino segreto",
+          "color": "pink",
+          "icon": "🍓",
+          "levels": [
             {
-              "type": "ROSSO"
+              "objective": {
+                "type": "OBSTACLE",
+                "required": 12
+              },
+              "movesLimit": 15,
+              "grid": [
+                [
+                  "VUOTO",
+                  "WAFFLE",
+                  "BLU",
+                  "MIELE",
+                  "ROSSO"
+                ],
+                [
+                  "GIALLO",
+                  "BLU",
+                  "VUOTO",
+                  "ROSSO",
+                  "BLU"
+                ],
+                [
+                  "BLU",
+                  "MIELE",
+                  "ROSSO",
+                  "GIALLO",
+                  "VUOTO"
+                ],
+                [
+                  "VUOTO",
+                  "GIALLO",
+                  "ROSSO",
+                  "VERDE",
+                  "LIQUIRIZIA"
+                ],
+                [
+                  "VUOTO",
+                  "GIALLO",
+                  "GIALLO",
+                  "VUOTO",
+                  "MIELE"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                },
+                {
+                  "type": "BLU",
+                  "point": 200
+                },
+                {
+                  "type": "GREEN",
+                  "point": 500
+                }
+              ],
+              "level": 18
             },
             {
-              "type": "BLU",
-              "point": 200
+              "objective": {
+                "type": "JELLY",
+                "targetColor": "GIALLO",
+                "required": 0
+              },
+              "movesLimit": 15,
+              "grid": [
+                [
+                  "BLU",
+                  "ARANCIONE",
+                  "ARANCIONE",
+                  "VERDE",
+                  "ARANCIONE"
+                ],
+                [
+                  "VERDE",
+                  "BLU",
+                  "VUOTO",
+                  "VUOTO",
+                  "VUOTO"
+                ],
+                [
+                  "ROSSO",
+                  "LIQUIRIZIA",
+                  "MIELE",
+                  "ROSSO",
+                  "GIALLO"
+                ],
+                [
+                  "BLU",
+                  "BLU",
+                  "GIALLO",
+                  "VERDE",
+                  "VUOTO"
+                ],
+                [
+                  "VERDE",
+                  "LIQUIRIZIA",
+                  "VUOTO",
+                  "VERDE",
+                  "ROSSO"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                },
+                {
+                  "type": "BLU",
+                  "point": 200
+                },
+                {
+                  "type": "GREEN",
+                  "point": 500
+                }
+              ],
+              "level": 19
+            },
+            {
+              "objective": {
+                "type": "JELLY",
+                "targetColor": "GIALLO",
+                "required": 0
+              },
+              "movesLimit": 15,
+              "grid": [
+                [
+                  "ROSSO",
+                  "ARANCIONE",
+                  "ROSSO",
+                  "BLU",
+                  "VERDE"
+                ],
+                [
+                  "VUOTO",
+                  "VUOTO",
+                  "ARANCIONE",
+                  "VUOTO",
+                  "BLU"
+                ],
+                [
+                  "WAFFLE",
+                  "VERDE",
+                  "VERDE",
+                  "ROSSO",
+                  "BLU"
+                ],
+                [
+                  "VUOTO",
+                  "BLU",
+                  "BLU",
+                  "GIALLO",
+                  "GIALLO"
+                ],
+                [
+                  "VERDE",
+                  "VERDE",
+                  "ROSSO",
+                  "VERDE",
+                  "ROSSO"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                },
+                {
+                  "type": "BLU",
+                  "point": 200
+                },
+                {
+                  "type": "GREEN",
+                  "point": 500
+                }
+              ],
+              "level": 20
+            },
+            {
+              "level": 17,
+              "objective": {
+                "type": "JELLY",
+                "targetColor": "ARANCIONE",
+                "required": 7
+              },
+              "movesLimit": 0,
+              "grid": [
+                [
+                  "VUOTO",
+                  "VUOTO",
+                  "VUOTO",
+                  "VUOTO",
+                  "VUOTO"
+                ],
+                [
+                  "VUOTO",
+                  "GHIACCIO",
+                  "GHIACCIO",
+                  "GHIACCIO",
+                  "VUOTO"
+                ],
+                [
+                  "VUOTO",
+                  "GHIACCIO",
+                  "TESORO",
+                  "GHIACCIO",
+                  "VUOTO"
+                ],
+                [
+                  "WAFFLE",
+                  "GHIACCIO",
+                  "GHIACCIO",
+                  "GHIACCIO",
+                  "VUOTO"
+                ],
+                [
+                  "CHIAVE",
+                  "WAFFLE",
+                  "VUOTO",
+                  "VUOTO",
+                  "VUOTO"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "Il regno dei funghi",
+          "color": "purple",
+          "icon": "🍄",
+          "levels": [
+            {
+              "objective": {
+                "type": "JELLY",
+                "targetColor": "VERDE",
+                "required": 0
+              },
+              "movesLimit": 15,
+              "grid": [
+                [
+                  "GIALLO",
+                  "BLU",
+                  "BLU",
+                  "BLU",
+                  "ARANCIONE"
+                ],
+                [
+                  "GIALLO",
+                  "GHIACCIO",
+                  "ARANCIONE",
+                  "BLU",
+                  "ARANCIONE"
+                ],
+                [
+                  "ROSSO",
+                  "VERDE",
+                  "LIQUIRIZIA",
+                  "GIALLO",
+                  "VERDE"
+                ],
+                [
+                  "VERDE",
+                  "ROSSO",
+                  "ROSSO",
+                  "MIELE",
+                  "BLU"
+                ],
+                [
+                  "VERDE",
+                  "ROSSO",
+                  "ARANCIONE",
+                  "VERDE",
+                  "WAFFLE"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                },
+                {
+                  "type": "BLU",
+                  "point": 200
+                },
+                {
+                  "type": "GREEN",
+                  "point": 500
+                }
+              ],
+              "level": 21
+            },
+            {
+              "objective": {
+                "type": "JELLY",
+                "targetColor": "ARANCIONE",
+                "required": 0
+              },
+              "movesLimit": 15,
+              "grid": [
+                [
+                  "TESORO",
+                  "GIALLO",
+                  "ROSSO",
+                  "WAFFLE",
+                  "CHIAVE"
+                ],
+                [
+                  "VERDE",
+                  "ROSSO",
+                  "GIALLO",
+                  "ROSSO",
+                  "VUOTO"
+                ],
+                [
+                  "ARANCIONE",
+                  "ROSSO",
+                  "ROSSO",
+                  "VUOTO",
+                  "VUOTO"
+                ],
+                [
+                  "VUOTO",
+                  "MIELE",
+                  "VUOTO",
+                  "VERDE",
+                  "VUOTO"
+                ],
+                [
+                  "ROSSO",
+                  "ARANCIONE",
+                  "BLU",
+                  "VERDE",
+                  "ARANCIONE"
+                ]
+              ],
+              "availablePieces": [
+                {
+                  "type": "ROSSO"
+                },
+                {
+                  "type": "BLU",
+                  "point": 200
+                },
+                {
+                  "type": "GREEN",
+                  "point": 500
+                }
+              ],
+              "level": 22
             }
           ]
         }
-      ]
-    }
   ]
 }
