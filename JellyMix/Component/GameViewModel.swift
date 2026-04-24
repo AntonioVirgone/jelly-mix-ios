@@ -31,6 +31,8 @@ class GameViewModel: ObservableObject {
     
     // Conserviamo i dati del livello corrente per generare i pezzi giusti
     private var currentLevelData: LevelData? = nil
+    // Pubblichiamo i mondi per la SagaMapView
+    @Published var worlds: [WorldData] = []
     // Dizionario di tutti i livelli caricati dal JSON
     private var allLevels: [Int: LevelData] = [:]
     private var licoriceDestroyedThisTurn: Bool = false
@@ -44,18 +46,21 @@ class GameViewModel: ObservableObject {
     // Carica il file JSON (assicurati che il file si chiami "levels.json" nel progetto Xcode)
     private func loadLevelsFromJSON() {
         guard let url = Bundle.main.url(forResource: "levels", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            print("File JSON non trovato")
-            return
-        }
+              let data = try? Data(contentsOf: url) else { return }
         
         do {
-            let collection = try JSONDecoder().decode(LevelCollection.self, from: data)
-            for lvl in collection.levels {
-                allLevels[lvl.level] = lvl
+            // Decodifichiamo la WorldCollection
+            let collection = try JSONDecoder().decode(WorldCollection.self, from: data)
+            self.worlds = collection.worlds
+            
+            // "Appiattiamo" i livelli in un dizionario per l'accesso rapido durante il gioco
+            for world in collection.worlds {
+                for lvl in world.levels {
+                    allLevels[lvl.level] = lvl
+                }
             }
         } catch {
-            print("Errore nel parsing del JSON: \(error)")
+            print("Errore parsing JSON: \(error)")
         }
     }
 
@@ -345,22 +350,45 @@ class GameViewModel: ObservableObject {
         guard !licoriceDestroyedThisTurn else { return }
         
         let licoriceIndices = grid.indices.filter { grid[$0].type == .licorice }
+        var hasExpanded = false
+    
+        // 1. Aumentiamo la probabilità: ogni liquirizia ha il 40% di chance di diffondersi
         for idx in licoriceIndices {
-            if Double.random(in: 0...1) < 0.20 { // 20% di probabilità
-                let r = idx / gridSize
-                let c = idx % gridSize
-                let neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
-                let validEmpty = neighbors.filter { nr, nc in
-                    nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize && grid[getIndex(row: nr, col: nc)].type == .empty
-                }
-                
-                if let target = validEmpty.randomElement() {
-                    grid[getIndex(row: target.0, col: target.1)].type = .licorice
+            if Double.random(in: 0...1) < 0.40 {
+                if espandiLiquirizia(da: idx) {
+                    hasExpanded = true
                 }
             }
         }
-    }
         
+        // 2. LA REGOLA D'ORO: Se sei stato "fortunato" e nessuna si è espansa con il 40%,
+        // il gioco ne FORZA l'espansione di almeno una per mantenere alta la pressione!
+        if !hasExpanded {
+            if let randomLicorice = licoriceIndices.randomElement() {
+                _ = espandiLiquirizia(da: randomLicorice)
+            }
+        }
+    }
+     
+    // Helper per trovare una casella vuota vicina e infettarla
+    private func espandiLiquirizia(da index: Int) -> Bool {
+        let r = index / gridSize
+        let c = index % gridSize
+        let neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
+        
+        // Troviamo i vicini validi che sono attualmente VUOTI
+        let validEmpty = neighbors.filter { nr, nc in
+            nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize && grid[getIndex(row: nr, col: nc)].type == .empty
+        }
+        
+        // Ne scegliamo uno a caso e lo infettiamo
+        if let target = validEmpty.randomElement() {
+            grid[getIndex(row: target.0, col: target.1)].type = .licorice
+            return true
+        }
+        return false
+    }
+    
     // Funzione che valuta se abbiamo vinto o perso dopo ogni mossa
     private func checkWinLoseConditions() {
         if objective.current >= objective.required {
@@ -369,6 +397,18 @@ class GameViewModel: ObservableObject {
             isGameOver = true
         } else if !grid.contains(where: { $0.type == .empty }) {
             isGameOver = true
+        }
+    }
+    
+    // Funzione helper per convertire la stringa colore del JSON in Color di SwiftUI
+    func getColor(from name: String) -> Color {
+        switch name.lowercased() {
+        case "pink": return .pink
+        case "cyan": return .cyan
+        case "orange": return .orange
+        case "purple": return .purple
+        case "blue": return .blue
+        default: return .gray
         }
     }
 }

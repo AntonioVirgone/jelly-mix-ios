@@ -95,6 +95,12 @@ struct ElementView: View {
                     .padding(8)
                     .foregroundColor(.black)
                     .opacity(0.5)
+            } else if type == .honey {
+                Image(systemName: "theatermasks.circle")
+                    .resizable()
+                    .padding(8)
+                    .foregroundColor(.black)
+                    .opacity(0.5)
             }
         }
     }

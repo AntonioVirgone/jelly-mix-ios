@@ -42,7 +42,7 @@ struct MainCoordinator: View {
                             .font(.system(size: 40, weight: .black, design: .rounded))
                             .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
                             .shadow(radius: 2)
-
+/*
                         // === LA NUOVA MAPPA SAGA ===
                         SagaMapView(maxUnlockedLevel: maxUnlockedLevel) { levelToPlay in
                             // Callback chiamato dalla mappa quando si preme "Gioca"
@@ -52,6 +52,18 @@ struct MainCoordinator: View {
                             }
                         }
                         .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 1.1)), removal: .opacity.combined(with: .scale(scale: 0.9))))
+                        */
+                        SagaMapView(
+                            worlds: gameEngine.worlds, // Usiamo i dati dal motore
+                            maxUnlockedLevel: maxUnlockedLevel,
+                            getColor: gameEngine.getColor // Passiamo la funzione per i colori
+                        ) { levelToPlay in
+                            gameEngine.resetGame(forLevel: levelToPlay)
+                            withAnimation(.spring()) {
+                                currentScreen = .game
+                            }
+                        }
+ 
                     }
                 } else {
                     // === LA SCHERMATA DI GIOCO ===

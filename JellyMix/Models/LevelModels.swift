@@ -7,8 +7,17 @@
 
 import Foundation
 
-// Root del JSON
-struct LevelCollection: Codable {
+// Root del JSON ora punta ai Mondi
+struct WorldCollection: Codable {
+    let worlds: [WorldData]
+}
+
+// Struttura del Mondo
+struct WorldData: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let color: String // Salviamo come stringa (es. "pink")
+    let icon: String
     let levels: [LevelData]
 }
 
