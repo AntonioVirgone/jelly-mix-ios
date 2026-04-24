@@ -1,2 +1,5 @@
-# Xcode user data
-*.xcuserdata
+# Xcode
+DerivedData/
+*.xcworkspace
+xcuserdata/
+*.xcuserstate
