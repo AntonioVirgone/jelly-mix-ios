@@ -34,6 +34,8 @@ class GameViewModel: ObservableObject {
     @Published var isGameOver: Bool = false
     @Published var isLevelCompleted: Bool = false
     
+    @Published var currentAvailablePieces: [AvailablePieceData] = []
+    
     // Conserviamo i dati del livello corrente per generare i pezzi giusti
     private var currentLevelData: LevelData? = nil
     // Pubblichiamo i mondi per la SagaMapView
@@ -86,6 +88,8 @@ class GameViewModel: ObservableObject {
 
         // Se il livello esiste nel JSON, usalo. Altrimenti fallback a griglia vuota.
         if let levelData = allLevels[level] {
+            self.currentAvailablePieces = levelData.availablePieces // <--- Aggiungi questa riga
+            
             self.currentLevelData = levelData
             self.movesLeft = levelData.movesLimit
             self.maxMoves = levelData.movesLimit
@@ -143,7 +147,7 @@ class GameViewModel: ObservableObject {
         }
         
         // Fallback se non ci sono dati JSON
-        return [.red, .blue].randomElement() ?? .red
+        return unlockedJellies.randomElement() ?? .red
     }
     
     // Helper per tradurre stringa JSON in enum

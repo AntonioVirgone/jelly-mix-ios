@@ -159,3 +159,7 @@ struct AppTabBar: View {
         .buttonStyle(.plain)
     }
 }
+
+#Preview {
+    MainCoordinator()
+}

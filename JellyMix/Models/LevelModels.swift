@@ -42,3 +42,15 @@ struct AvailablePieceData: Codable {
     let type: String
     let point: Int? // nil significa che è disponibile fin da subito (0 punti)
 }
+
+extension AvailablePieceData {
+    var elementType: ElementType {
+        switch type.uppercased() {
+        case "ROSSO": return .red
+        case "BLU": return .blue
+        case "GREEN", "VERDE": return .green
+        case "GIALLO": return .yellow
+        default: fatalError("Unknown element type: \(type)")
+        }
+    }
+}

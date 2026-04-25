@@ -41,56 +41,39 @@ struct ContentView: View {
                 .padding()
                 Spacer()
             }
-            VStack(spacing: 30) {
+            VStack() {
                 Text("JELLY MIX")
                     .font(.system(size: 40, weight: .black, design: .rounded))
                     .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
                     .shadow(radius: 2)
-                VStack(spacing: 10) {
-                    HStack {
-                        Text("PUNTI: \(viewModel.score)")
+                HStack {
+                    VStack(spacing: 10) {
+                        if let moves = viewModel.movesLeft {
+                            Text("Mosse rimaste: \(moves)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 20)
+                                .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
+                        }
+                        
+                        // Barra obiettivo con dati reali
+                        Text("LVL \(viewModel.currentLevel) | \(objectiveText)")
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
-                            .padding(.vertical, 8)
+                            .padding(.vertical, 12)
                             .padding(.horizontal, 20)
-                            .background(Capsule().fill(Color.purple.opacity(0.8)))
-                        Text("MONETE: \(viewModel.coins)")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 20)
-                            .background(Capsule().fill(Color.purple.opacity(0.8)))
+                            .background(Capsule().fill(LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)))
                     }
-                    if let moves = viewModel.movesLeft {
-                        Text("Mosse rimaste: \(moves)")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 20)
-                            .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
+                    VStack {
+                        BoxIconView(labelNumber: "\(viewModel.coins)", labelImage: "icon_coins")
+                        if viewModel.keysCollected > 0 {
+                            BoxIconView(labelNumber: "\(viewModel.keysCollected)", labelImage: "icon_key")
+                        }
                     }
-                    if viewModel.keysCollected > 0 {
-                        Text("Chiavi prese: \(viewModel.keysCollected)")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 20)
-                            .background(Capsule().fill(Color.purple.opacity(0.8)))
-                    }
-
-                    // Barra obiettivo con dati reali
-                    Text("LVL \(viewModel.currentLevel) | \(objectiveText)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 20)
-                        .background(Capsule().fill(LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)))
-                }.padding(.bottom, 10)
+                }
                 
                 // BOX CONSERVA E PROSSIMO
                 HStack(spacing: 30) {
@@ -101,8 +84,12 @@ struct ContentView: View {
                         .onTapGesture {
                             withAnimation(.spring()) { viewModel.toggleHold() }
                         }
-                }
-                Spacer()
+                }.padding()
+
+                // LA NUOVA PROGRESS BAR
+                    ScoreProgressBar(score: viewModel.score, availablePieces: viewModel.currentAvailablePieces)
+                        .frame(height: 70) // Diamo spazio per le icone sopra la barra
+                        .padding(.horizontal)
 
                 // GRIGLIA DI GIOCO 5x5 INTERATTIVA
                 LazyVGrid(columns: columns, spacing: 8) {
@@ -177,4 +164,16 @@ struct ContentView: View {
             return "Distruggi \(obj.required) liquirizie (\(obj.current)/\(obj.required))"
         }
     }
+}
+
+#Preview {
+    ContentView(
+        viewModel: {
+            let vm = GameViewModel()
+            vm.coins = 10
+            vm.keysCollected = 3
+            return vm
+        }(),
+        onReturnToMap: {}
+    )
 }
