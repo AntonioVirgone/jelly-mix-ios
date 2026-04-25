@@ -42,10 +42,7 @@ struct CollectionBookView: View {
                                         ElementView(type: type, isDirty: false)
                                             .frame(width: 60, height: 60)
                                             .brightness(-1.0) // Diventa tutto nero
-                                            .opacity(0.3)
-                                        
-                                        Image(systemName: "book.fill")
-                                            .foregroundColor(.white.opacity(0.5))
+                                            .opacity(0.3)                                        
                                     }
                                 }
                                 
