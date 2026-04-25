@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 // MARK: - Vista Negozio Principale
-
 struct ShopView: View {
     @ObservedObject var viewModel: GameViewModel
 

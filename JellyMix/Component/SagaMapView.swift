@@ -14,7 +14,7 @@ struct SagaMapView: View {
     var maxUnlockedLevel: Int
     var getColor: (String) -> Color
     var onPlayLevel: (Int) -> Void
-    
+
     var body: some View {
         ZStack {
             ScrollViewReader { proxy in
@@ -222,3 +222,4 @@ struct MapPathLineView: View {
         onPlayLevel: { _ in }
     )
 }
+

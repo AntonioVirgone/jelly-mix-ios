@@ -23,7 +23,7 @@ class GameViewModel: ObservableObject {
     @Published var keysCollected: Int = 0
     
     // Nuove variabili per lo shop
-    @Published var unlockedJellies: Set<ElementType> = [.red, .blue, .green] // Gelatine base già sbloccate
+    @Published var unlockedJellies: Set<ElementType> = [.red] // Gelatine base già sbloccate
     @Published var coins: Int = 0
 
     // Nuove variabili per i livelli

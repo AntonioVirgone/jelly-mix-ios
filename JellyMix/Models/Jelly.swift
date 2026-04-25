@@ -31,7 +31,7 @@ struct Jelly: Identifiable, Equatable {
 }
 
 // Enum che definisce tutti i tipi di elementi possibili e la loro rappresentazione visiva
-enum ElementType: Int, Equatable {
+enum ElementType: Int, Equatable, CaseIterable, Hashable {
     // Ostacoli (valori negativi)
     case treasure = -7
     case key = -8

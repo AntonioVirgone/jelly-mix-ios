@@ -12,6 +12,7 @@ enum AppScreen {
     case map
     case game
     case shop
+    case collection // <-- Nuovo
 }
 
 struct MainCoordinator: View {
@@ -84,6 +85,10 @@ struct MainCoordinator: View {
                         ShopView(viewModel: gameEngine)
                             .opacity(currentScreen == .shop ? 1 : 0)
                             .allowsHitTesting(currentScreen == .shop)
+                        
+                        CollectionBookView(viewModel: gameEngine)
+                            .opacity(currentScreen == .collection ? 1 : 0)
+                            .allowsHitTesting(currentScreen == .collection)
                     }
                     .animation(.easeInOut(duration: 0.2), value: currentScreen)
 
@@ -107,6 +112,7 @@ struct AppTabBar: View {
         HStack(spacing: 8) {
             tabItem(icon: "map.fill",  label: "MAPPA", screen: .map)
             tabItem(icon: "bag.fill",  label: "NEGOZIO", screen: .shop)
+            tabItem(icon: "book.fill",  label: "COLLEZIONE", screen: .collection)
         }
         .padding(8)
         .background(
