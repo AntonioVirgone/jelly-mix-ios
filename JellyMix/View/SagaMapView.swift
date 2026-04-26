@@ -12,7 +12,6 @@ import SwiftUI
 struct SagaMapView: View {
     @State private var showNoLivesAlert = false
     
-    var gameEngine: GameViewModel
     var worlds: [WorldData]
     var maxUnlockedLevel: Int
     var getColor: (String) -> Color
@@ -63,29 +62,6 @@ struct SagaMapView: View {
         let worldColor = getColor(world.color)
 
         VStack(spacing: 0) {
-            // Crea un bell'HStack per contenere Vite e Timer
-            HStack {
-                Image(systemName: "heart.fill")
-                    .foregroundColor(.red)
-                    // Se le vite sono a zero, fa pulsare il cuore in grigio
-                    .opacity(gameEngine.lives == 0 ? 0.5 : 1.0)
-                
-                Text("\(gameEngine.lives)")
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                // Mostra il timer solo se non siamo al massimo delle vite
-                if gameEngine.lives < gameEngine.maxLives {
-                    Text(timeString(from: gameEngine.timeToNextLife))
-                        .font(.caption2)
-                        .foregroundColor(.yellow)
-                        .monospacedDigit() // Evita che il testo "balli" cambiando i secondi
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Capsule().fill(Color.black.opacity(0.5)))
-            
             // 1. Banner del Mondo (come image_1.png)
             HStack {
                 Text(world.icon)
@@ -157,11 +133,7 @@ struct SagaMapView: View {
         
         Button(action: {
             if isUnlocked {
-                if gameEngine.lives > 0 { // <-- CONTROLLO VITE
-                    onPlayLevel(levelNum)
-                } else {
-                    showNoLivesAlert = true // Mostra l'avviso
-                }
+                onPlayLevel(levelNum)
             }
         }) {
             ZStack {
@@ -251,7 +223,6 @@ struct MapPathLineView: View {
 // MARK: - Preview (Mock per far funzionare la Canvas in Xcode)
 #Preview {
     SagaMapView(
-        gameEngine: GameViewModel(),
         worlds: [
             WorldData(id: 1, name: "Valle delle Gelatine", color: "pink", icon: "🍓", levels: [
                 LevelData(level: 1, objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5), movesLimit: 10, grid: [], availablePieces: []),

@@ -37,6 +37,7 @@ struct ContentView: View {
                             .shadow(radius: 2)
                     }
                     Spacer()
+                    LivesBarView(viewModel: viewModel)
                 }
                 .padding()
                 Spacer()

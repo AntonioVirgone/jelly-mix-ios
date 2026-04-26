@@ -56,6 +56,11 @@ struct MainCoordinator: View {
             // ── Schermate con TabBar ────────────────────────────────────────
             if currentScreen != .game {
                 VStack(spacing: 0) {
+                    // Barra vite — sempre visibile su tutte le tab
+                    LivesBarView(viewModel: gameEngine)
+                        .padding(.top, 12)
+                        .padding(.bottom, 4)
+
                     // Contenuto della scheda attiva
                     ZStack {
                         // Mappa
@@ -69,7 +74,6 @@ struct MainCoordinator: View {
                                 .shadow(radius: 2)
 
                             SagaMapView(
-                                gameEngine: gameEngine,
                                 worlds: gameEngine.worlds,
                                 maxUnlockedLevel: getMaxUnlockedLevel(),
                                 getColor: { gameEngine.getColor(from: $0) }
@@ -100,6 +104,9 @@ struct MainCoordinator: View {
             }
         }
         .animation(.spring(response: 0.45, dampingFraction: 0.8), value: currentScreen)
+        .onAppear {
+            gameEngine.setupLivesSystem()
+        }
     }
     
     func getMaxUnlockedLevel() -> Int {
