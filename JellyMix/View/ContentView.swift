@@ -96,7 +96,7 @@ struct ContentView: View {
                     ForEach(0..<viewModel.totalCells, id: \.self) { index in
                         let jelly = viewModel.grid[index]
                         
-                        ElementView(type: jelly.type, isDirty: jelly.isDirty)
+                        ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze)
                             .frame(width: 60, height: 60)
                             .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
                             .onTapGesture {

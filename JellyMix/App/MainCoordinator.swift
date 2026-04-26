@@ -37,6 +37,7 @@ struct MainCoordinator: View {
             // ── Schermata di gioco (senza TabBar) ──────────────────────────
             if currentScreen == .game {
                 ContentView(viewModel: gameEngine) {
+                    maxUnlockedLevel = getMaxUnlockedLevel()
                     if gameEngine.isLevelCompleted && gameEngine.currentLevel == maxUnlockedLevel {
                         maxUnlockedLevel += 1
                         UserDefaults.standard.set(maxUnlockedLevel, forKey: "maxUnlockedLevel")
@@ -69,9 +70,7 @@ struct MainCoordinator: View {
 
                             SagaMapView(
                                 worlds: gameEngine.worlds,
-                                maxUnlockedLevel: UserDefaults.standard.integer(forKey: "maxUnlockedLevel") != 0
-                                    ? UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
-                                    : maxUnlockedLevel,
+                                maxUnlockedLevel: getMaxUnlockedLevel(),
                                 getColor: { gameEngine.getColor(from: $0) }
                             ) { levelToPlay in
                                 gameEngine.resetGame(forLevel: levelToPlay)
@@ -100,6 +99,12 @@ struct MainCoordinator: View {
             }
         }
         .animation(.spring(response: 0.45, dampingFraction: 0.8), value: currentScreen)
+    }
+    
+    func getMaxUnlockedLevel() -> Int {
+        return UserDefaults.standard.integer(forKey: "maxUnlockedLevel") != 0
+                ? UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
+                : maxUnlockedLevel
     }
 }
 

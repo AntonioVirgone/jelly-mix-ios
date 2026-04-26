@@ -10,7 +10,8 @@ import SwiftUI
 
 struct ElementView: View {
     var type: ElementType
-    var isDirty: Bool = false // Per la meccanica del miele
+    var isDirty: Bool = false  // Per la meccanica del miele
+    var isFreeze: Bool = false // Per la meccanica del congelamento
 
     // 1. Aggiungiamo questa riga per "leggere" il tema del sistema (Chiaro/Scuro)
     @Environment(\.colorScheme) var colorScheme
@@ -68,7 +69,16 @@ struct ElementView: View {
                     .offset(x: 18, y: 18)
                     .shadow(radius: 2)
             }
-            
+
+            // 6. Overlay Congelamento
+            if isFreeze {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.cyan.opacity(0.45))
+                Image(systemName: "snowflake")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
+                    .shadow(color: .cyan, radius: 6)
+            }
         }
         .aspectRatio(1, contentMode: .fit) // Mantiene la cella quadrata
     }

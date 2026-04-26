@@ -26,7 +26,8 @@ struct Jelly: Identifiable, Equatable {
     let id = UUID() // Fondamentale per SwiftUI per tracciare ogni singolo oggetto
     var type: ElementType
     var isDirty: Bool = false
-    var isFreeze: Bool = false // serve per bloccare il merge
+    var isFreeze: Bool = false       // serve per bloccare il merge
+    var freezeTurnsLeft: Int = 0     // turni rimanenti di congelamento
 
     var requirement: Int { type.config.requirement }
 }

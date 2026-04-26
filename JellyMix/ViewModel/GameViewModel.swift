@@ -265,7 +265,7 @@ class GameViewModel: ObservableObject {
                     if visited.contains(idx) { return }
                     
                     let cell = grid[idx]
-                    if cell.type == targetType || cell.type == .rainbow {
+                    if (cell.type == targetType || cell.type == .rainbow) && !cell.isFreeze {
                         visited.insert(idx)
                         connectedCells.append(idx)
                         
@@ -287,6 +287,8 @@ class GameViewModel: ObservableObject {
                     if connectedCells.count > requiredToMerge { earnedRainbow = true }
                     
                     // A. Rompi ostacoli adiacenti SOLO al focus
+                    // Controlla prima se c'è ghiaccio tra i vicini (per congelare il risultato)
+                    var iceDestroyedThisMerge = false
                     let focusNeighbors = [
                         (currentFocus.r - 1, currentFocus.c), (currentFocus.r + 1, currentFocus.c),
                         (currentFocus.r, currentFocus.c - 1), (currentFocus.r, currentFocus.c + 1)
@@ -294,25 +296,32 @@ class GameViewModel: ObservableObject {
                     for (nr, nc) in focusNeighbors {
                         if nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize {
                             let nIdx = getIndex(row: nr, col: nc)
+                            if grid[nIdx].type == .ice { iceDestroyedThisMerge = true }
                             gestisciDistruzioneOstacolo(at: nIdx)
                         }
                     }
-                    
+
                     // B. Rimuovi le gelatine unite
                     for idx in connectedCells {
                         grid[idx].type = .empty
                     }
-                    
+
                     // C. Crea la nuova gelatina evoluta
                     let nextLevelRaw = mergeBaseType.rawValue + 1
                     if let nextType = ElementType(rawValue: nextLevelRaw) {
                         grid[currentIndex].type = nextType
                         score += (mergeBaseType.rawValue * 10) * connectedCells.count
-                        
+
                         if objective.type == .jelly && nextType == objective.targetColor {
                             objective.current += 1
                         }
-                        
+
+                        // Se è stato rotto un ghiaccio adiacente, congela la gelatina per 2 turni
+                        if iceDestroyedThisMerge {
+                            grid[currentIndex].isFreeze = true
+                            grid[currentIndex].freezeTurnsLeft = 3
+                        }
+
                         hasMerged = true
                         break // IMPORTANTE: Interrompiamo il for-loop perché abbiamo trovato una fusione valida!
                     }
@@ -368,6 +377,15 @@ class GameViewModel: ObservableObject {
     
     // Espansione Liquirizia a fine turno
     private func processaFineTurno() {
+        // Decrementa i turni di congelamento per tutte le gelatine congelate
+        for i in grid.indices where grid[i].isFreeze {
+            grid[i].freezeTurnsLeft -= 1
+            if grid[i].freezeTurnsLeft <= 0 {
+                grid[i].isFreeze = false
+                grid[i].freezeTurnsLeft = 0
+            }
+        }
+
         guard !licoriceDestroyedThisTurn else { return }
         
         let licoriceIndices = grid.indices.filter { grid[$0].type == .licorice }
