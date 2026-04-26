@@ -27,7 +27,7 @@ struct LivesBarView: View {
                         .scaleEffect(i < viewModel.lives ? 1.0 : 0.85)
                 }
             }
-
+            
             // ── Countdown (visibile solo se non siamo al massimo) ──
             if viewModel.lives < viewModel.maxLives {
                 HStack(spacing: 3) {
@@ -48,8 +48,13 @@ struct LivesBarView: View {
         .padding(.vertical, 7)
         .background(
             Capsule()
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
+                .fill(LinearGradient(colors: [.purple.opacity(0.4), .pink.opacity(0.4)],
+                                     startPoint: .leading, endPoint: .trailing))
+                .shadow(color: .black.opacity(0.2), radius: 6, y: 2)
         )
     }
+}
+
+#Preview {
+    LivesBarView(viewModel: GameViewModel())
 }

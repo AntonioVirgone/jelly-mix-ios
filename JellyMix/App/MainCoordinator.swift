@@ -18,6 +18,7 @@ enum AppScreen {
 struct MainCoordinator: View {
     @State private var currentScreen: AppScreen = .map
     @State private var maxUnlockedLevel: Int = 1
+    @State private var showNoLivesOverlay = false
 
     @StateObject private var gameEngine = GameViewModel()
 
@@ -78,8 +79,14 @@ struct MainCoordinator: View {
                                 maxUnlockedLevel: getMaxUnlockedLevel(),
                                 getColor: { gameEngine.getColor(from: $0) }
                             ) { levelToPlay in
-                                gameEngine.resetGame(forLevel: levelToPlay)
-                                withAnimation(.spring()) { currentScreen = .game }
+                                if gameEngine.lives > 0 {
+                                    gameEngine.resetGame(forLevel: levelToPlay)
+                                    withAnimation(.spring()) { currentScreen = .game }
+                                } else {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        showNoLivesOverlay = true
+                                    }
+                                }
                             }
                         }
                         .opacity(currentScreen == .map ? 1 : 0)
@@ -107,6 +114,17 @@ struct MainCoordinator: View {
         .onAppear {
             gameEngine.setupLivesSystem()
         }
+        .overlay {
+            if showNoLivesOverlay {
+                NoLivesOverlayView(viewModel: gameEngine) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        showNoLivesOverlay = false
+                    }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            }
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showNoLivesOverlay)
     }
     
     func getMaxUnlockedLevel() -> Int {
@@ -170,6 +188,88 @@ struct AppTabBar: View {
             .animation(.spring(response: 0.25, dampingFraction: 0.65), value: isSelected)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Overlay Vite Esaurite
+
+struct NoLivesOverlayView: View {
+    @ObservedObject var viewModel: GameViewModel
+    var onDismiss: () -> Void
+
+    private var timerText: String {
+        let m = viewModel.timeToNextLife / 60
+        let s = viewModel.timeToNextLife % 60
+        return String(format: "%d:%02d", m, s)
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.65).ignoresSafeArea()
+
+            VStack(spacing: 22) {
+                // Icona
+                Image(systemName: "heart.slash.fill")
+                    .font(.system(size: 52))
+                    .foregroundStyle(
+                        LinearGradient(colors: [.red, .pink], startPoint: .top, endPoint: .bottom)
+                    )
+
+                Text("Vite esaurite!")
+                    .font(.system(size: 28, weight: .black, design: .rounded))
+                    .foregroundColor(.white)
+
+                // Cuori vuoti
+                HStack(spacing: 5) {
+                    ForEach(0..<viewModel.maxLives, id: \.self) { _ in
+                        Image(systemName: "heart")
+                            .font(.system(size: 22))
+                            .foregroundColor(.white.opacity(0.35))
+                    }
+                }
+
+                // Countdown prossima vita
+                VStack(spacing: 6) {
+                    Text("Prossima vita tra")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.75))
+                    Text(timerText)
+                        .font(.system(size: 42, weight: .black, design: .monospaced))
+                        .foregroundColor(.white)
+                        .shadow(color: .red.opacity(0.6), radius: 8)
+                }
+                .padding(.vertical, 14)
+                .padding(.horizontal, 28)
+                .background(
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(Color.red.opacity(0.25))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 18)
+                                .stroke(Color.red.opacity(0.4), lineWidth: 1.5)
+                        )
+                )
+
+                Button("Chiudi") { onDismiss() }
+                    .font(.headline)
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, 13)
+                    .background(
+                        Capsule().fill(
+                            LinearGradient(colors: [.purple, .pink],
+                                           startPoint: .leading, endPoint: .trailing)
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .shadow(color: .purple.opacity(0.3), radius: 8, y: 3)
+            }
+            .padding(32)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(.ultraThinMaterial)
+                    .shadow(color: .black.opacity(0.3), radius: 24, y: 8)
+            )
+            .padding(.horizontal, 28)
+        }
     }
 }
 

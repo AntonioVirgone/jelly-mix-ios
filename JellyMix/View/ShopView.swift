@@ -68,7 +68,10 @@ struct ShopView: View {
                     .disabled(viewModel.coins < 100)
                 }
                 .padding(24)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Color.white.opacity(0.15)))
+                .background(RoundedRectangle(cornerRadius: 20)
+                    .fill(LinearGradient(colors: [.purple.opacity(0.2), .pink.opacity(0.2)],
+                                         startPoint: .leading,
+                                         endPoint: .trailing)))
                 .padding(.horizontal)
 
                 // Carte pescate

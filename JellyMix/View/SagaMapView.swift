@@ -117,11 +117,6 @@ struct SagaMapView: View {
             }
             .padding(.bottom, 50)
         }
-        .alert("Vite Esaurite!", isPresented: $showNoLivesAlert) {
-            Button("Capito", role: .cancel) { }
-        } message: {
-            Text("Devi aspettare che le tue vite si ricarichino per continuare a giocare.")
-        }
     }
     
     // Disegna il singolo nodo del livello (il cerchio cliccabile)
