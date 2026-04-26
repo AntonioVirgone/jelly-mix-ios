@@ -18,23 +18,31 @@ struct ShopView: View {
         ZStack {
             VStack(spacing: 24) {
                 // Header monete
-                HStack {
-                    Spacer()
-                    Text("🪙 \(viewModel.coins)")
+                ZStack {
+                    Text("NEGOZIO")
+                        .font(.system(size: 34, weight: .black, design: .rounded))
+                        .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
+                        .shadow(radius: 2)
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Text("\(viewModel.coins)")
+                            Image("icon_coins")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                                .offset(y: 1)
+                        }
                         .font(.headline)
                         .fontWeight(.black)
                         .foregroundColor(.white)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                         .background(Capsule().fill(Color.orange.opacity(0.8)))
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top)
-
-                Text("NEGOZIO")
-                    .font(.system(size: 34, weight: .black, design: .rounded))
-                    .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
-                    .shadow(radius: 2)
 
                 // Bustina
                 VStack(spacing: 12) {
@@ -52,18 +60,24 @@ struct ShopView: View {
                             pulledCards = viewModel.buyAndOpenPack(cost: 100)
                         }
                     }) {
-                        Text("Apri Bustina — 100 🪙")
-                            .font(.headline)
-                            .padding(.horizontal, 32)
-                            .padding(.vertical, 14)
-                            .background(
-                                Capsule().fill(
-                                    viewModel.coins >= 100
-                                    ? LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing)
-                                    : LinearGradient(colors: [.gray, .gray], startPoint: .leading, endPoint: .trailing)
-                                )
+                        HStack(spacing: 6) {
+                            Text("Apri Bustina — 100")
+                            Image("icon_coins")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                        }
+                        .font(.headline)
+                        .padding(.horizontal, 32)
+                        .padding(.vertical, 14)
+                        .background(
+                            Capsule().fill(
+                                viewModel.coins >= 100
+                                ? LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing)
+                                : LinearGradient(colors: [.gray, .gray], startPoint: .leading, endPoint: .trailing)
                             )
-                            .foregroundColor(.white)
+                        )
+                        .foregroundColor(.white)
                     }
                     .disabled(viewModel.coins < 100)
                 }
