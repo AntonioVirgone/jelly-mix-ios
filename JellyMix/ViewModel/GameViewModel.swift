@@ -434,8 +434,10 @@ class GameViewModel: ObservableObject {
             isLevelCompleted = true
         } else if let moves = movesLeft, moves <= 0 {
             isGameOver = true
+            loseLife()
         } else if !grid.contains(where: { $0.type == .empty }) {
             isGameOver = true
+            loseLife()
         }
     }
     
@@ -497,5 +499,103 @@ class GameViewModel: ObservableObject {
         }
         
         return pullRates
+    }
+    
+    // MARK: - SISTEMA VITE
+    @Published var lives: Int = 5 {
+        didSet { UserDefaults.standard.set(lives, forKey: "savedLives") }
+    }
+    @Published var timeToNextLife: Int = 0 {
+        didSet { UserDefaults.standard.set(timeToNextLife, forKey: "lastTimeToNextLife") }
+    }
+    
+    let maxLives: Int = 5
+    let secondsPerLife: Int = 300 // 300 secondi = 5 minuti (Parametrico!)
+    private var livesTimer: Timer?
+    
+    func setupLivesSystem() {
+        // Carica i dati salvati (o imposta il default a maxLives)
+        if UserDefaults.standard.object(forKey: "savedLives") != nil {
+            self.lives = UserDefaults.standard.integer(forKey: "savedLives")
+            self.timeToNextLife = UserDefaults.standard.integer(forKey: "lastTimeToNextLife")
+        } else {
+            self.lives = maxLives
+        }
+        
+        calcolaTempoOffline()
+        avviaTimerVite()
+        
+        // Ascoltatori per calcolare il tempo quando l'app va in background/foreground
+        NotificationCenter.default.addObserver(self, selector: #selector(appWentBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appCameForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+    
+    // Funzione da chiamare QUANDO SI PERDE UN LIVELLO
+    func loseLife() {
+        if lives > 0 {
+            if lives == maxLives {
+                timeToNextLife = secondsPerLife // Fa partire il timer se eravamo al massimo
+            }
+            lives -= 1
+        }
+    }
+    
+    private func avviaTimerVite() {
+        livesTimer?.invalidate()
+        livesTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            if self.lives < self.maxLives {
+                if self.timeToNextLife > 0 {
+                    self.timeToNextLife -= 1
+                } else {
+                    self.lives += 1
+                    if self.lives < self.maxLives {
+                        self.timeToNextLife = self.secondsPerLife
+                    }
+                }
+            } else {
+                self.timeToNextLife = 0
+            }
+        }
+    }
+    
+    @objc private func appWentBackground() {
+        UserDefaults.standard.set(Date(), forKey: "lastExitDate")
+    }
+    
+    @objc private func appCameForeground() {
+        calcolaTempoOffline()
+    }
+    
+    private func calcolaTempoOffline() {
+        guard lives < maxLives else { return }
+        guard let lastExit = UserDefaults.standard.object(forKey: "lastExitDate") as? Date else { return }
+        
+        var timeElapsed = Int(Date().timeIntervalSince(lastExit))
+        var tempTime = timeToNextLife
+        var tempLives = lives
+        
+        // Calcola quante vite e secondi sono passati mentre l'app era chiusa
+        if timeElapsed >= tempTime {
+            timeElapsed -= tempTime
+            tempLives += 1
+            
+            let viteIntereRecuperate = timeElapsed / secondsPerLife
+            tempLives += viteIntereRecuperate
+            
+            let resto = timeElapsed % secondsPerLife
+            tempTime = secondsPerLife - resto
+        } else {
+            tempTime -= timeElapsed
+        }
+        
+        // Assegna i nuovi valori
+        if tempLives >= maxLives {
+            self.lives = maxLives
+            self.timeToNextLife = 0
+        } else {
+            self.lives = tempLives
+            self.timeToNextLife = tempTime
+        }
     }
 }

@@ -10,6 +10,9 @@ import SwiftUI
 
 // MARK: - Vista Mappa Saga Verticale
 struct SagaMapView: View {
+    @State private var showNoLivesAlert = false
+    
+    var gameEngine: GameViewModel
     var worlds: [WorldData]
     var maxUnlockedLevel: Int
     var getColor: (String) -> Color
@@ -47,6 +50,12 @@ struct SagaMapView: View {
         }
     }
     
+    func timeString(from seconds: Int) -> String {
+        let m = seconds / 60
+        let s = seconds % 60
+        return String(format: "%02d:%02d", m, s)
+    }
+    
     // Disegna la sezione completa di un Mondo
     @ViewBuilder
     private func renderWorldSection(world: WorldData) -> some View {
@@ -54,6 +63,28 @@ struct SagaMapView: View {
         let worldColor = getColor(world.color)
 
         VStack(spacing: 0) {
+            // Crea un bell'HStack per contenere Vite e Timer
+            HStack {
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.red)
+                    // Se le vite sono a zero, fa pulsare il cuore in grigio
+                    .opacity(gameEngine.lives == 0 ? 0.5 : 1.0)
+                
+                Text("\(gameEngine.lives)")
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                // Mostra il timer solo se non siamo al massimo delle vite
+                if gameEngine.lives < gameEngine.maxLives {
+                    Text(timeString(from: gameEngine.timeToNextLife))
+                        .font(.caption2)
+                        .foregroundColor(.yellow)
+                        .monospacedDigit() // Evita che il testo "balli" cambiando i secondi
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(Color.black.opacity(0.5)))
             
             // 1. Banner del Mondo (come image_1.png)
             HStack {
@@ -110,6 +141,11 @@ struct SagaMapView: View {
             }
             .padding(.bottom, 50)
         }
+        .alert("Vite Esaurite!", isPresented: $showNoLivesAlert) {
+            Button("Capito", role: .cancel) { }
+        } message: {
+            Text("Devi aspettare che le tue vite si ricarichino per continuare a giocare.")
+        }
     }
     
     // Disegna il singolo nodo del livello (il cerchio cliccabile)
@@ -121,7 +157,11 @@ struct SagaMapView: View {
         
         Button(action: {
             if isUnlocked {
-                onPlayLevel(levelNum)
+                if gameEngine.lives > 0 { // <-- CONTROLLO VITE
+                    onPlayLevel(levelNum)
+                } else {
+                    showNoLivesAlert = true // Mostra l'avviso
+                }
             }
         }) {
             ZStack {
@@ -211,6 +251,7 @@ struct MapPathLineView: View {
 // MARK: - Preview (Mock per far funzionare la Canvas in Xcode)
 #Preview {
     SagaMapView(
+        gameEngine: GameViewModel(),
         worlds: [
             WorldData(id: 1, name: "Valle delle Gelatine", color: "pink", icon: "🍓", levels: [
                 LevelData(level: 1, objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5), movesLimit: 10, grid: [], availablePieces: []),

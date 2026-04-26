@@ -69,6 +69,7 @@ struct MainCoordinator: View {
                                 .shadow(radius: 2)
 
                             SagaMapView(
+                                gameEngine: gameEngine,
                                 worlds: gameEngine.worlds,
                                 maxUnlockedLevel: getMaxUnlockedLevel(),
                                 getColor: { gameEngine.getColor(from: $0) }

@@ -9,9 +9,22 @@ import SwiftUI
 
 @main
 struct JellyMixApp: App {
+    @State private var showSplash = true
+
     var body: some Scene {
         WindowGroup {
-            MainCoordinator()
+            if showSplash {
+                SplashScreenView()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation(.easeOut(duration: 0.4)) {
+                                showSplash = false
+                            }
+                        }
+                    }
+            } else {
+                MainCoordinator() // la tua view principale
+            }
         }
     }
 }
