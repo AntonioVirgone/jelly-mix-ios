@@ -35,7 +35,15 @@ class GameViewModel: ObservableObject {
     @Published var isLevelCompleted: Bool = false
     
     @Published var currentAvailablePieces: [AvailablePieceData] = []
-    
+    // MARK: - Merge Animation State
+    struct MergeEvent: Equatable {
+        let focusIndex: Int
+        let color: Color
+        private let token = UUID()
+        static func == (lhs: Self, rhs: Self) -> Bool { lhs.token == rhs.token }
+    }
+    @Published var mergeEvent: MergeEvent? = nil
+
     // Conserviamo i dati del livello corrente per generare i pezzi giusti
     private var currentLevelData: LevelData? = nil
     // Pubblichiamo i mondi per la SagaMapView
@@ -310,6 +318,7 @@ class GameViewModel: ObservableObject {
                     let nextLevelRaw = mergeBaseType.rawValue + 1
                     if let nextType = ElementType(rawValue: nextLevelRaw) {
                         grid[currentIndex].type = nextType
+                        mergeEvent = MergeEvent(focusIndex: currentIndex, color: nextType.config.color)
                         score += (mergeBaseType.rawValue * 10) * connectedCells.count
 
                         if objective.type == .jelly && nextType == objective.targetColor {

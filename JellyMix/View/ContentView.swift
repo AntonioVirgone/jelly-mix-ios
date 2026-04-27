@@ -12,7 +12,8 @@ struct ContentView: View {
     var onReturnToMap: () -> Void
 
     let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 5)
-
+    @State private var gridBlurRadius: CGFloat = 0
+    
     private func colorIntensity(maxMoves: Int, currentMoves: Int) -> [Color] {
         if currentMoves >= maxMoves / 2 {
             return [.orange]
@@ -94,18 +95,23 @@ struct ContentView: View {
                 // GRIGLIA DI GIOCO 5x5 INTERATTIVA
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(0..<viewModel.totalCells, id: \.self) { index in
-                        let jelly = viewModel.grid[index]
-                        
-                        ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze)
-                            .frame(width: 60, height: 60)
-                            .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
-                            .onTapGesture {
-                                // Calcola riga e colonna dall'indice flat
-                                let row = index / viewModel.gridSize
-                                let col = index % viewModel.gridSize
-                                viewModel.posizionaGelatina(row: row, col: col)
-                            }
+                        AnimatedGridCell(
+                            index: index,
+                            jelly: viewModel.grid[index],
+                            mergeEvent: viewModel.mergeEvent
+                        ) {
+                            let row = index / viewModel.gridSize
+                            let col = index % viewModel.gridSize
+                            viewModel.posizionaGelatina(row: row, col: col)
+                        }
                     }
+                }
+                // Gooey blur pulse: breve sfocatura sull'intera griglia durante il merge
+                .blur(radius: gridBlurRadius)
+                .onChange(of: viewModel.mergeEvent) { _, event in
+                    guard event != nil else { return }
+                    withAnimation(.easeOut(duration: 0.07)) { gridBlurRadius = 2.5 }
+                    withAnimation(.easeIn(duration: 0.18).delay(0.07)) { gridBlurRadius = 0 }
                 }
                 .padding(12)
                 .background(Color.white.opacity(0.6))
@@ -162,6 +168,65 @@ struct ContentView: View {
             return "Distruggi \(obj.required) ostacoli (\(obj.current)/\(obj.required))"
         case .licorice:
             return "Distruggi \(obj.required) liquirizie (\(obj.current)/\(obj.required))"
+        }
+    }
+}
+// MARK: - Animated grid cell con Squash & Stretch + Gooey ripple
+
+private struct AnimatedGridCell: View {
+    let index: Int
+    let jelly: Jelly
+    let mergeEvent: GameViewModel.MergeEvent?
+    let onTap: () -> Void
+
+    @State private var squashX: CGFloat = 1.0
+    @State private var squashY: CGFloat = 1.0
+    @State private var rippleScale: CGFloat = 0.2
+    @State private var rippleOpacity: Double = 0
+    @State private var rippleColor: Color = .clear
+
+    var body: some View {
+        ZStack {
+            // Gooey ripple (livello sotto la gelatina)
+            Circle()
+                .fill(rippleColor)
+                .blur(radius: 14)
+                .scaleEffect(rippleScale)
+                .opacity(rippleOpacity)
+                .allowsHitTesting(false)
+
+            ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze)
+                .scaleEffect(x: squashX, y: squashY)
+        }
+        .frame(width: 60, height: 60)
+        .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
+        .onTapGesture { onTap() }
+        .onChange(of: mergeEvent) { _, event in
+            guard let event, event.focusIndex == index else { return }
+            playMergeAnimation(color: event.color)
+        }
+    }
+
+    private func playMergeAnimation(color: Color) {
+        // Prepara il ripple
+        rippleColor = color.opacity(0.6)
+        rippleScale = 0.2
+        rippleOpacity = 0.9
+
+        // Fase Squash (impatto)
+        withAnimation(.easeOut(duration: 0.09)) {
+            squashX = 1.28
+            squashY = 0.72
+            rippleScale = 2.2
+        }
+        // Fase Stretch elastica (rimbalzo)
+        withAnimation(.interpolatingSpring(stiffness: 280, damping: 14).delay(0.09)) {
+            squashX = 1.0
+            squashY = 1.0
+        }
+        // Dissolvenza ripple gooey
+        withAnimation(.easeIn(duration: 0.22).delay(0.10)) {
+            rippleOpacity = 0
         }
     }
 }
