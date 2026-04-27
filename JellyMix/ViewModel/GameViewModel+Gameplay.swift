@@ -13,12 +13,17 @@ extension GameViewModel {
         guard !hasHeldThisTurn && !isGameOver && !isLevelCompleted else { return }
 
         if let currentlyHeld = holdPiece {
-            let temp = nextJellyType
+            let tempType = nextJellyType
+            let tempKey = nextJellyHasKey
             nextJellyType = currentlyHeld
-            holdPiece = temp
+            nextJellyHasKey = holdPieceHasKey
+            holdPiece = tempType
+            holdPieceHasKey = tempKey
         } else {
             holdPiece = nextJellyType
+            holdPieceHasKey = nextJellyHasKey
             nextJellyType = generaNuovoPezzo()
+            nextJellyHasKey = shouldGenerateKeyPiece()
         }
 
         hasHeldThisTurn = true
@@ -36,10 +41,12 @@ extension GameViewModel {
         }
 
         grid[index].type = nextJellyType
+        grid[index].hasKey = nextJellyHasKey
         hasHeldThisTurn = false
 
         let earnedRainbow = processMerges(startRow: row, startCol: col)
         nextJellyType = earnedRainbow ? .rainbow : generaNuovoPezzo()
+        nextJellyHasKey = earnedRainbow ? false : shouldGenerateKeyPiece()
 
         checkWinLoseConditions()
     }
@@ -90,6 +97,11 @@ extension GameViewModel {
                 if connectedCells.count >= requiredToMerge && containsActualTarget {
                     if connectedCells.count > requiredToMerge { earnedRainbow = true }
 
+                    // Award key if any merging jelly had swallowed one
+                    if connectedCells.contains(where: { grid[$0].hasKey }) {
+                        keysCollected += 1
+                    }
+
                     var iceDestroyedThisMerge = false
                     let focusNeighbors = [
                         (currentFocus.r - 1, currentFocus.c), (currentFocus.r + 1, currentFocus.c),
@@ -103,7 +115,10 @@ extension GameViewModel {
                         }
                     }
 
-                    for idx in connectedCells { grid[idx].type = .empty }
+                    for idx in connectedCells {
+                        grid[idx].type = .empty
+                        grid[idx].hasKey = false
+                    }
 
                     let nextLevelRaw = mergeBaseType.rawValue + 1
                     if let nextType = ElementType(rawValue: nextLevelRaw) {

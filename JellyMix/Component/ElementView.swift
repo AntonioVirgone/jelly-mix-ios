@@ -10,8 +10,9 @@ import SwiftUI
 
 struct ElementView: View {
     var type: ElementType
-    var isDirty: Bool = false  // Per la meccanica del miele
-    var isFreeze: Bool = false // Per la meccanica del congelamento
+    var isDirty: Bool = false
+    var isFreeze: Bool = false
+    var hasKey: Bool = false
 
     // 1. Aggiungiamo questa riga per "leggere" il tema del sistema (Chiaro/Scuro)
     @Environment(\.colorScheme) var colorScheme
@@ -79,6 +80,16 @@ struct ElementView: View {
                     .foregroundColor(.white)
                     .shadow(color: .cyan, radius: 6)
             }
+
+            // 7. Overlay Chiave ingoiata
+            if hasKey {
+                Image(systemName: "key.fill")
+                    .font(.system(size: 11, weight: .black))
+                    .foregroundColor(.yellow)
+                    .shadow(color: .black.opacity(0.6), radius: 2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .padding(4)
+            }
         }
         .aspectRatio(1, contentMode: .fit) // Mantiene la cella quadrata
     }
@@ -116,12 +127,6 @@ struct ElementView: View {
                     .resizable()
                     .padding(8)
                     .foregroundColor(.black)
-                    .opacity(0.5)
-            } else if type == .key  {
-                Image(systemName: "key.fill")
-                    .resizable()
-                    .padding(8)
-                    .foregroundColor(.yellow)
                     .opacity(0.5)
             }
         }

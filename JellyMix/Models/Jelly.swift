@@ -23,11 +23,12 @@ struct ElementConfig {
 // MARK: - Modello Dati
 // Stato dinamico di una singola gelatina (o ostacolo) sulla griglia
 struct Jelly: Identifiable, Equatable {
-    let id = UUID() // Fondamentale per SwiftUI per tracciare ogni singolo oggetto
+    let id = UUID()
     var type: ElementType
     var isDirty: Bool = false
-    var isFreeze: Bool = false       // serve per bloccare il merge
-    var freezeTurnsLeft: Int = 0     // turni rimanenti di congelamento
+    var isFreeze: Bool = false
+    var freezeTurnsLeft: Int = 0
+    var hasKey: Bool = false
 
     var requirement: Int { type.config.requirement }
 }
@@ -36,7 +37,6 @@ struct Jelly: Identifiable, Equatable {
 enum ElementType: Int, Equatable, CaseIterable, Hashable {
     // Ostacoli (valori negativi)
     case treasure = -7
-    case key = -8
     case honey = -5
     case licorice = -4
     case brokenWaffle = -3
@@ -69,8 +69,7 @@ enum ElementType: Int, Equatable, CaseIterable, Hashable {
         case .brokenWaffle: return ElementConfig(name: "Waffle Rotto", color: Color.orange.opacity(0.8), requirement: 0, isObstacle: true, hasFace: false)
         case .licorice:     return ElementConfig(name: "Liquirizia", color: .gray, requirement: 0, isObstacle: true, hasFace: false)
         case .honey:        return ElementConfig(name: "Miele", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
-        case .treasure:     return ElementConfig(name: "Tesoto", color: .indigo, requirement: 0, isObstacle: true, hasFace: false, requireKeys: 1)
-        case .key:          return ElementConfig(name: "Chiave", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
+        case .treasure:     return ElementConfig(name: "Tesoro", color: .indigo, requirement: 0, isObstacle: true, hasFace: false, requireKeys: 1)
         }
     }
 }

@@ -49,14 +49,14 @@ struct ContentView: View {
                     .shadow(radius: 2)
                 HStack {
                     VStack(spacing: 10) {
-                        if let moves = viewModel.movesLeft {
+                        if let moves = viewModel.movesLeft, let max = viewModel.maxMoves {
                             Text("Mosse rimaste: \(moves)")
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 20)
-                                .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: viewModel.maxMoves!, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
+                                .background(Capsule().fill(LinearGradient(colors: colorIntensity(maxMoves: max, currentMoves: moves), startPoint: .leading, endPoint: .trailing)))
                         }
                         
                         // Barra obiettivo con dati reali
@@ -78,9 +78,9 @@ struct ContentView: View {
                 
                 // BOX CONSERVA E PROSSIMO
                 HStack(spacing: 30) {
-                    PieceBoxView(label: "PROSSIMO", jellyType: viewModel.nextJellyType)
+                    PieceBoxView(label: "PROSSIMO", jellyType: viewModel.nextJellyType, hasKey: viewModel.nextJellyHasKey)
 
-                    PieceBoxView(label: "CONSERVA", jellyType: viewModel.holdPiece)
+                    PieceBoxView(label: "CONSERVA", jellyType: viewModel.holdPiece, hasKey: viewModel.holdPieceHasKey)
                         .opacity(viewModel.hasHeldThisTurn ? 0.5 : 1.0)
                         .onTapGesture {
                             withAnimation(.spring()) { viewModel.toggleHold() }
@@ -195,7 +195,7 @@ private struct AnimatedGridCell: View {
                 .opacity(rippleOpacity)
                 .allowsHitTesting(false)
 
-            ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze)
+            ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze, hasKey: jelly.hasKey)
                 .scaleEffect(x: squashX, y: squashY)
         }
         .frame(width: 60, height: 60)

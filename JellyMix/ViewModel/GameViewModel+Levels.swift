@@ -29,6 +29,8 @@ extension GameViewModel {
         score = 0
         keysCollected = 0
         holdPiece = nil
+        holdPieceHasKey = false
+        nextJellyHasKey = false
         hasHeldThisTurn = false
         isGameOver = false
         isLevelCompleted = false
@@ -65,5 +67,6 @@ extension GameViewModel {
         }
 
         nextJellyType = generaNuovoPezzo()
+        nextJellyHasKey = shouldGenerateKeyPiece()
     }
 }

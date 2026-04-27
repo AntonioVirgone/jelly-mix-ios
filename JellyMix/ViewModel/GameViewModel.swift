@@ -16,7 +16,9 @@ class GameViewModel: ObservableObject {
     // MARK: - Game State
     @Published var grid: [Jelly] = []
     @Published var nextJellyType: ElementType = .red
+    @Published var nextJellyHasKey: Bool = false
     @Published var holdPiece: ElementType? = nil
+    @Published var holdPieceHasKey: Bool = false
     @Published var hasHeldThisTurn: Bool = false
     @Published var score: Int = 0
     @Published var keysCollected: Int = 0
@@ -85,7 +87,6 @@ class GameViewModel: ObservableObject {
         case "LIQUIRIZIA": return .licorice
         case "MIELE": return .honey
         case "TESORO": return .treasure
-        case "CHIAVE": return .key
         case "VUOTO": return .empty
         default: return .empty
         }
@@ -99,6 +100,18 @@ class GameViewModel: ObservableObject {
             }
         }
         return unlockedJellies.randomElement() ?? .red
+    }
+
+    func shouldGenerateKeyPiece() -> Bool {
+        let treasureCount = grid.filter { $0.type == .treasure }.count
+        guard treasureCount > 0 else { return false }
+
+        let keysOnGrid = grid.filter { $0.hasKey }.count
+        let heldKey = holdPieceHasKey ? 1 : 0
+        let totalKeysInPlay = keysCollected + keysOnGrid + heldKey
+        guard totalKeysInPlay < treasureCount else { return false }
+
+        return Double.random(in: 0...1) < 0.5
     }
 
     func getColor(from name: String) -> Color {

@@ -12,8 +12,8 @@ import SwiftUI
 struct PieceBoxView: View {
     let label: String
     let jellyType: ElementType?
+    var hasKey: Bool = false
 
-    // 1. Aggiungi questa riga anche qui
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -29,7 +29,7 @@ struct PieceBoxView: View {
                 .overlay(
                     Group {
                         if let type = jellyType {
-                            ElementView(type: type)
+                            ElementView(type: type, hasKey: hasKey)
                                 .frame(width: 60, height: 60)
                         } else {
                             RoundedRectangle(cornerRadius: 12)
