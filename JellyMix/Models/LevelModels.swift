@@ -50,7 +50,7 @@ extension AvailablePieceData {
         case "BLU": return .blue
         case "GREEN", "VERDE": return .green
         case "GIALLO": return .yellow
-        default: fatalError("Unknown element type: \(type)")
+        default: return .empty
         }
     }
 }

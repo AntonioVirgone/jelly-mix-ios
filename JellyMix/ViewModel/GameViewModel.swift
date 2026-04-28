@@ -64,6 +64,10 @@ class GameViewModel: ObservableObject {
     let secondsPerLife: Int = 300
     var livesTimer: Timer?
 
+    // MARK: - Special Cells
+    @Published var cellTypes: [CellType] = []
+    @Published var generatorCounters: [Int: Int] = [:]
+
     // MARK: - Internal
     var currentLevelData: LevelData? = nil
     var allLevels: [Int: LevelData] = [:]

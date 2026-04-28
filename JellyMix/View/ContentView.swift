@@ -95,9 +95,12 @@ struct ContentView: View {
                 // GRIGLIA DI GIOCO 5x5 INTERATTIVA
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(0..<viewModel.totalCells, id: \.self) { index in
+                        let cellType = index < viewModel.cellTypes.count ? viewModel.cellTypes[index] : .normal
                         AnimatedGridCell(
                             index: index,
                             jelly: viewModel.grid[index],
+                            cellType: cellType,
+                            generatorTurns: viewModel.generatorCounters[index],
                             mergeEvent: viewModel.mergeEvent
                         ) {
                             let row = index / viewModel.gridSize
@@ -176,6 +179,8 @@ struct ContentView: View {
 private struct AnimatedGridCell: View {
     let index: Int
     let jelly: Jelly
+    let cellType: CellType
+    let generatorTurns: Int?
     let mergeEvent: GameViewModel.MergeEvent?
     let onTap: () -> Void
 
@@ -187,7 +192,10 @@ private struct AnimatedGridCell: View {
 
     var body: some View {
         ZStack {
-            // Gooey ripple (livello sotto la gelatina)
+            // Sfondo cella speciale (nastro o generatore)
+            CellBackgroundView(cellType: cellType, generatorTurns: generatorTurns)
+
+            // Gooey ripple
             Circle()
                 .fill(rippleColor)
                 .blur(radius: 14)
@@ -195,8 +203,12 @@ private struct AnimatedGridCell: View {
                 .opacity(rippleOpacity)
                 .allowsHitTesting(false)
 
-            ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze, hasKey: jelly.hasKey)
-                .scaleEffect(x: squashX, y: squashY)
+            // Celle normali: ElementView sempre (gestisce anche il rendering della cella vuota).
+            // Celle speciali: ElementView solo se c'è un pezzo sopra (CellBackgroundView gestisce il resto).
+            if cellType == .normal || jelly.type != .empty {
+                ElementView(type: jelly.type, isDirty: jelly.isDirty, isFreeze: jelly.isFreeze, hasKey: jelly.hasKey)
+                    .scaleEffect(x: squashX, y: squashY)
+            }
         }
         .frame(width: 60, height: 60)
         .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
@@ -227,6 +239,45 @@ private struct AnimatedGridCell: View {
         // Dissolvenza ripple gooey
         withAnimation(.easeIn(duration: 0.22).delay(0.10)) {
             rippleOpacity = 0
+        }
+    }
+}
+
+// MARK: - Cell Background (nastri e generatori)
+
+private struct CellBackgroundView: View {
+    let cellType: CellType
+    let generatorTurns: Int?
+
+    var body: some View {
+        switch cellType {
+        case .normal:
+            EmptyView()
+
+        case .conveyor(let direction):
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.indigo.opacity(0.35))
+                .overlay(
+                    Image(systemName: direction.systemImage)
+                        .font(.system(size: 22, weight: .black))
+                        .foregroundColor(.white.opacity(0.8))
+                )
+
+        case .generator(let output):
+            let turnsLeft = 3 - (generatorTurns ?? 0)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.teal.opacity(0.4))
+                .overlay(
+                    VStack(spacing: 2) {
+                        ElementView(type: output)
+                            .frame(width: 34, height: 34)
+                            .opacity(0.85)
+                        Text("\(turnsLeft)")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .foregroundColor(.white)
+                            .shadow(color: .black.opacity(0.4), radius: 1)
+                    }
+                )
         }
     }
 }

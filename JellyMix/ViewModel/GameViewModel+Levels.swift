@@ -52,21 +52,59 @@ extension GameViewModel {
             objective = LevelObjective(type: objType, targetColor: targetType, required: levelData.objective.required)
 
             var newGrid: [Jelly] = []
+            var newCellTypes: [CellType] = Array(repeating: .normal, count: totalCells)
+            var newGeneratorCounters: [Int: Int] = [:]
+
             for r in 0..<gridSize {
                 for c in 0..<gridSize {
-                    newGrid.append(Jelly(type: mapStringToElementType(levelData.grid[r][c])))
+                    let cellStr = levelData.grid[r][c]
+                    let idx = getIndex(row: r, col: c)
+
+                    if let specialCell = mapStringToCellType(cellStr) {
+                        newCellTypes[idx] = specialCell
+                        newGrid.append(Jelly(type: .empty))
+                        if specialCell.isGenerator {
+                            newGeneratorCounters[idx] = 0
+                        }
+                    } else {
+                        newGrid.append(Jelly(type: mapStringToElementType(cellStr)))
+                    }
                 }
             }
+
             grid = newGrid
+            cellTypes = newCellTypes
+            generatorCounters = newGeneratorCounters
 
         } else {
             currentLevelData = nil
             movesLeft = nil
             maxMoves = nil
             grid = Array(repeating: Jelly(type: .empty), count: totalCells)
+            cellTypes = Array(repeating: .normal, count: totalCells)
+            generatorCounters = [:]
         }
 
         nextJellyType = generaNuovoPezzo()
         nextJellyHasKey = shouldGenerateKeyPiece()
+    }
+
+    func mapStringToCellType(_ str: String) -> CellType? {
+        switch str.uppercased() {
+        case "NASTRO_SX":  return .conveyor(.left)
+        case "NASTRO_DX":  return .conveyor(.right)
+        case "NASTRO_SU":  return .conveyor(.up)
+        case "NASTRO_GIU": return .conveyor(.down)
+        case "GENERATORE_GHIACCIO":    return .generator(.ice)
+        case "GENERATORE_WAFFLE":      return .generator(.waffle)
+        case "GENERATORE_LIQUIRIZIA":  return .generator(.licorice)
+        case "GENERATORE_MIELE":       return .generator(.honey)
+        case "GENERATORE_ROSSO":       return .generator(.red)
+        case "GENERATORE_BLU":         return .generator(.blue)
+        case "GENERATORE_VERDE":       return .generator(.green)
+        case "GENERATORE_ARANCIONE":   return .generator(.orange)
+        case "GENERATORE_GIALLO":      return .generator(.yellow)
+        default: return nil
+        }
     }
 }

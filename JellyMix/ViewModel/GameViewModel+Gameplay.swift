@@ -35,6 +35,7 @@ extension GameViewModel {
 
         let index = getIndex(row: row, col: col)
         guard grid[index].type == .empty else { return }
+        guard index < cellTypes.count && !cellTypes[index].isGenerator else { return }
 
         if let moves = movesLeft {
             movesLeft = moves - 1
@@ -192,6 +193,9 @@ extension GameViewModel {
                 grid[i].freezeTurnsLeft = 0
             }
         }
+
+        processConveyors()
+        processGenerators()
 
         guard !licoriceDestroyedThisTurn else { return }
 
