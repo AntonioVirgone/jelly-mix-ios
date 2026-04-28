@@ -13,6 +13,7 @@ struct ShopView: View {
     @ObservedObject var viewModel: GameViewModel
 
     @State private var pulledCards: [ElementType]? = nil
+    @State private var packCount: Int = 0
 
     var body: some View {
         ZStack {
@@ -57,6 +58,7 @@ struct ShopView: View {
 
                     Button(action: {
                         withAnimation(.spring()) {
+                            packCount += 1
                             pulledCards = viewModel.buyAndOpenPack(cost: 100)
                         }
                     }) {
@@ -96,9 +98,9 @@ struct ShopView: View {
                             .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
 
                         HStack(spacing: 16) {
-                            ForEach(Array(cards.enumerated()), id: \.offset) { _, card in
+                            ForEach(Array(cards.enumerated()), id: \.offset) { i, card in
                                 JellyCardView(jellyType: card)
-                                    .id(UUID())
+                                    .id("\(packCount)-\(i)")
                                     .frame(width: 90, height: 135)
                             }
                         }

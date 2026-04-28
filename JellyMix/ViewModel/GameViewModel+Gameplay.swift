@@ -175,12 +175,9 @@ extension GameViewModel {
         case .treasure:
             if keysCollected > 0 {
                 grid[index].type = .empty
-                coins += 250
                 keysCollected -= 1
+                self.coins += 250
             }
-        case .key:
-            grid[index].type = .empty
-            keysCollected += 1
         default:
             break
         }

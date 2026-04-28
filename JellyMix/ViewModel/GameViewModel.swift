@@ -24,8 +24,14 @@ class GameViewModel: ObservableObject {
     @Published var keysCollected: Int = 0
 
     // MARK: - Shop
-    @Published var unlockedJellies: Set<ElementType> = [.red]
-    @Published var coins: Int = 0
+    @Published var unlockedJellies: Set<ElementType> = [.red] {
+        didSet {
+            UserDefaults.standard.set(unlockedJellies.map { $0.rawValue }, forKey: "savedUnlockedJellies")
+        }
+    }
+    @Published var coins: Int = 0 {
+        didSet { UserDefaults.standard.set(coins, forKey: "savedCoins") }
+    }
 
     // MARK: - Level
     @Published var currentLevel: Int = 1
@@ -67,6 +73,10 @@ class GameViewModel: ObservableObject {
         totalCells = gridSize * gridSize
         loadLevelsFromJSON()
         resetGame(forLevel: 1)
+        coins = UserDefaults.standard.integer(forKey: "savedCoins")
+        if let saved = UserDefaults.standard.array(forKey: "savedUnlockedJellies") as? [Int] {
+            unlockedJellies = Set(saved.compactMap { ElementType(rawValue: $0) })
+        }
     }
 
     // MARK: - Helpers
