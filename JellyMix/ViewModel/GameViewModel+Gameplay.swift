@@ -53,7 +53,7 @@ extension GameViewModel {
     }
 
     // MARK: - Merge
-    private func processMerges(startRow: Int, startCol: Int) -> Bool {
+    func processMerges(startRow: Int, startCol: Int) -> Bool {
         let currentFocus = (r: startRow, c: startCol)
         var hasMerged = true
         var earnedRainbow = false
@@ -148,7 +148,7 @@ extension GameViewModel {
     }
 
     // MARK: - Obstacle Destruction
-    private func gestisciDistruzioneOstacolo(at index: Int) {
+    func gestisciDistruzioneOstacolo(at index: Int) {
         let type = grid[index].type
         guard type.config.isObstacle else { return }
 
@@ -231,7 +231,7 @@ extension GameViewModel {
     }
 
     // MARK: - Win/Lose
-    private func checkWinLoseConditions() {
+    func checkWinLoseConditions() {
         if objective.current >= objective.required {
             isLevelCompleted = true
         } else if let moves = movesLeft, moves <= 0 {

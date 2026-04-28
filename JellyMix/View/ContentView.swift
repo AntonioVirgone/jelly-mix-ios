@@ -92,24 +92,34 @@ struct ContentView: View {
                         .frame(height: 70) // Diamo spazio per le icone sopra la barra
                         .padding(.horizontal)
 
-                // GRIGLIA DI GIOCO 5x5 INTERATTIVA
-                LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(0..<viewModel.totalCells, id: \.self) { index in
-                        let cellType = index < viewModel.cellTypes.count ? viewModel.cellTypes[index] : .normal
-                        AnimatedGridCell(
-                            index: index,
-                            jelly: viewModel.grid[index],
-                            cellType: cellType,
-                            generatorTurns: viewModel.generatorCounters[index],
-                            mergeEvent: viewModel.mergeEvent
-                        ) {
-                            let row = index / viewModel.gridSize
-                            let col = index % viewModel.gridSize
-                            viewModel.posizionaGelatina(row: row, col: col)
+                // GRIGLIA DI GIOCO 5x5 INTERATTIVA + Barra Power-Up
+                VStack(spacing: 0) {
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(0..<viewModel.totalCells, id: \.self) { index in
+                            let cellType = index < viewModel.cellTypes.count ? viewModel.cellTypes[index] : .normal
+                            AnimatedGridCell(
+                                index: index,
+                                jelly: viewModel.grid[index],
+                                cellType: cellType,
+                                generatorTurns: viewModel.generatorCounters[index],
+                                activePowerUp: viewModel.activePowerUp,
+                                mergeEvent: viewModel.mergeEvent
+                            ) {
+                                if viewModel.activePowerUp != nil {
+                                    viewModel.applyPowerUp(at: index)
+                                } else {
+                                    let row = index / viewModel.gridSize
+                                    let col = index % viewModel.gridSize
+                                    viewModel.posizionaGelatina(row: row, col: col)
+                                }
+                            }
                         }
                     }
+
+                    PowerUpBarView(viewModel: viewModel)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 20)
                 }
-                // Gooey blur pulse: breve sfocatura sull'intera griglia durante il merge
                 .blur(radius: gridBlurRadius)
                 .onChange(of: viewModel.mergeEvent) { _, event in
                     guard event != nil else { return }
@@ -181,6 +191,7 @@ private struct AnimatedGridCell: View {
     let jelly: Jelly
     let cellType: CellType
     let generatorTurns: Int?
+    let activePowerUp: PowerUpType?
     let mergeEvent: GameViewModel.MergeEvent?
     let onTap: () -> Void
 
@@ -212,6 +223,11 @@ private struct AnimatedGridCell: View {
         }
         .frame(width: 60, height: 60)
         .shadow(color: jelly.type != .empty ? .black.opacity(0.15) : .clear, radius: 4, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(activePowerUp.map { $0.accentColor } ?? .clear, lineWidth: activePowerUp != nil ? 2 : 0)
+                .opacity(activePowerUp != nil ? 0.8 : 0)
+        )
         .onTapGesture { onTap() }
         .onChange(of: mergeEvent) { _, event in
             guard let event, event.focusIndex == index else { return }
@@ -239,6 +255,48 @@ private struct AnimatedGridCell: View {
         // Dissolvenza ripple gooey
         withAnimation(.easeIn(duration: 0.22).delay(0.10)) {
             rippleOpacity = 0
+        }
+    }
+}
+
+// MARK: - Power-Up Bar
+
+private struct PowerUpBarView: View {
+    @ObservedObject var viewModel: GameViewModel
+
+    var body: some View {
+        HStack(spacing: 12) {
+            ForEach(PowerUpType.allCases, id: \.self) { type in
+                let count = viewModel.powerUps[type] ?? 0
+                let isActive = viewModel.activePowerUp == type
+
+                Button {
+                    viewModel.activatePowerUp(type)
+                } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: type.systemImage)
+                            .font(.system(size: 20, weight: .bold))
+                        Text("×\(count)")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                    }
+                    .foregroundColor(count > 0 ? .white : .white.opacity(0.35))
+                    .frame(width: 64, height: 52)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(isActive
+                                  ? type.accentColor
+                                  : type.accentColor.opacity(count > 0 ? 0.55 : 0.2))
+                            .shadow(color: isActive ? type.accentColor.opacity(0.6) : .clear, radius: 8, y: 3)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(isActive ? Color.white.opacity(0.9) : .clear, lineWidth: 2)
+                    )
+                    .scaleEffect(isActive ? 1.08 : 1.0)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.65), value: isActive)
+                }
+                .disabled(count == 0)
+            }
         }
     }
 }

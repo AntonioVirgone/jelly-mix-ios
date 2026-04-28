@@ -23,6 +23,10 @@ class GameViewModel: ObservableObject {
     @Published var score: Int = 0
     @Published var keysCollected: Int = 0
 
+    // MARK: - Power-Ups
+    @Published var powerUps: [PowerUpType: Int] = [:]
+    @Published var activePowerUp: PowerUpType? = nil
+
     // MARK: - Shop
     @Published var unlockedJellies: Set<ElementType> = [.red] {
         didSet {
@@ -81,6 +85,7 @@ class GameViewModel: ObservableObject {
         if let saved = UserDefaults.standard.array(forKey: "savedUnlockedJellies") as? [Int] {
             unlockedJellies = Set(saved.compactMap { ElementType(rawValue: $0) })
         }
+        loadPowerUps()
     }
 
     // MARK: - Helpers

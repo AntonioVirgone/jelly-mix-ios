@@ -90,6 +90,26 @@ struct ShopView: View {
                                          endPoint: .trailing)))
                 .padding(.horizontal)
 
+                // Power-Up
+                VStack(spacing: 12) {
+                    Text("Potenziamenti")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
+
+                    VStack(spacing: 10) {
+                        ForEach(PowerUpType.allCases, id: \.self) { type in
+                            PowerUpShopRow(type: type, viewModel: viewModel)
+                        }
+                    }
+                }
+                .padding(24)
+                .background(RoundedRectangle(cornerRadius: 20)
+                    .fill(LinearGradient(colors: [.purple.opacity(0.2), .pink.opacity(0.2)],
+                                         startPoint: .leading,
+                                         endPoint: .trailing)))
+                .padding(.horizontal)
+
                 // Carte pescate
                 if let cards = pulledCards {
                     VStack(spacing: 16) {
@@ -126,6 +146,59 @@ struct ShopView: View {
                 Spacer()
             }
         }
+    }
+}
+
+// MARK: - Riga Power-Up nel Negozio
+
+private struct PowerUpShopRow: View {
+    let type: PowerUpType
+    @ObservedObject var viewModel: GameViewModel
+
+    var body: some View {
+        let count = viewModel.powerUps[type] ?? 0
+        let canAfford = viewModel.coins >= PowerUpType.cost
+
+        HStack(spacing: 12) {
+            Image(systemName: type.systemImage)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(type.accentColor)
+                .frame(width: 36)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(type.displayName)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                Text("Posseduti: \(count)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Button(action: {
+                viewModel.buyPowerUp(type)
+            }) {
+                HStack(spacing: 4) {
+                    Text("\(PowerUpType.cost)")
+                    Image("icon_coins")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                }
+                .font(.caption)
+                .fontWeight(.black)
+                .foregroundColor(.white)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 14)
+                .background(Capsule().fill(canAfford ? type.accentColor : Color.gray.opacity(0.5)))
+            }
+            .disabled(!canAfford)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 12)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.5)))
     }
 }
 

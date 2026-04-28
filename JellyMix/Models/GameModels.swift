@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 // MARK: - Direzione nastro trasportatore
 enum Direction: Equatable {
@@ -50,6 +51,39 @@ enum CellType: Equatable {
         if case .conveyor(let d) = self { return d }
         return nil
     }
+}
+
+// MARK: - Power-Up
+enum PowerUpType: String, CaseIterable {
+    case hammer = "hammer"
+    case swap   = "swap"
+    case brush  = "brush"
+
+    var displayName: String {
+        switch self {
+        case .hammer: return "Martello"
+        case .swap:   return "Scambio"
+        case .brush:  return "Pennello"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .hammer: return "hammer.fill"
+        case .swap:   return "arrow.left.arrow.right.circle.fill"
+        case .brush:  return "paintbrush.fill"
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .hammer: return .red
+        case .swap:   return .blue
+        case .brush:  return .purple
+        }
+    }
+
+    static let cost = 500
 }
 
 // MARK: - Tipo di Obiettivo
