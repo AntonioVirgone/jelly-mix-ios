@@ -42,8 +42,6 @@
 		};
 		EC23A5C42FA1E78C006E9590 /* JellyMixTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JellyMixTests;
 			sourceTree = "<group>";
 		};

@@ -77,15 +77,22 @@ class GameViewModel: ObservableObject {
     var allLevels: [Int: LevelData] = [:]
     var licoriceDestroyedThisTurn: Bool = false
 
+    @Published var isLoadingLevels: Bool = true
+
     init() {
         totalCells = gridSize * gridSize
-        loadLevelsFromJSON()
-        resetGame(forLevel: 1)
         coins = UserDefaults.standard.integer(forKey: "savedCoins")
         if let saved = UserDefaults.standard.array(forKey: "savedUnlockedJellies") as? [Int] {
             unlockedJellies = Set(saved.compactMap { ElementType(rawValue: $0) })
         }
         loadPowerUps()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            await self.loadLevels()
+            self.resetGame(forLevel: 1)
+            self.isLoadingLevels = false
+        }
     }
 
     // MARK: - Helpers
