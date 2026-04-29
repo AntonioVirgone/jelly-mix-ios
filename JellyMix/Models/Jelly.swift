@@ -48,6 +48,26 @@ enum ElementType: Int, Equatable, CaseIterable, Hashable {
     case red = 1, blue = 2, green = 3, orange = 4, yellow = 5, brown = 6, black = 7
     case empty = 99
 
+    var imageName: String {
+        switch self {
+        case .red:          return "jelly_red"
+        case .blue:         return "jelly_blue"
+        case .green:        return "jelly_green"
+        case .orange:       return "jelly_orange"
+        case .yellow:       return "jelly_yellow"
+        case .brown:        return "jelly_brown"
+        case .black:        return "jelly_black"
+        case .rainbow:      return "jelly_rainbow"
+        case .ice:          return "jelly_ice"
+        case .waffle:       return "jelly_waffle"
+        case .brokenWaffle: return "jelly_broken_waffle"
+        case .licorice:     return "jelly_licorice"
+        case .honey:        return "jelly_honey"
+        case .treasure:     return "jelly_treasure"
+        case .empty:        return "jelly_empty"
+        }
+    }
+    
     // IL CUORE DELLA SCALABILITÀ: Tutto è definito qui!
     var config: ElementConfig {
         switch self {

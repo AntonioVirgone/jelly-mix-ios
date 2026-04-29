@@ -17,6 +17,10 @@ struct ElementView: View {
     // 1. Aggiungiamo questa riga per "leggere" il tema del sistema (Chiaro/Scuro)
     @Environment(\.colorScheme) var colorScheme
 
+    private var hasJellyImage: Bool {
+        UIImage(named: type.imageName) != nil
+    }
+
     var body: some View {
         let config = type.config
         
@@ -26,40 +30,15 @@ struct ElementView: View {
                 RoundedRectangle(cornerRadius: 12)
                     // Se è dark mode usiamo bianco trasparente, altrimenti nero trasparente
                     .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.black.opacity(0.08))
-            } else if type == .rainbow {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(AngularGradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red], center: .center))
-            } else if config.isObstacle {
-                // Sfondo semplice per ostacoli
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(config.color)
+            } else if hasJellyImage {
+                Image(type.imageName)
+                    .resizable()
+                    .scaledToFit()
+            // Base: fallback disegno programmatico
             } else {
-                // Corpo della Gelatina con gradiente morbido (Luce -> Ombra)
-                JellyBodyShape()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [config.color.opacity(0.8), config.color, config.color.opacity(1.1)]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                programmaticBase
             }
-            
-            // 2. L'effetto "Glossy" (Lucidità 3D in alto a sinistra)
-            if !config.isObstacle && type != .empty {
-                JellyGlossHighlight()
-            }
-            
-            // 3. Texture Ostacoli
-            if config.isObstacle {
-                renderObstacleTexture(for: type)
-            }
-            
-            // 4. Le Nuove Faccine Carine (Grandi occhioni lucidi)
-            if config.hasFace {
-                CuteJellyFaceView()
-            }
-            
+                        
             // 5. Overlay Miele "Sporco"
             if isDirty {
                 Image(systemName: "drop.fill")
@@ -92,6 +71,75 @@ struct ElementView: View {
             }
         }
         .aspectRatio(1, contentMode: .fit) // Mantiene la cella quadrata
+    }
+    
+    @ViewBuilder
+    private var programmaticBase: some View {
+        let config = type.config
+
+        if type == .rainbow {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(AngularGradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red], center: .center))
+        } else if config.isObstacle {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(config.color)
+        } else {
+            JellyBodyShape()
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [config.color.opacity(0.8), config.color, config.color.opacity(1.1)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        }
+
+        if !config.isObstacle {
+            JellyGlossHighlight()
+        }
+
+        if config.isObstacle {
+            obstacleTexture
+        }
+
+        if config.hasFace {
+            CuteJellyFaceView()
+        }
+    }
+    
+    @ViewBuilder
+    private var obstacleTexture: some View {
+        if type == .waffle || type == .brokenWaffle {
+            Image(systemName: "square.grid.3x3.fill")
+                .resizable()
+                .padding(10)
+                .foregroundColor(type == .brokenWaffle ? Color(white: 0.4) : Color(white: 0.2))
+                .opacity(0.4)
+        } else if type == .ice {
+            Image(systemName: "snowflake")
+                .resizable()
+                .padding(12)
+                .foregroundColor(.white)
+                .opacity(0.7)
+        } else if type == .licorice {
+            Image(systemName: "hurricane")
+                .resizable()
+                .padding(8)
+                .foregroundColor(.black)
+                .opacity(0.5)
+        } else if type == .honey {
+            Image(systemName: "theatermasks.circle")
+                .resizable()
+                .padding(8)
+                .foregroundColor(.black)
+                .opacity(0.5)
+        } else if type == .treasure {
+            Image(systemName: "bitcoinsign.ring")
+                .resizable()
+                .padding(8)
+                .foregroundColor(.black)
+                .opacity(0.5)
+        }
     }
     
     // Helper per disegnare la texture sopra gli ostacoli
