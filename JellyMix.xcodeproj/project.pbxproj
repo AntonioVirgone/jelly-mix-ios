@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		EC23A5C72FA1E78C006E9590 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC23A5222F97B39B006E9590 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC23A5292F97B39B006E9590;
+			remoteInfo = JellyMix;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		EC23A52A2F97B39B006E9590 /* JellyMix.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JellyMix.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC23A5C32FA1E78C006E9590 /* JellyMixTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JellyMixTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -29,10 +40,24 @@
 			path = JellyMix;
 			sourceTree = "<group>";
 		};
+		EC23A5C42FA1E78C006E9590 /* JellyMixTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			path = JellyMixTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		EC23A5272F97B39B006E9590 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC23A5C02FA1E78C006E9590 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				EC23A52C2F97B39B006E9590 /* JellyMix */,
+				EC23A5C42FA1E78C006E9590 /* JellyMixTests */,
 				EC23A52B2F97B39B006E9590 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				EC23A52A2F97B39B006E9590 /* JellyMix.app */,
+				EC23A5C32FA1E78C006E9590 /* JellyMixTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,6 +110,29 @@
 			productReference = EC23A52A2F97B39B006E9590 /* JellyMix.app */;
 			productType = "com.apple.product-type.application";
 		};
+		EC23A5C22FA1E78C006E9590 /* JellyMixTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC23A5C92FA1E78C006E9590 /* Build configuration list for PBXNativeTarget "JellyMixTests" */;
+			buildPhases = (
+				EC23A5BF2FA1E78C006E9590 /* Sources */,
+				EC23A5C02FA1E78C006E9590 /* Frameworks */,
+				EC23A5C12FA1E78C006E9590 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC23A5C82FA1E78C006E9590 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EC23A5C42FA1E78C006E9590 /* JellyMixTests */,
+			);
+			name = JellyMixTests;
+			packageProductDependencies = (
+			);
+			productName = JellyMixTests;
+			productReference = EC23A5C32FA1E78C006E9590 /* JellyMixTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -95,6 +145,11 @@
 				TargetAttributes = {
 					EC23A5292F97B39B006E9590 = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					EC23A5C22FA1E78C006E9590 = {
+						CreatedOnToolsVersion = 26.2;
+						LastSwiftMigration = 2620;
+						TestTargetID = EC23A5292F97B39B006E9590;
 					};
 				};
 			};
@@ -113,12 +168,20 @@
 			projectRoot = "";
 			targets = (
 				EC23A5292F97B39B006E9590 /* JellyMix */,
+				EC23A5C22FA1E78C006E9590 /* JellyMixTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EC23A5282F97B39B006E9590 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC23A5C12FA1E78C006E9590 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,7 +198,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EC23A5BF2FA1E78C006E9590 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EC23A5C82FA1E78C006E9590 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC23A5292F97B39B006E9590 /* JellyMix */;
+			targetProxy = EC23A5C72FA1E78C006E9590 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EC23A5332F97B39C006E9590 /* Debug */ = {
@@ -329,6 +407,61 @@
 			};
 			name = Release;
 		};
+		EC23A5CA2FA1E78C006E9590 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2DMW5G3LV8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = it.vertexlab.JellyMixTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JellyMix.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JellyMix";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		EC23A5CB2FA1E78C006E9590 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2DMW5G3LV8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = it.vertexlab.JellyMixTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JellyMix.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JellyMix";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -346,6 +479,15 @@
 			buildConfigurations = (
 				EC23A5362F97B39C006E9590 /* Debug */,
 				EC23A5372F97B39C006E9590 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC23A5C92FA1E78C006E9590 /* Build configuration list for PBXNativeTarget "JellyMixTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC23A5CA2FA1E78C006E9590 /* Debug */,
+				EC23A5CB2FA1E78C006E9590 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
