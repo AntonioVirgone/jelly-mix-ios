@@ -29,11 +29,11 @@ extension GameViewModel {
     }
 
     private func applyLevelCollection(_ collection: WorldCollection) {
-        worlds = collection.worlds
+        worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
         allLevels.removeAll()
-        for world in collection.worlds {
+        for world in collection {
             for lvl in world.levels {
-                allLevels[lvl.level] = lvl
+                allLevels[lvl.levelNumber] = lvl
             }
         }
     }

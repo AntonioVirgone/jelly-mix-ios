@@ -67,7 +67,7 @@ struct SagaMapView: View {
                 Text(world.icon)
                     .font(.title)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("MONDO \(world.id)")
+                    Text("MONDO \(world.stageNumber)")
                         .font(.caption)
                         .fontWeight(.bold)
                         .opacity(0.8)
@@ -89,9 +89,9 @@ struct SagaMapView: View {
             
             // 2. Il Percorso Tortuoso dei Livelli
             LazyVStack(spacing: 30) {
-                ForEach(Array(world.levels.enumerated()), id: \.element.level) { index, levelData in
+                ForEach(Array(world.levels.enumerated()), id: \.element.levelNumber) { index, levelData in
                     // Estraiamo il numero del livello
-                    let levelNum = levelData.level
+                    let levelNum = levelData.levelNumber
                     
                     // Calcolo dell'offset orizzontale per creare l'effetto tortuoso (zig-zag)
                     // I livelli dispari vanno a sinistra, i pari a destra
@@ -110,7 +110,7 @@ struct SagaMapView: View {
                     .id("level_\(levelNum)")
                     
                     // Disegna la linea tratteggiata di connessione tra i livelli
-                    if let lastLevel = world.levels.last, levelNum < lastLevel.level {
+                    if let lastLevel = world.levels.last, levelNum < lastLevel.levelNumber {
                         MapPathLineView(color: worldColor.opacity(0.6), horizontalOffset: horizontalOffset)
                     }
                 }
@@ -219,9 +219,15 @@ struct MapPathLineView: View {
 #Preview {
     SagaMapView(
         worlds: [
-            WorldData(id: 1, name: "Valle delle Gelatine", color: "pink", icon: "🍓", levels: [
-                LevelData(level: 1, objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5), movesLimit: 10, grid: [], availablePieces: []),
-                LevelData(level: 2, objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5), movesLimit: 10, grid: [], availablePieces: [])
+            WorldData(id: "preview-1", name: "Valle delle Gelatine", description: nil,
+                      stageNumber: 1, color: "pink", icon: "🍓", status: "ACTIVE",
+                      isActive: true, createdAt: nil, updatedAt: nil, levels: [
+                LevelData(id: "l1", levelNumber: 1, movesLimit: 10, status: nil,
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil),
+                LevelData(id: "l2", levelNumber: 2, movesLimit: 10, status: nil,
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil)
             ])
         ],
         maxUnlockedLevel: 1,

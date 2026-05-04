@@ -10,7 +10,6 @@ enum LevelService {
     // Sostituire con l'URL reale dell'API
     static let apiURL = URL(string: "https://api.example.com/levels")!
 
-    // Timeout per la chiamata API (secondi)
     private static let timeoutInterval: TimeInterval = 10
 
     // Prova a caricare i livelli dall'API REST (GET).
@@ -29,9 +28,9 @@ enum LevelService {
         return try JSONDecoder().decode(WorldCollection.self, from: data)
     }
 
-    // Carica i livelli dal file levels.json nel bundle dell'app.
+    // Carica i livelli dal file worlds.json nel bundle dell'app (fallback offline).
     static func loadFromBundle() throws -> WorldCollection {
-        guard let url = Bundle.main.url(forResource: "levels", withExtension: "json") else {
+        guard let url = Bundle.main.url(forResource: "worlds", withExtension: "json") else {
             throw CocoaError(.fileNoSuchFile)
         }
         let data = try Data(contentsOf: url)
