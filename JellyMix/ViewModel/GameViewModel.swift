@@ -96,7 +96,6 @@ class GameViewModel: ObservableObject {
     }
 
     // MARK: - Helpers
-
     func getIndex(row: Int, col: Int) -> Int {
         row * gridSize + col
     }

@@ -1,0 +1,326 @@
+[
+  {
+    "id": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
+    "name": "Nuovo Mondo 2",
+    "description": null,
+    "stageNumber": 2,
+    "color": "blue",
+    "icon": "🌍",
+    "status": "DRAFT",
+    "isActive": true,
+    "createdAt": "2026-05-04T13:05:11.774Z",
+    "updatedAt": "2026-05-04T13:05:11.774Z",
+    "levels": [
+      {
+        "id": "72666736-173b-40a4-8fc3-f8a64d8da1d2",
+        "levelNumber": 4,
+        "movesLimit": 20,
+        "status": "DRAFT",
+        "objective": {
+          "type": "JELLY",
+          "required": 5,
+          "targetColor": "ROSSO"
+        },
+        "grid": [
+          [
+            "GIALLO",
+            "GHIACCIO",
+            "ARANCIONE",
+            "ROSSO",
+            "VUOTO"
+          ],
+          [
+            "ARANCIONE",
+            "BLU",
+            "GIALLO",
+            "GIALLO",
+            "ARANCIONE"
+          ],
+          [
+            "ARANCIONE",
+            "VUOTO",
+            "ROSSO",
+            "GIALLO",
+            "VUOTO"
+          ],
+          [
+            "VUOTO",
+            "BLU",
+            "BLU",
+            "ROSSO",
+            "ARANCIONE"
+          ],
+          [
+            "ROSSO",
+            "WAFFLE",
+            "GHIACCIO",
+            "GIALLO",
+            "GHIACCIO"
+          ]
+        ],
+        "availablePieces": [
+          {
+            "type": "ROSSO"
+          },
+          {
+            "type": "BLU",
+            "point": 200
+          }
+        ],
+        "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
+        "createdAt": "2026-05-04T13:05:11.786Z",
+        "updatedAt": "2026-05-04T13:05:11.786Z"
+      },
+      {
+        "id": "208c4530-ff0c-4417-84cd-32af0b7f9e24",
+        "levelNumber": 5,
+        "movesLimit": 20,
+        "status": "DRAFT",
+        "objective": {
+          "type": "JELLY",
+          "required": 8,
+          "targetColor": "BLU"
+        },
+        "grid": [
+          [
+            "VERDE",
+            "WAFFLE",
+            "BLU",
+            "ROSSO",
+            "GHIACCIO"
+          ],
+          [
+            "GIALLO",
+            "VERDE",
+            "GHIACCIO",
+            "ROSSO",
+            "GHIACCIO"
+          ],
+          [
+            "ARANCIONE",
+            "BLU",
+            "GIALLO",
+            "GIALLO",
+            "VERDE"
+          ],
+          [
+            "ARANCIONE",
+            "GIALLO",
+            "VERDE",
+            "GIALLO",
+            "VUOTO"
+          ],
+          [
+            "BLU",
+            "VUOTO",
+            "GIALLO",
+            "BLU",
+            "BLU"
+          ]
+        ],
+        "availablePieces": [
+          {
+            "type": "ROSSO"
+          },
+          {
+            "type": "BLU",
+            "point": 200
+          }
+        ],
+        "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
+        "createdAt": "2026-05-04T13:05:11.793Z",
+        "updatedAt": "2026-05-04T13:05:11.793Z"
+      }
+    ]
+  },
+  {
+    "id": "cc2f19e7-c870-4c8e-a947-75e21156f812",
+    "name": "Nuovo Mondo 1",
+    "description": null,
+    "stageNumber": 1,
+    "color": "red",
+    "icon": "🌍",
+    "status": "DRAFT",
+    "isActive": true,
+    "createdAt": "2026-05-04T13:04:00.501Z",
+    "updatedAt": "2026-05-04T13:05:35.036Z",
+    "levels": [
+      {
+        "id": "2ef723d9-9e28-49ea-b759-6782fae0f8f2",
+        "levelNumber": 1,
+        "movesLimit": 15,
+        "status": "DRAFT",
+        "objective": {
+          "type": "JELLY",
+          "required": 9,
+          "targetColor": "ROSSO"
+        },
+        "grid": [
+          [
+            "VUOTO",
+            "VUOTO",
+            "ROSSO",
+            "VERDE",
+            "BLU"
+          ],
+          [
+            "VUOTO",
+            "BLU",
+            "BLU",
+            "BLU",
+            "ROSSO"
+          ],
+          [
+            "GIALLO",
+            "VERDE",
+            "BLU",
+            "VUOTO",
+            "GIALLO"
+          ],
+          [
+            "VUOTO",
+            "ARANCIONE",
+            "VUOTO",
+            "LIQUIRIZIA",
+            "VUOTO"
+          ],
+          [
+            "VUOTO",
+            "VUOTO",
+            "VERDE",
+            "ARANCIONE",
+            "VUOTO"
+          ]
+        ],
+        "availablePieces": [
+          {
+            "type": "ROSSO"
+          },
+          {
+            "type": "BLU",
+            "point": 200
+          },
+          {
+            "type": "GREEN",
+            "point": 500
+          }
+        ],
+        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
+        "createdAt": "2026-05-04T13:04:20.331Z",
+        "updatedAt": "2026-05-04T13:05:11.749Z"
+      },
+      {
+        "id": "8f1f30c2-4cb1-45fe-abc9-cbc6fb99403c",
+        "levelNumber": 2,
+        "movesLimit": 25,
+        "status": "DRAFT",
+        "objective": {
+          "type": "JELLY",
+          "required": 9,
+          "targetColor": "ROSSO"
+        },
+        "grid": [
+          [
+            "VUOTO",
+            "WAFFLE",
+            "BLU",
+            "BLU",
+            "ROSSO"
+          ],
+          [
+            "BLU",
+            "ROSSO",
+            "VERDE",
+            "ROSSO",
+            "VERDE"
+          ],
+          [
+            "BLU",
+            "GHIACCIO",
+            "ROSSO",
+            "VUOTO",
+            "VERDE"
+          ],
+          [
+            "BLU",
+            "VUOTO",
+            "VUOTO",
+            "BLU",
+            "VUOTO"
+          ],
+          [
+            "ROSSO",
+            "VERDE",
+            "VUOTO",
+            "VUOTO",
+            "ROSSO"
+          ]
+        ],
+        "availablePieces": [
+          {
+            "type": "ROSSO"
+          }
+        ],
+        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
+        "createdAt": "2026-05-04T13:04:20.337Z",
+        "updatedAt": "2026-05-04T13:05:11.758Z"
+      },
+      {
+        "id": "d729c91f-09dd-470f-9f2a-09a8461ffa93",
+        "levelNumber": 3,
+        "movesLimit": 25,
+        "status": "DRAFT",
+        "objective": {
+          "type": "JELLY",
+          "required": 6,
+          "targetColor": "BLU"
+        },
+        "grid": [
+          [
+            "VUOTO",
+            "GHIACCIO",
+            "ROSSO",
+            "VERDE",
+            "ROSSO"
+          ],
+          [
+            "ROSSO",
+            "ROSSO",
+            "ROSSO",
+            "ROSSO",
+            "ROSSO"
+          ],
+          [
+            "BLU",
+            "WAFFLE",
+            "BLU",
+            "GHIACCIO",
+            "BLU"
+          ],
+          [
+            "GHIACCIO",
+            "ROSSO",
+            "BLU",
+            "VERDE",
+            "ROSSO"
+          ],
+          [
+            "VUOTO",
+            "WAFFLE",
+            "VERDE",
+            "VERDE",
+            "BLU"
+          ]
+        ],
+        "availablePieces": [
+          {
+            "type": "ROSSO"
+          }
+        ],
+        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
+        "createdAt": "2026-05-04T13:04:03.346Z",
+        "updatedAt": "2026-05-04T13:05:11.768Z"
+      }
+    ]
+  }
+]
