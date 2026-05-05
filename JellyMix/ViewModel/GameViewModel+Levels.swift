@@ -29,12 +29,21 @@ extension GameViewModel {
     }
 
     private func applyLevelCollection(_ collection: WorldCollection) {
+        // 1. Ordiniamo i mondi per stageNumber
         worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
+        
+        // 2. Puliamo la collezione esistente
         allLevels.removeAll()
-        for world in collection {
-            for lvl in world.levels {
-                allLevels[lvl.levelNumber] = lvl
-            }
+        
+        // 3. Estraiamo tutti i livelli da tutti i mondi, li "appiattiamo" (flatMap)
+        // e li ordiniamo globalmente per levelNumber
+        let flattenedSortedLevels = collection
+            .flatMap { $0.levels }
+            .sorted { $0.levelNumber < $1.levelNumber }
+        
+        // 4. Popoliamo la collezione (sia essa un Dictionary o un Array)
+        for lvl in flattenedSortedLevels {
+            allLevels[lvl.levelNumber] = lvl
         }
     }
 

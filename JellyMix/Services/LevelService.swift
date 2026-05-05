@@ -8,7 +8,7 @@ import Foundation
 enum LevelService {
 
     // Sostituire con l'URL reale dell'API
-    static let apiURL = URL(string: "https://api.example.com/levels")!
+    static let apiURL = URL(string: "https://jelly-mix-api.onrender.com/api/v1/worlds")!
 
     private static let timeoutInterval: TimeInterval = 10
 
