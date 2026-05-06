@@ -7,21 +7,49 @@ import Foundation
 
 extension GameViewModel {
 
-    func loadLevelsFromJSON() {
-        guard let url = Bundle.main.url(forResource: "levels", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return }
-
+    // Carica i livelli: prova l'API REST, in caso di errore usa il JSON locale.
+    func loadLevels() async {
         do {
-            let collection = try JSONDecoder().decode(WorldCollection.self, from: data)
-            self.worlds = collection.worlds
-            for world in collection.worlds {
-                for lvl in world.levels {
-                    allLevels[lvl.level] = lvl
-                }
-            }
+            let collection = try await LevelService.fetchFromAPI()
+            applyLevelCollection(collection)
         } catch {
-            print("Errore parsing JSON: \(error)")
+            print("[LevelService] API non disponibile (\(error.localizedDescription)), uso JSON locale.")
+            loadLevelsFromBundle()
         }
+    }
+
+    // Fallback sincrono: legge levels.json dal bundle. Usato anche dai test.
+    func loadLevelsFromBundle() {
+        do {
+            let collection = try LevelService.loadFromBundle()
+            applyLevelCollection(collection)
+        } catch {
+            print("[LevelService] Errore caricamento JSON locale: \(error)")
+        }
+    }
+
+    private func applyLevelCollection(_ collection: WorldCollection) {
+        // 1. Ordiniamo i mondi per stageNumber
+        worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
+        
+        // 2. Puliamo la collezione esistente
+        allLevels.removeAll()
+        
+        // 3. Estraiamo tutti i livelli da tutti i mondi, li "appiattiamo" (flatMap)
+        // e li ordiniamo globalmente per levelNumber
+        let flattenedSortedLevels = collection
+            .flatMap { $0.levels }
+            .sorted { $0.levelNumber < $1.levelNumber }
+        
+        // 4. Popoliamo la collezione (sia essa un Dictionary o un Array)
+        for lvl in flattenedSortedLevels {
+            allLevels[lvl.levelNumber] = lvl
+        }
+    }
+
+    // Mantenuto per compatibilità con i test esistenti.
+    func loadLevelsFromJSON() {
+        loadLevelsFromBundle()
     }
 
     func resetGame(forLevel level: Int) {

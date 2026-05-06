@@ -7,40 +7,45 @@
 
 import Foundation
 
-// Root del JSON ora punta ai Mondi
-struct WorldCollection: Codable {
-    let worlds: [WorldData]
-}
+// La root dell'API è un array diretto di WorldData
+typealias WorldCollection = [WorldData]
 
-// Struttura del Mondo
 struct WorldData: Codable, Identifiable {
-    let id: Int
+    let id: String
     let name: String
-    let color: String // Salviamo come stringa (es. "pink")
+    let description: String?
+    let stageNumber: Int
+    let color: String
     let icon: String
+    let status: String
+    let isActive: Bool
+    let createdAt: String?
+    let updatedAt: String?
     let levels: [LevelData]
 }
 
-// Dati del singolo Livello
 struct LevelData: Codable {
-    let level: Int
-    let objective: ObjectiveData
+    let id: String
+    let levelNumber: Int
     let movesLimit: Int?
+    let status: String?
+    let objective: ObjectiveData
     let grid: [[String]]
     let availablePieces: [AvailablePieceData]
+    let worldId: String?
+    let createdAt: String?
+    let updatedAt: String?
 }
 
-// Obiettivo
 struct ObjectiveData: Codable {
     let type: String
     let targetColor: String?
     let required: Int
 }
 
-// Pezzi disponibili dinamicamente
 struct AvailablePieceData: Codable {
     let type: String
-    let point: Int? // nil significa che è disponibile fin da subito (0 punti)
+    let point: Int?
 }
 
 extension AvailablePieceData {

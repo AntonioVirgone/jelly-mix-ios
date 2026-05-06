@@ -146,11 +146,11 @@ struct ContentView: View {
                         .foregroundColor(.white)
                     Text(viewModel.isLevelCompleted
                          ? "Ottimo lavoro! Torna alla mappa per continuare."
-                         : "Mosse esaurite. Riprova!")
+                         : "Mosse esaurite!")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
-                    if viewModel.isGameOver {
+                    if viewModel.isGameOver && viewModel.lives > 0 {
                         Button("Riprova") {
                             viewModel.resetGame(forLevel: viewModel.currentLevel)
                         }
