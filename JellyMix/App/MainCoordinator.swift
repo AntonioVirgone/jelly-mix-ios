@@ -19,6 +19,7 @@ struct MainCoordinator: View {
     @State private var currentScreen: AppScreen = .map
     @State private var maxUnlockedLevel: Int = 1
     @State private var showNoLivesOverlay = false
+    @State private var showMapUpdatedBanner = false
 
     @ObservedObject var gameEngine: GameViewModel
 
@@ -114,6 +115,23 @@ struct MainCoordinator: View {
         .onAppear {
             gameEngine.setupLivesSystem()
         }
+        // Mostra il banner se i nuovi dati arrivano mentre l'utente è sulla mappa.
+        .onChange(of: gameEngine.mapWasUpdated) { _, updated in
+            if updated && currentScreen == .map { showBanner() }
+        }
+        // Mostra il banner se l'utente torna sulla mappa dopo che il refresh era già avvenuto.
+        .onChange(of: currentScreen) { _, newScreen in
+            if newScreen == .map && gameEngine.mapWasUpdated { showBanner() }
+        }
+        .overlay(alignment: .top) {
+            if showMapUpdatedBanner {
+                MapUpdatedBannerView()
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.top, 60)
+                    .allowsHitTesting(false)
+                    .zIndex(99)
+            }
+        }
         .overlay {
             if showNoLivesOverlay {
                 NoLivesOverlayView(viewModel: gameEngine) {
@@ -131,6 +149,21 @@ struct MainCoordinator: View {
         return UserDefaults.standard.integer(forKey: "maxUnlockedLevel") != 0
                 ? UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
                 : maxUnlockedLevel
+    }
+
+    // MARK: - Banner helpers
+
+    private func showBanner() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            showMapUpdatedBanner = true
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            withAnimation(.easeOut(duration: 0.3)) {
+                showMapUpdatedBanner = false
+            }
+            gameEngine.mapWasUpdated = false
+        }
     }
 }
 
@@ -270,6 +303,33 @@ struct NoLivesOverlayView: View {
             )
             .padding(.horizontal, 28)
         }
+    }
+}
+
+// MARK: - Banner View
+
+struct MapUpdatedBannerView: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 16, weight: .bold))
+            Text("Mappa aggiornata")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+        }
+        .foregroundColor(.white)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(
+                    LinearGradient(
+                        colors: [.green, .mint],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .shadow(color: .green.opacity(0.35), radius: 8, y: 4)
+        )
     }
 }
 

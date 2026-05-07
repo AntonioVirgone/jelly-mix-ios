@@ -41,19 +41,19 @@ enum CommonService {
     ///   - body: Un oggetto Encodable da inviare (opzionale)
     /// - Returns: L'oggetto decodificato del tipo richiesto T
     static func request<T: Decodable, E: Encodable>(
-        from path: String, // Ora accettiamo solo il path (es. "data-logger")
+        from path: String,
         method: HTTPMethod = .get,
-        body: E? = nil as Optional<Never>
+        body: E? = nil as Optional<Never>,
+        timeoutInterval: TimeInterval = 10
     ) async throws -> T {
-        
-        // Componiamo l'URL completo
+
         let fullURLString = path.contains("http") ? path : "\(baseURL)/\(path)"
-        
+
         guard let url = URL(string: fullURLString) else {
             throw APIError.invalidURL
         }
-        
-        var request = URLRequest(url: url, timeoutInterval: 10)
+
+        var request = URLRequest(url: url, timeoutInterval: timeoutInterval)
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -76,9 +76,7 @@ enum CommonService {
         return try JSONDecoder().decode(T.self, from: data)
     }
     
-    /// Metodo semplificato per il GET (per compatibilità con il codice esistente)
-    static func fetch<T: Decodable>(from urlString: String) async throws -> T {
-        // Chiamiamo il metodo principale passando Never come tipo del body
-        return try await request(from: urlString, method: .get)
+    static func fetch<T: Decodable>(from urlString: String, timeoutInterval: TimeInterval = 10) async throws -> T {
+        return try await request(from: urlString, method: .get, timeoutInterval: timeoutInterval)
     }
 }
