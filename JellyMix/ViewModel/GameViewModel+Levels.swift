@@ -28,7 +28,7 @@ extension GameViewModel {
         }
     }
 
-    private func applyLevelCollection(_ collection: WorldCollection) {
+    func applyLevelCollection(_ collection: WorldCollection) {
         // 1. Ordiniamo i mondi per stageNumber
         worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
         

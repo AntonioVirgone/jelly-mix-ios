@@ -11,6 +11,7 @@ import SwiftUI
 struct JellyMixApp: App {
     @State private var showSplash = true
     @StateObject private var gameEngine = GameViewModel()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -22,61 +23,70 @@ struct JellyMixApp: App {
                         await prepareAppData()
                     }
             } else {
-                /// La view principale
                 MainCoordinator(gameEngine: gameEngine)
                     .transition(.opacity)
             }
         }
+        // Quando l'app torna in foreground (dopo essere stata in background)
+        // avvia subito un refresh silenzioso della mappa.
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active && !showSplash {
+                Task { await backgroundRefresh() }
+            }
+        }
     }
-    
+
+    // MARK: - Boot sequence
+
     private func prepareLogData() async {
-        if let appId = UserDefaults.standard.string(forKey: "appId") {
-            print("LOG: App ID già registrato: \(appId)")
-        } else {
-            let newAppId = UUID().uuidString
-            do {
-                try await DataLoggerService.createLevel(dataLogger: DataLoggerModels(appId: newAppId, type: TypeDataLogger.install))
-                UserDefaults.standard.set(newAppId, forKey: "appId")
-            } catch {
-                print("LOG: Errore invio dati log.")
-            }
-        }        
-    }
-    
-    /// Logica di caricamento dati con gestione dei tempi e fallback
-    private func prepareAppData() async {
-        // Memorizziamo il tempo di inizio per garantire una durata minima alla Splash
-        let startTime = Date()
-        
+        if UserDefaults.standard.string(forKey: "appId") != nil { return }
+        let newAppId = UUID().uuidString
         do {
-            // 1. Tentativo di caricamento tramite CommonService (API)
-            // Utilizziamo il metodo definito nel Canvas
-            let data = try await LevelService.fetchWorlds()
-            gameEngine.worlds = data
-            print("LOG: Mondi caricati con successo dal backend.")
-            
+            try await DataLoggerService.createLevel(
+                dataLogger: DataLoggerModels(appId: newAppId, type: TypeDataLogger.install)
+            )
+            UserDefaults.standard.set(newAppId, forKey: "appId")
         } catch {
-            print("LOG: Errore API (\(error.localizedDescription)). Avvio fallback da Bundle...")
-            
-            // 2. Fallback: Caricamento dal file JSON locale
-            do {
-                let localData = try LevelService.loadFromBundle()
-                gameEngine.worlds = localData
-            } catch {
-                print("LOG: Errore critico nel caricamento dei dati locali.")
-                // Qui potresti gestire uno stato di errore più grave
-            }
+            print("LOG: Errore invio dati install.")
         }
-        
-        // 3. Garantiamo una durata minima della splash per fluidità visiva
-        let elapsedTime = Date().timeIntervalSince(startTime)
-        if elapsedTime < 2.0 {
-            try? await Task.sleep(nanoseconds: UInt64((2.0 - elapsedTime) * 1_000_000_000))
+    }
+
+    private func prepareAppData() async {
+        let startTime = Date()
+
+        // 1. Carica subito da cache (disco) o bundle — istantaneo, nessuna rete.
+        if let local = WorldCacheService.loadBestAvailable() {
+            gameEngine.applyLevelCollection(local)
+            gameEngine.resetGame(forLevel: 1)
         }
-        
-        // 4. Transizione fluida alla main view
-        withAnimation(.easeOut(duration: 0.5)) {
-            showSplash = false
+
+        // 2. Durata minima splash: 1 secondo.
+        let elapsed = Date().timeIntervalSince(startTime)
+        if elapsed < 1.0 {
+            try? await Task.sleep(nanoseconds: UInt64((1.0 - elapsed) * 1_000_000_000))
+        }
+
+        // 3. Mostra la schermata principale.
+        withAnimation(.easeOut(duration: 0.5)) { showSplash = false }
+
+        // 4. Avvia il refresh in background senza aspettarne il risultato.
+        Task { await backgroundRefresh() }
+    }
+
+    // MARK: - Background refresh
+
+    // Tenta di scaricare i mondi aggiornati con retry.
+    // Se riesce: salva su disco, aggiorna il ViewModel, notifica la UI.
+    @MainActor
+    private func backgroundRefresh() async {
+        do {
+            let fresh = try await LevelService.fetchWorldsWithRetry()
+            try? WorldCacheService.save(fresh)
+            gameEngine.applyLevelCollection(fresh)
+            gameEngine.mapWasUpdated = true
+            print("[Refresh] Mappa aggiornata dall'API.")
+        } catch {
+            print("[Refresh] Tutti i tentativi falliti: \(error.localizedDescription)")
         }
     }
 }

@@ -77,22 +77,19 @@ class GameViewModel: ObservableObject {
     var allLevels: [Int: LevelData] = [:]
     var licoriceDestroyedThisTurn: Bool = false
 
-    @Published var isLoadingLevels: Bool = true
+    // Impostato a true quando un refresh in background porta nuovi dati.
+    // MainCoordinator lo osserva per mostrare il banner "Mappa aggiornata".
+    @Published var mapWasUpdated: Bool = false
 
     init() {
         totalCells = gridSize * gridSize
+        grid = Array(repeating: Jelly(type: .empty), count: totalCells)
+        cellTypes = Array(repeating: .normal, count: totalCells)
         coins = UserDefaults.standard.integer(forKey: "savedCoins")
         if let saved = UserDefaults.standard.array(forKey: "savedUnlockedJellies") as? [Int] {
             unlockedJellies = Set(saved.compactMap { ElementType(rawValue: $0) })
         }
         loadPowerUps()
-
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            await self.loadLevels()
-            self.resetGame(forLevel: 1)
-            self.isLoadingLevels = false
-        }
     }
 
     // MARK: - Helpers
