@@ -1,0 +1,524 @@
+{
+  "worlds": [
+    {
+      "id": 1,
+      "name": "Nuovo Mondo 1",
+      "color": "blue",
+      "icon": "🌍",
+      "levels": [
+        {
+          "levelNumber": 1,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 5
+          },
+          "movesLimit": 20,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "ROCK",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ROCK",
+              "ROCK",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "ROCK",
+              "RED",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 800
+            }
+          ]
+        },
+        {
+          "levelNumber": 2,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 7
+          },
+          "movesLimit": 25,
+          "grid": [
+            [
+              "RED",
+              "RED",
+              "BLUE",
+              "ICE",
+              "RED"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "BLUE",
+              "ICE",
+              "WAFFLE"
+            ],
+            [
+              "EMPTY",
+              "WAFFLE",
+              "BLUE",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "RED",
+              "RED",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "WAFFLE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Nuovo Mondo 2",
+      "color": "blue",
+      "icon": "🌍",
+      "levels": [
+        {
+          "levelNumber": 3,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "ORANGE"
+          },
+          "movesLimit": 35,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "YELLOW"
+            ],
+            [
+              "BLUE",
+              "BLUE",
+              "GREEN",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "YELLOW"
+            ],
+            [
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "YELLOW",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "GREEN",
+              "GREEN",
+              "EMPTY",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 800
+            },
+            {
+              "type": "GREEN",
+              "point": 1200
+            }
+          ]
+        },
+        {
+          "levelNumber": 4,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 7
+          },
+          "movesLimit": 37,
+          "grid": [
+            [
+              "BLUE",
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "BLUE",
+              "BLUE"
+            ],
+            [
+              "ICE",
+              "WAFFLE",
+              "BLUE",
+              "GREEN",
+              "HONEY"
+            ],
+            [
+              "RED",
+              "GREEN",
+              "RED",
+              "GREEN",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 800
+            },
+            {
+              "type": "GREEN",
+              "point": 1200
+            }
+          ]
+        },
+        {
+          "levelNumber": 5,
+          "objective": {
+            "type": "JELLY",
+            "required": 1,
+            "targetColor": "EMPTY"
+          },
+          "movesLimit": 20,
+          "grid": [
+            [
+              "YELLOW",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "GREEN",
+              "GREEN",
+              "BLUE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 140
+            },
+            {
+              "type": "GREEN",
+              "point": 220
+            },
+            {
+              "type": "ORANGE",
+              "point": 280
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Nuovo Mondo 3",
+      "color": "blue",
+      "icon": "🌍",
+      "levels": [
+        {
+          "levelNumber": 8,
+          "objective": {
+            "type": "JELLY",
+            "required": 5,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 15,
+          "grid": [
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "RED",
+              "RED",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "levelNumber": 9,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 35,
+          "grid": [
+            [
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "TREASURE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "TREASURE",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Nuovo Mondo 4",
+      "color": "blue",
+      "icon": "🌍",
+      "levels": [
+        {
+          "levelNumber": 6,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 5,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 37,
+          "grid": [
+            [
+              "TREASURE",
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "LICORICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "TREASURE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "levelNumber": 7,
+          "objective": {
+            "type": "JELLY",
+            "required": 2,
+            "targetColor": "ORANGE"
+          },
+          "movesLimit": 28,
+          "grid": [
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "BLUE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "ICE",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "GREEN",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

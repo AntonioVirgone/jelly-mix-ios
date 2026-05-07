@@ -212,10 +212,10 @@ struct MapPathLineView: View {
                       stageNumber: 1, color: "pink", icon: "🍓", status: "ACTIVE",
                       isActive: true, createdAt: nil, updatedAt: nil, levels: [
                 LevelData(id: "l2", levelNumber: 2, movesLimit: 10, status: nil,
-                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil),
                 LevelData(id: "l1", levelNumber: 1, movesLimit: 10, status: nil,
-                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil)
             ])
         ],

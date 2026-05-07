@@ -19,53 +19,18 @@
         "objective": {
           "type": "JELLY",
           "required": 5,
-          "targetColor": "ROSSO"
+          "targetColor": "RED"
         },
         "grid": [
-          [
-            "GIALLO",
-            "GHIACCIO",
-            "ARANCIONE",
-            "ROSSO",
-            "VUOTO"
-          ],
-          [
-            "ARANCIONE",
-            "BLU",
-            "GIALLO",
-            "GIALLO",
-            "ARANCIONE"
-          ],
-          [
-            "ARANCIONE",
-            "VUOTO",
-            "ROSSO",
-            "GIALLO",
-            "VUOTO"
-          ],
-          [
-            "VUOTO",
-            "BLU",
-            "BLU",
-            "ROSSO",
-            "ARANCIONE"
-          ],
-          [
-            "ROSSO",
-            "WAFFLE",
-            "GHIACCIO",
-            "GIALLO",
-            "GHIACCIO"
-          ]
+          ["YELLOW", "ICE",    "ORANGE", "RED",    "EMPTY"],
+          ["ORANGE", "BLUE",   "YELLOW", "YELLOW", "ORANGE"],
+          ["ORANGE", "EMPTY",  "RED",    "YELLOW", "EMPTY"],
+          ["EMPTY",  "BLUE",   "BLUE",   "RED",    "ORANGE"],
+          ["RED",    "WAFFLE", "ICE",    "YELLOW", "ICE"]
         ],
         "availablePieces": [
-          {
-            "type": "ROSSO"
-          },
-          {
-            "type": "BLU",
-            "point": 200
-          }
+          { "type": "RED" },
+          { "type": "BLUE", "point": 200 }
         ],
         "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
         "createdAt": "2026-05-04T13:05:11.786Z",
@@ -79,53 +44,18 @@
         "objective": {
           "type": "JELLY",
           "required": 8,
-          "targetColor": "BLU"
+          "targetColor": "BLUE"
         },
         "grid": [
-          [
-            "VERDE",
-            "WAFFLE",
-            "BLU",
-            "ROSSO",
-            "GHIACCIO"
-          ],
-          [
-            "GIALLO",
-            "VERDE",
-            "GHIACCIO",
-            "ROSSO",
-            "GHIACCIO"
-          ],
-          [
-            "ARANCIONE",
-            "BLU",
-            "GIALLO",
-            "GIALLO",
-            "VERDE"
-          ],
-          [
-            "ARANCIONE",
-            "GIALLO",
-            "VERDE",
-            "GIALLO",
-            "VUOTO"
-          ],
-          [
-            "BLU",
-            "VUOTO",
-            "GIALLO",
-            "BLU",
-            "BLU"
-          ]
+          ["GREEN",  "WAFFLE", "BLUE",   "RED",    "ICE"],
+          ["YELLOW", "GREEN",  "ICE",    "RED",    "ICE"],
+          ["ORANGE", "BLUE",   "YELLOW", "YELLOW", "GREEN"],
+          ["ORANGE", "YELLOW", "GREEN",  "YELLOW", "EMPTY"],
+          ["BLUE",   "EMPTY",  "YELLOW", "BLUE",   "BLUE"]
         ],
         "availablePieces": [
-          {
-            "type": "ROSSO"
-          },
-          {
-            "type": "BLU",
-            "point": 200
-          }
+          { "type": "RED" },
+          { "type": "BLUE", "point": 200 }
         ],
         "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
         "createdAt": "2026-05-04T13:05:11.793Z",
@@ -153,57 +83,19 @@
         "objective": {
           "type": "JELLY",
           "required": 9,
-          "targetColor": "ROSSO"
+          "targetColor": "RED"
         },
         "grid": [
-          [
-            "VUOTO",
-            "VUOTO",
-            "ROSSO",
-            "VERDE",
-            "BLU"
-          ],
-          [
-            "VUOTO",
-            "BLU",
-            "BLU",
-            "BLU",
-            "ROSSO"
-          ],
-          [
-            "GIALLO",
-            "VERDE",
-            "BLU",
-            "VUOTO",
-            "GIALLO"
-          ],
-          [
-            "VUOTO",
-            "ARANCIONE",
-            "VUOTO",
-            "LIQUIRIZIA",
-            "VUOTO"
-          ],
-          [
-            "VUOTO",
-            "VUOTO",
-            "VERDE",
-            "ARANCIONE",
-            "VUOTO"
-          ]
+          ["EMPTY",  "EMPTY",   "RED",    "GREEN",   "BLUE"],
+          ["EMPTY",  "BLUE",    "BLUE",   "BLUE",    "RED"],
+          ["YELLOW", "GREEN",   "BLUE",   "EMPTY",   "YELLOW"],
+          ["EMPTY",  "ORANGE",  "EMPTY",  "LICORICE","EMPTY"],
+          ["EMPTY",  "EMPTY",   "GREEN",  "ORANGE",  "EMPTY"]
         ],
         "availablePieces": [
-          {
-            "type": "ROSSO"
-          },
-          {
-            "type": "BLU",
-            "point": 200
-          },
-          {
-            "type": "GREEN",
-            "point": 500
-          }
+          { "type": "RED" },
+          { "type": "BLUE",  "point": 200 },
+          { "type": "GREEN", "point": 500 }
         ],
         "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
         "createdAt": "2026-05-04T13:04:20.331Z",
@@ -217,49 +109,17 @@
         "objective": {
           "type": "JELLY",
           "required": 9,
-          "targetColor": "ROSSO"
+          "targetColor": "RED"
         },
         "grid": [
-          [
-            "VUOTO",
-            "WAFFLE",
-            "BLU",
-            "BLU",
-            "ROSSO"
-          ],
-          [
-            "BLU",
-            "ROSSO",
-            "VERDE",
-            "ROSSO",
-            "VERDE"
-          ],
-          [
-            "BLU",
-            "GHIACCIO",
-            "ROSSO",
-            "VUOTO",
-            "VERDE"
-          ],
-          [
-            "BLU",
-            "VUOTO",
-            "VUOTO",
-            "BLU",
-            "VUOTO"
-          ],
-          [
-            "ROSSO",
-            "VERDE",
-            "VUOTO",
-            "VUOTO",
-            "ROSSO"
-          ]
+          ["EMPTY", "WAFFLE", "BLUE",  "BLUE",  "RED"],
+          ["BLUE",  "RED",    "GREEN", "RED",   "GREEN"],
+          ["BLUE",  "ICE",    "RED",   "EMPTY", "GREEN"],
+          ["BLUE",  "EMPTY",  "EMPTY", "BLUE",  "EMPTY"],
+          ["RED",   "GREEN",  "EMPTY", "EMPTY", "RED"]
         ],
         "availablePieces": [
-          {
-            "type": "ROSSO"
-          }
+          { "type": "RED" }
         ],
         "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
         "createdAt": "2026-05-04T13:04:20.337Z",
@@ -273,49 +133,17 @@
         "objective": {
           "type": "JELLY",
           "required": 6,
-          "targetColor": "BLU"
+          "targetColor": "BLUE"
         },
         "grid": [
-          [
-            "VUOTO",
-            "GHIACCIO",
-            "ROSSO",
-            "VERDE",
-            "ROSSO"
-          ],
-          [
-            "ROSSO",
-            "ROSSO",
-            "ROSSO",
-            "ROSSO",
-            "ROSSO"
-          ],
-          [
-            "BLU",
-            "WAFFLE",
-            "BLU",
-            "GHIACCIO",
-            "BLU"
-          ],
-          [
-            "GHIACCIO",
-            "ROSSO",
-            "BLU",
-            "VERDE",
-            "ROSSO"
-          ],
-          [
-            "VUOTO",
-            "WAFFLE",
-            "VERDE",
-            "VERDE",
-            "BLU"
-          ]
+          ["EMPTY", "ICE",    "RED",   "GREEN", "RED"],
+          ["RED",   "RED",    "RED",   "RED",   "RED"],
+          ["BLUE",  "WAFFLE", "BLUE",  "ICE",   "BLUE"],
+          ["ICE",   "RED",    "BLUE",  "GREEN", "RED"],
+          ["EMPTY", "WAFFLE", "GREEN", "GREEN", "BLUE"]
         ],
         "availablePieces": [
-          {
-            "type": "ROSSO"
-          }
+          { "type": "RED" }
         ],
         "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
         "createdAt": "2026-05-04T13:04:03.346Z",

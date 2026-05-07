@@ -37,6 +37,7 @@ struct Jelly: Identifiable, Equatable {
 enum ElementType: Int, Equatable, CaseIterable, Hashable {
     // Ostacoli (valori negativi)
     case treasure = -7
+    case rock = -6
     case honey = -5
     case licorice = -4
     case brokenWaffle = -3
@@ -45,7 +46,7 @@ enum ElementType: Int, Equatable, CaseIterable, Hashable {
     // Speciali
     case rainbow = 0
     // Gelatine
-    case red = 1, blue = 2, green = 3, orange = 4, yellow = 5, brown = 6, black = 7
+    case red = 1, blue = 2, green = 3, orange = 4, yellow = 5, purple = 6, black = 7
     case empty = 99
 
     // IL CUORE DELLA SCALABILITÀ: Tutto è definito qui!
@@ -53,16 +54,16 @@ enum ElementType: Int, Equatable, CaseIterable, Hashable {
         switch self {
         case .empty:        return ElementConfig(name: "Vuoto", color: Color.gray.opacity(0.15), requirement: 0, isObstacle: false, hasFace: false)
         case .rainbow:      return ElementConfig(name: "Arcobaleno", color: .clear, requirement: 0, isObstacle: false, hasFace: true)
-        
+
         // Gelatine
         case .red:          return ElementConfig(name: "Rossa", color: .red, requirement: 2, isObstacle: false, hasFace: true)
         case .blue:         return ElementConfig(name: "Blu", color: .blue, requirement: 3, isObstacle: false, hasFace: true)
         case .green:        return ElementConfig(name: "Verde", color: .green, requirement: 4, isObstacle: false, hasFace: true)
         case .orange:       return ElementConfig(name: "Arancione", color: .orange, requirement: 5, isObstacle: false, hasFace: true)
         case .yellow:       return ElementConfig(name: "Gialla", color: .yellow, requirement: 6, isObstacle: false, hasFace: true)
-        case .brown:        return ElementConfig(name: "Viola", color: .purple, requirement: 7, isObstacle: false, hasFace: true)
+        case .purple:       return ElementConfig(name: "Viola", color: .purple, requirement: 7, isObstacle: false, hasFace: true)
         case .black:        return ElementConfig(name: "Nera", color: .black, requirement: Int.max, isObstacle: false, hasFace: true)
-            
+
         // Ostacoli
         case .ice:          return ElementConfig(name: "Ghiaccio", color: Color.cyan.opacity(0.5), requirement: 0, isObstacle: true, hasFace: false)
         case .waffle:       return ElementConfig(name: "Waffle", color: Color.yellow.opacity(0.8), requirement: 0, isObstacle: true, hasFace: false)
@@ -70,6 +71,8 @@ enum ElementType: Int, Equatable, CaseIterable, Hashable {
         case .licorice:     return ElementConfig(name: "Liquirizia", color: .gray, requirement: 0, isObstacle: true, hasFace: false)
         case .honey:        return ElementConfig(name: "Miele", color: .yellow, requirement: 0, isObstacle: true, hasFace: false)
         case .treasure:     return ElementConfig(name: "Tesoro", color: .indigo, requirement: 0, isObstacle: true, hasFace: false, requireKeys: 1)
+        // Roccia: ostacolo indistruttibile — non viene rimosso da nessuna mossa
+        case .rock:         return ElementConfig(name: "🪨 Roccia", color: Color(white: 0.35), requirement: 0, isObstacle: true, hasFace: false)
         }
     }
 }

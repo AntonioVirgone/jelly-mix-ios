@@ -72,7 +72,7 @@ extension GameViewModel {
 
             let targetType = mapStringToElementType(levelData.objective.targetColor ?? "")
             let objType: ObjectiveType
-            switch levelData.objective.type {
+            switch levelData.objective.type.uppercased() {
             case "OBSTACLE": objType = .obstacle
             case "LICORICE": objType = .licorice
             default:         objType = .jelly
@@ -119,6 +119,23 @@ extension GameViewModel {
 
     func mapStringToCellType(_ str: String) -> CellType? {
         switch str.uppercased() {
+        // English identifiers (new format)
+        case "CONVEYOR_LEFT":  return .conveyor(.left)
+        case "CONVEYOR_RIGHT": return .conveyor(.right)
+        case "CONVEYOR_UP":    return .conveyor(.up)
+        case "CONVEYOR_DOWN":  return .conveyor(.down)
+        case "GENERATOR_ICE":      return .generator(.ice)
+        case "GENERATOR_WAFFLE":   return .generator(.waffle)
+        case "GENERATOR_LICORICE": return .generator(.licorice)
+        case "GENERATOR_HONEY":    return .generator(.honey)
+        case "GENERATOR_RED":      return .generator(.red)
+        case "GENERATOR_BLUE":     return .generator(.blue)
+        case "GENERATOR_GREEN":    return .generator(.green)
+        case "GENERATOR_ORANGE":   return .generator(.orange)
+        case "GENERATOR_YELLOW":   return .generator(.yellow)
+        case "GENERATOR_PURPLE":   return .generator(.purple)
+        case "GENERATOR_ROCK":     return .generator(.rock)
+        // Italian identifiers (backward compatibility)
         case "NASTRO_SX":  return .conveyor(.left)
         case "NASTRO_DX":  return .conveyor(.right)
         case "NASTRO_SU":  return .conveyor(.up)

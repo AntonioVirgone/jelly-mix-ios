@@ -99,18 +99,33 @@ class GameViewModel: ObservableObject {
 
     func mapStringToElementType(_ str: String) -> ElementType {
         switch str.uppercased() {
-        case "ROSSO": return .red
-        case "BLU": return .blue
-        case "GREEN", "VERDE": return .green
-        case "ARANCIONE": return .orange
-        case "GIALLO": return .yellow
-        case "GHIACCIO": return .ice
-        case "WAFFLE": return .waffle
+        // English identifiers (new format)
+        case "RED":      return .red
+        case "BLUE":     return .blue
+        case "GREEN":    return .green
+        case "ORANGE":   return .orange
+        case "YELLOW":   return .yellow
+        case "PURPLE":   return .purple
+        case "ICE":      return .ice
+        case "WAFFLE":   return .waffle
+        case "LICORICE": return .licorice
+        case "HONEY":    return .honey
+        case "TREASURE": return .treasure
+        case "ROCK":     return .rock
+        case "EMPTY":    return .empty
+        // Italian identifiers (backward compatibility)
+        case "ROSSO":      return .red
+        case "BLU":        return .blue
+        case "VERDE":      return .green
+        case "ARANCIONE":  return .orange
+        case "GIALLO":     return .yellow
+        case "VIOLA":      return .purple
+        case "GHIACCIO":   return .ice
         case "LIQUIRIZIA": return .licorice
-        case "MIELE": return .honey
-        case "TESORO": return .treasure
-        case "VUOTO": return .empty
-        default: return .empty
+        case "MIELE":      return .honey
+        case "TESORO":     return .treasure
+        case "VUOTO":      return .empty
+        default:           return .empty
         }
     }
 
