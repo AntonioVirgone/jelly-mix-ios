@@ -51,11 +51,21 @@ struct AvailablePieceData: Codable {
 extension AvailablePieceData {
     var elementType: ElementType {
         switch type.uppercased() {
-        case "ROSSO": return .red
-        case "BLU": return .blue
-        case "GREEN", "VERDE": return .green
-        case "GIALLO": return .yellow
-        default: return .empty
+        // English identifiers (new format)
+        case "RED":    return .red
+        case "BLUE":   return .blue
+        case "GREEN":  return .green
+        case "ORANGE": return .orange
+        case "YELLOW": return .yellow
+        case "PURPLE": return .purple
+        // Italian identifiers (backward compatibility)
+        case "ROSSO":    return .red
+        case "BLU":      return .blue
+        case "VERDE":    return .green
+        case "ARANCIONE": return .orange
+        case "GIALLO":   return .yellow
+        case "VIOLA":    return .purple
+        default:         return .empty
         }
     }
 }

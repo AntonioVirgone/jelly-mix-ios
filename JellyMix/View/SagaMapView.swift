@@ -209,13 +209,13 @@ struct MapPathLineView: View {
     SagaMapView(
         worlds: [
             WorldData(id: "preview-1", name: "Valle delle Gelatine", description: nil,
-                      stageNumber: 1, color: "pink", icon: "🍓", status: "ACTIVE",
+                      stageNumber: 1, color: "#007700", icon: "🍓", status: "ACTIVE",
                       isActive: true, createdAt: nil, updatedAt: nil, levels: [
                 LevelData(id: "l2", levelNumber: 2, movesLimit: 10, status: nil,
-                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil),
                 LevelData(id: "l1", levelNumber: 1, movesLimit: 10, status: nil,
-                          objective: ObjectiveData(type: "JELLY", targetColor: "BLU", required: 5),
+                          objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil)
             ])
         ],

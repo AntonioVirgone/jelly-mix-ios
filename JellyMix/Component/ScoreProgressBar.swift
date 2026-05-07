@@ -69,5 +69,5 @@ struct ScoreProgressBar: View {
 }
 
 #Preview {
-    ScoreProgressBar(score: 100, availablePieces: [AvailablePieceData.init(type: "BLU", point: 100)])
+    ScoreProgressBar(score: 100, availablePieces: [AvailablePieceData.init(type: "BLUE", point: 100)])
 }

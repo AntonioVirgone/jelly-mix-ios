@@ -32,7 +32,7 @@ extension GameViewModel {
             if i <= 5 {
                 pullRates.append(.black)
             } else if i <= 10 {
-                pullRates.append(.brown)
+                pullRates.append(.purple)
             } else if i <= 25 {
                 pullRates.append(.yellow)
             } else if i <= 40 {

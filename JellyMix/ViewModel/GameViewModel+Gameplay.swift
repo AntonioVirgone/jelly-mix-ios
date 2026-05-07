@@ -67,7 +67,7 @@ extension GameViewModel {
             guard currentType != .empty && currentType.rawValue < 7 else { break }
 
             let possibleTargets: [ElementType] = currentType == .rainbow
-                ? [.brown, .yellow, .orange, .green, .blue, .red]
+                ? [.purple, .yellow, .orange, .green, .blue, .red]
                 : [currentType]
 
             for targetType in possibleTargets {

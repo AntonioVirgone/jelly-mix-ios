@@ -99,18 +99,33 @@ class GameViewModel: ObservableObject {
 
     func mapStringToElementType(_ str: String) -> ElementType {
         switch str.uppercased() {
-        case "ROSSO": return .red
-        case "BLU": return .blue
-        case "GREEN", "VERDE": return .green
-        case "ARANCIONE": return .orange
-        case "GIALLO": return .yellow
-        case "GHIACCIO": return .ice
-        case "WAFFLE": return .waffle
+        // English identifiers (new format)
+        case "RED":      return .red
+        case "BLUE":     return .blue
+        case "GREEN":    return .green
+        case "ORANGE":   return .orange
+        case "YELLOW":   return .yellow
+        case "PURPLE":   return .purple
+        case "ICE":      return .ice
+        case "WAFFLE":   return .waffle
+        case "LICORICE": return .licorice
+        case "HONEY":    return .honey
+        case "TREASURE": return .treasure
+        case "ROCK":     return .rock
+        case "EMPTY":    return .empty
+        // Italian identifiers (backward compatibility)
+        case "ROSSO":      return .red
+        case "BLU":        return .blue
+        case "VERDE":      return .green
+        case "ARANCIONE":  return .orange
+        case "GIALLO":     return .yellow
+        case "VIOLA":      return .purple
+        case "GHIACCIO":   return .ice
         case "LIQUIRIZIA": return .licorice
-        case "MIELE": return .honey
-        case "TESORO": return .treasure
-        case "VUOTO": return .empty
-        default: return .empty
+        case "MIELE":      return .honey
+        case "TESORO":     return .treasure
+        case "VUOTO":      return .empty
+        default:           return .empty
         }
     }
 
@@ -137,13 +152,53 @@ class GameViewModel: ObservableObject {
     }
 
     func getColor(from name: String) -> Color {
-        switch name.lowercased() {
-        case "pink": return .pink
-        case "cyan": return .cyan
-        case "orange": return .orange
-        case "purple": return .purple
-        case "blue": return .blue
-        default: return .gray
+        Color(hex: name)
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+
+        let a, r, g, b: UInt64
+
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (
+                255,
+                (int >> 8) * 17,
+                (int >> 4 & 0xF) * 17,
+                (int & 0xF) * 17
+            )
+
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (
+                255,
+                int >> 16,
+                int >> 8 & 0xFF,
+                int & 0xFF
+            )
+
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (
+                int >> 24,
+                int >> 16 & 0xFF,
+                int >> 8 & 0xFF,
+                int & 0xFF
+            )
+
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
         }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
     }
 }
