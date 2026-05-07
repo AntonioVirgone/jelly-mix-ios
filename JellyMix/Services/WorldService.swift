@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum LevelService {
+enum WorldService {
 
     static func fetchWorlds() async throws -> WorldCollection {
         return try await CommonService.fetch(from: "worlds")

@@ -24,7 +24,7 @@ enum WorldCacheService {
     // Gerarchia completa: cache disco → bundle (primo avvio / cache corrotta).
     static func loadBestAvailable() -> WorldCollection? {
         if let cached = try? load() { return cached }
-        return try? LevelService.loadFromBundle()
+        return try? WorldService.loadFromBundle()
     }
 
     private static func cacheURL() -> URL {

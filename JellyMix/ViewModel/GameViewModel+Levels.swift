@@ -10,7 +10,7 @@ extension GameViewModel {
     // Carica i livelli: prova l'API REST, in caso di errore usa il JSON locale.
     func loadLevels() async {
         do {
-            let collection = try await LevelService.fetchWorlds()
+            let collection = try await WorldService.fetchWorlds()
             applyLevelCollection(collection)
         } catch {
             print("[LevelService] API non disponibile (\(error.localizedDescription)), uso JSON locale.")
@@ -21,7 +21,7 @@ extension GameViewModel {
     // Fallback sincrono: legge levels.json dal bundle. Usato anche dai test.
     func loadLevelsFromBundle() {
         do {
-            let collection = try LevelService.loadFromBundle()
+            let collection = try WorldService.loadFromBundle()
             applyLevelCollection(collection)
         } catch {
             print("[LevelService] Errore caricamento JSON locale: \(error)")

@@ -80,7 +80,7 @@ struct JellyMixApp: App {
     @MainActor
     private func backgroundRefresh() async {
         do {
-            let fresh = try await LevelService.fetchWorldsWithRetry()
+            let fresh = try await WorldService.fetchWorldsWithRetry()
             try? WorldCacheService.save(fresh)
             gameEngine.applyLevelCollection(fresh)
             gameEngine.mapWasUpdated = true
