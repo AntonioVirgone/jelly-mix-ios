@@ -14,42 +14,71 @@ enum APIError: Error {
     case requestFailed
     case invalidResponse
     case decodingError
+    case encodingError
 }
+
+// MARK: - HTTP Method
+/// Definisce i metodi HTTP supportati
+enum HTTPMethod: String {
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
+}
+
+// Modello di utility per risposte vuote
+struct EmptyResponse: Codable {}
 
 // MARK: - Common Service (Network Engine)
 /// Gestisce la logica di rete generica per tutta l'app
 enum CommonService {
-    
-    /// Metodo generico per eseguire chiamate GET
+    private static let baseURL = "https://jelly-mix-api.onrender.com/api/v1"
+
+    /// Metodo universale per eseguire chiamate di rete
     /// - Parameters:
     ///   - urlString: L'indirizzo dell'endpoint
-    ///   - type: Il tipo di dato che ci aspettiamo (deve essere Decodable)
-    /// - Returns: L'oggetto decodificato del tipo richiesto
-    static func fetch<T: Decodable>(from urlString: String) async throws -> T {
-        // Validazione URL
-        guard let url = URL(string: urlString) else {
+    ///   - method: Il metodo HTTP da utilizzare (default .get)
+    ///   - body: Un oggetto Encodable da inviare (opzionale)
+    /// - Returns: L'oggetto decodificato del tipo richiesto T
+    static func request<T: Decodable, E: Encodable>(
+        from path: String, // Ora accettiamo solo il path (es. "data-logger")
+        method: HTTPMethod = .get,
+        body: E? = nil as Optional<Never>
+    ) async throws -> T {
+        
+        // Componiamo l'URL completo
+        let fullURLString = path.contains("http") ? path : "\(baseURL)/\(path)"
+        
+        guard let url = URL(string: fullURLString) else {
             throw APIError.invalidURL
         }
         
-        // Configurazione richiesta
-        let request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url, timeoutInterval: 10)
+        request.httpMethod = method.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // Esecuzione chiamata
+        if let body = body {
+            request.httpBody = try JSONEncoder().encode(body)
+        }
+        
         let (data, response) = try await URLSession.shared.data(for: request)
         
-        // Validazione risposta HTTP
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw APIError.invalidResponse
         }
         
-        // Decodifica JSON
-        do {
-            let decodedData = try JSONDecoder().decode(T.self, from: data)
-            return decodedData
-        } catch {
-            print("Decoding Error: \(error)")
-            throw APIError.decodingError
+        // Se ci aspettiamo una risposta vuota e l'API non manda dati (o dati minimi)
+        if T.self == EmptyResponse.self && (data.isEmpty || data.count <= 4) {
+            return EmptyResponse() as! T
         }
+        
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+    
+    /// Metodo semplificato per il GET (per compatibilità con il codice esistente)
+    static func fetch<T: Decodable>(from urlString: String) async throws -> T {
+        // Chiamiamo il metodo principale passando Never come tipo del body
+        return try await request(from: urlString, method: .get)
     }
 }

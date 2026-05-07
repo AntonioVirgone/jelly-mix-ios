@@ -7,11 +7,9 @@ import Foundation
 
 enum LevelService {
 
-    private static let baseURL = "https://jelly-mix-api.onrender.com/api/v1"
-        
     /// Carica i mondi dall'API usando il motore centralizzato
     static func fetchWorlds() async throws -> WorldCollection {
-        let endpoint = "\(baseURL)/worlds"
+        let endpoint = "worlds"
         // Chiamiamo il metodo generico specificando il tipo di ritorno atteso
         return try await CommonService.fetch(from: endpoint)
     }

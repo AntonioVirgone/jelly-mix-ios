@@ -20,7 +20,7 @@ struct MainCoordinator: View {
     @State private var maxUnlockedLevel: Int = 1
     @State private var showNoLivesOverlay = false
 
-    @StateObject private var gameEngine = GameViewModel()
+    @ObservedObject var gameEngine: GameViewModel
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -274,5 +274,5 @@ struct NoLivesOverlayView: View {
 }
 
 #Preview {
-    MainCoordinator()
+    MainCoordinator(gameEngine: GameViewModel())
 }
