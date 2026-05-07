@@ -10,7 +10,7 @@ extension GameViewModel {
     // Carica i livelli: prova l'API REST, in caso di errore usa il JSON locale.
     func loadLevels() async {
         do {
-            let collection = try await LevelService.fetchFromAPI()
+            let collection = try await LevelService.fetchWorlds()
             applyLevelCollection(collection)
         } catch {
             print("[LevelService] API non disponibile (\(error.localizedDescription)), uso JSON locale.")
