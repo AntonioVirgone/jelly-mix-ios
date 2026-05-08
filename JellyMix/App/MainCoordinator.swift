@@ -143,6 +143,13 @@ struct MainCoordinator: View {
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showNoLivesOverlay)
+        // Tap su qualsiasi notifica → naviga alla mappa con animazione spring.
+        .onReceive(NotificationCenter.default.publisher(for: .openMapFromNotification)) { _ in
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
+                showNoLivesOverlay = false
+                currentScreen = .map
+            }
+        }
     }
     
     func getMaxUnlockedLevel() -> Int {

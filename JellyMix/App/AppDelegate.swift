@@ -60,6 +60,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         completionHandler([.banner, .sound])
     }
+
+    // Invocato quando l'utente tappa la notifica (locale o remota).
+    // Naviga alla mappa in modo che l'utente possa subito scegliere un livello.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        NotificationCenter.default.post(name: .openMapFromNotification, object: nil)
+        completionHandler()
+    }
 }
 
 // MARK: - Notification.Name
@@ -67,4 +78,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension Notification.Name {
     /// Postata dall'AppDelegate quando arriva una push remota di tipo "map_update".
     static let mapUpdatePushReceived = Notification.Name("mapUpdatePushReceived")
+    /// Postata quando l'utente tappa qualsiasi notifica: naviga alla schermata mappa.
+    static let openMapFromNotification = Notification.Name("openMapFromNotification")
 }
