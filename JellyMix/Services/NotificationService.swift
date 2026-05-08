@@ -11,12 +11,20 @@ enum NotificationService {
     private static let categoryID = "LIVES_RESTORED"
     private static let identifierPrefix = "life_restore_"
 
-    // Richiede il permesso per le notifiche locali.
+    // Richiede il permesso per le notifiche locali e remote.
     // Chiamato una volta sola all'avvio — il sistema memorizza la scelta dell'utente.
     static func requestPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error { print("[Notifications] Errore permesso: \(error.localizedDescription)") }
         }
+    }
+
+    // Converte il token APNs in stringa esadecimale e lo salva in UserDefaults.
+    // Il backend può leggerlo tramite DataUserService per inviare push mirate.
+    static func saveDeviceToken(_ tokenData: Data) {
+        let token = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
+        UserDefaults.standard.set(token, forKey: "apnsDeviceToken")
+        print("[APNS] Device token: \(token)")
     }
 
     // Pianifica una notifica per ogni vita che verrà ripristinata mentre l'app è in background.
