@@ -62,7 +62,7 @@ extension GameViewModel {
     }
 
     @objc func appCameForeground() {
-        NotificationService.cancelPendingNotifications()
+        NotificationService.cancelPendingLivesNotifications()
         calcolaTempoOffline()
     }
 
