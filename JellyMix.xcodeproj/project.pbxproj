@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EC33E7762FADC75E006E53E2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = EC33E7752FADC75E006E53E2 /* FirebaseMessaging */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		EC23A5C72FA1E78C006E9590 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC33E7762FADC75E006E53E2 /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +108,7 @@
 			);
 			name = JellyMix;
 			packageProductDependencies = (
+				EC33E7752FADC75E006E53E2 /* FirebaseMessaging */,
 			);
 			productName = JellyMix;
 			productReference = EC23A52A2F97B39B006E9590 /* JellyMix.app */;
@@ -160,6 +166,9 @@
 			);
 			mainGroup = EC23A5212F97B39B006E9590;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EC33E7742FADC75E006E53E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC23A52B2F97B39B006E9590 /* Products */;
 			projectDirPath = "";
@@ -493,6 +502,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EC33E7742FADC75E006E53E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EC33E7752FADC75E006E53E2 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC33E7742FADC75E006E53E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EC23A5222F97B39B006E9590 /* Project object */;
 }

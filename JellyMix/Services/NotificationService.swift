@@ -68,8 +68,10 @@ enum NotificationService {
                 trigger: trigger
             )
 
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error { print("[Notifications] Scheduling vita \(lifeIndex): \(error.localizedDescription)") }
+            if livesCount == maxLives {
+                UNUserNotificationCenter.current().add(request) { error in
+                    if let error { print("[Notifications] Scheduling vita \(lifeIndex): \(error.localizedDescription)") }
+                }
             }
 
             livesCount += 1
