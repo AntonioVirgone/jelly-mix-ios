@@ -16,6 +16,7 @@ extension GameViewModel {
             self.lives = maxLives
         }
 
+        NotificationService.requestPermission()
         calcolaTempoOffline()
         avviaTimerVite()
 
@@ -52,9 +53,16 @@ extension GameViewModel {
 
     @objc func appWentBackground() {
         UserDefaults.standard.set(Date(), forKey: "lastExitDate")
+        NotificationService.scheduleLivesRestoredNotifications(
+            currentLives: lives,
+            maxLives: maxLives,
+            timeToNextLife: timeToNextLife,
+            secondsPerLife: secondsPerLife
+        )
     }
 
     @objc func appCameForeground() {
+        NotificationService.cancelPendingLivesNotifications()
         calcolaTempoOffline()
     }
 

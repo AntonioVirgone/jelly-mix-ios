@@ -9,22 +9,31 @@ import SwiftUI
 
 @main
 struct JellyMixApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @State private var showSplash = true
     @StateObject private var gameEngine = GameViewModel()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
-            if showSplash {
-                SplashScreenView()
-                    .transition(.opacity)
-                    .task {
-                        await prepareLogData()
-                        await prepareAppData()
-                    }
-            } else {
-                MainCoordinator(gameEngine: gameEngine)
-                    .transition(.opacity)
+            Group {
+                if showSplash {
+                    SplashScreenView()
+                        .transition(.opacity)
+                        .task {
+                            await prepareLogData()
+                            await prepareAppData()
+                        }
+                } else {
+                    MainCoordinator(gameEngine: gameEngine)
+                        .transition(.opacity)
+                }
+            }
+            // Push remota "map_update": aggiorna la mappa con la stessa logica del refresh automatico.
+            .onReceive(NotificationCenter.default.publisher(for: .mapUpdatePushReceived)) { _ in
+                guard !showSplash else { return }
+                Task { await backgroundRefresh() }
             }
         }
         // Quando l'app torna in foreground (dopo essere stata in background)
