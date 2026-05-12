@@ -31,88 +31,58 @@ struct SagaMapView: View {
     }
 
     var body: some View {
-        ZStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: 0) {
-                        Color.clear.frame(height: 50)
-                        ForEach(worlds) { world in
-                            renderWorldSection(world: world)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                    Color.clear.frame(height: 50)
+                    ForEach(worlds) { world in
+                        Section {
+                            renderWorldContent(world: world)
+                        } header: {
+                            WorldHeaderView(world: world, color: getColor(world.color))
                         }
-                        Color.clear.frame(height: 100)
                     }
-                    .onAppear {
-                        guard let id = currentNodeId else { return }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                proxy.scrollTo(id, anchor: .center)
-                            }
+                    Color.clear.frame(height: 100)
+                }
+                .onAppear {
+                    guard let id = currentNodeId else { return }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            proxy.scrollTo(id, anchor: .center)
                         }
                     }
                 }
-                .scrollIndicators(.hidden)
             }
+            .scrollIndicators(.hidden)
         }
     }
-    
-    func timeString(from seconds: Int) -> String {
-        let m = seconds / 60
-        let s = seconds % 60
-        return String(format: "%02d:%02d", m, s)
-    }
-    
-    // Disegna la sezione completa di un Mondo
+        
     @ViewBuilder
-    private func renderWorldSection(world: WorldData) -> some View {
+    private func renderWorldContent(world: WorldData) -> some View {
         let worldColor = getColor(world.color)
         let sortedLevels = world.levels.sorted { $0.levelIndex < $1.levelIndex }
 
-        VStack(spacing: 0) {
-            HStack {
-                Text(world.icon)
-                    .font(.title)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("MONDO \(world.stageNumber)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .opacity(0.8)
-                    Text(world.name)
-                        .font(.headline)
-                        .fontWeight(.black)
+        Color.clear.frame(height: 50)
+        VStack(spacing: 30) {
+            ForEach(Array(sortedLevels.enumerated()), id: \.element.levelIndex) { index, levelData in
+                let isEven = index % 2 == 0
+                let horizontalOffset: CGFloat = isEven ? 80 : -80
+
+                HStack {
+                    if !isEven { Spacer() }
+                    renderLevelNode(levelData: levelData, stageNumber: world.stageNumber)
+                        .offset(x: horizontalOffset)
+                    if isEven { Spacer() }
                 }
-                Spacer()
-            }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(worldColor)
-                    .shadow(color: worldColor.opacity(0.4), radius: 8, y: 4)
-            )
-            .foregroundColor(.white)
-            .padding(.horizontal)
-            .padding(.bottom, 30)
+                .padding(.horizontal, 40)
+                .id("level_\(world.stageNumber)_\(levelData.levelIndex)")
 
-            LazyVStack(spacing: 30) {
-                ForEach(Array(sortedLevels.enumerated()), id: \.element.levelIndex) { index, levelData in
-                    let isEven = index % 2 == 0
-                    let horizontalOffset: CGFloat = isEven ? 80 : -80
-
-                    HStack {
-                        if !isEven { Spacer() }
-                        renderLevelNode(levelData: levelData, stageNumber: world.stageNumber)
-                            .offset(x: horizontalOffset)
-                        if isEven { Spacer() }
-                    }
-                    .padding(.horizontal, 40)
-                    .id("level_\(world.stageNumber)_\(levelData.levelIndex)")
-
-                    if index < sortedLevels.count - 1 {
-                        MapPathLineView(color: worldColor.opacity(0.6), horizontalOffset: horizontalOffset)
-                    }
+                if index < sortedLevels.count - 1 {
+                    MapPathLineView(color: worldColor.opacity(0.6), horizontalOffset: horizontalOffset)
                 }
             }
-            .padding(.bottom, 50)
         }
+        .padding(.bottom, 50)
     }
 
     // Disegna il singolo nodo del livello
@@ -197,6 +167,39 @@ struct MapPathLineView: View {
         }
         .frame(height: 30)
         .offset(y: -15)
+    }
+}
+
+struct WorldHeaderView: View {
+    let world: WorldData
+    let color: Color
+    
+    var body: some View {
+        HStack {
+            Text(world.icon)
+                .font(.title)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("MONDO \(world.stageNumber)")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .opacity(0.8)
+                Text(world.name)
+                    .font(.headline)
+                    .fontWeight(.black)
+            }
+            Spacer()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(color)
+                .shadow(color: color.opacity(0.4), radius: 8, y: 4)
+        )
+        .foregroundColor(.white)
+        .padding(.horizontal)
+        .padding(.bottom, 8)
+        // ⚠️ Sfondo opaco dietro il padding per evitare bleed-through
+        .background(Color(UIColor.systemBackground).opacity(0.001))
     }
 }
 
