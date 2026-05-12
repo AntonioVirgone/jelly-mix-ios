@@ -6,7 +6,24 @@
 //
 
 import Testing
+import Foundation
 @testable import JellyMix
+
+// MARK: - Helpers per i test di sblocco
+
+private func makeWorld(stageNumber: Int, levelCount: Int, startingLevelNumber: Int = 1) -> WorldData {
+    let levels = (1...levelCount).map { i in
+        LevelData(
+            id: "\(stageNumber)-\(i)", levelNumber: startingLevelNumber + i - 1, levelIndex: i,
+            movesLimit: 10, status: nil,
+            objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 1),
+            grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil
+        )
+    }
+    return WorldData(id: "\(stageNumber)", name: "Mondo \(stageNumber)", description: nil,
+                     stageNumber: stageNumber, color: "#FF0000", icon: "🍓",
+                     status: "ACTIVE", isActive: true, createdAt: nil, updatedAt: nil, levels: levels)
+}
 
 // MARK: - Reset Game
 
@@ -179,5 +196,94 @@ struct CellTypeMappingTests {
         #expect(vm.mapStringToCellType("ROSSO")    == nil) // elemento, non tipo-cella
         #expect(vm.mapStringToCellType("SCONOSCIUTO") == nil)
         #expect(vm.mapStringToCellType("")         == nil)
+    }
+}
+
+// MARK: - isUnlocked / completeLevel
+
+@MainActor
+@Suite("Levels – isUnlocked")
+struct UnlockTests {
+
+    // Scenario 1: fresh install → solo Mondo 1 Livello 1 sbloccato
+    @Test("fresh install: solo (1,1) sbloccato")
+    func freshInstall_onlyFirstLevelUnlocked() {
+        let vm = GameViewModel.makeForTesting()
+        vm.applyLevelCollection([makeWorld(stageNumber: 1, levelCount: 3)])
+
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 1) == true)
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 2) == false)
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 3) == false)
+    }
+
+    // Scenario 2: progressione normale → completa (1,1) sblocca (1,2), non (2,1)
+    @Test("progressione normale: (1,1) completato → (1,2) sbloccato, (2,1) ancora bloccato")
+    func progression_completingLevel1_unlocksLevel2SameWorld() {
+        let vm = GameViewModel.makeForTesting()
+        vm.applyLevelCollection([
+            makeWorld(stageNumber: 1, levelCount: 3),
+            makeWorld(stageNumber: 2, levelCount: 2, startingLevelNumber: 4)
+        ])
+
+        vm.completeLevel(stageNumber: 1, levelIndex: 1)
+
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 1) == true)
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 2) == true)
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 3) == false)
+        #expect(vm.isUnlocked(stageNumber: 2, levelIndex: 1) == false)
+    }
+
+    // Scenario 3: completare tutti i livelli del Mondo 1 sblocca Mondo 2 Livello 1
+    @Test("passaggio mondo: completare Mondo 1 → (2,1) sbloccato")
+    func worldTransition_completingWorld_unlocksFirstLevelNextWorld() {
+        let vm = GameViewModel.makeForTesting()
+        vm.applyLevelCollection([
+            makeWorld(stageNumber: 1, levelCount: 2),
+            makeWorld(stageNumber: 2, levelCount: 2, startingLevelNumber: 3)
+        ])
+
+        vm.completeLevel(stageNumber: 1, levelIndex: 1)
+        vm.completeLevel(stageNumber: 1, levelIndex: 2)
+
+        #expect(vm.completedWorlds.contains(1) == true)
+        #expect(vm.isUnlocked(stageNumber: 2, levelIndex: 1) == true)
+        #expect(vm.isUnlocked(stageNumber: 2, levelIndex: 2) == false)
+    }
+
+    // Scenario 4 (caso critico): mondo completato → nuovo livello aggiunto risulta sbloccato
+    @Test("caso critico: Mondo 1 completato, nuovo livello aggiunto → risulta sbloccato")
+    func criticalCase_worldCompleted_newLevelIsUnlocked() {
+        let vm = GameViewModel.makeForTesting()
+        // Il giocatore ha completato Mondo 1 con 2 livelli
+        vm.applyLevelCollection([makeWorld(stageNumber: 1, levelCount: 2)])
+        vm.completeLevel(stageNumber: 1, levelIndex: 1)
+        vm.completeLevel(stageNumber: 1, levelIndex: 2)
+
+        // Backend aggiunge un terzo livello al Mondo 1
+        vm.applyLevelCollection([makeWorld(stageNumber: 1, levelCount: 3)])
+
+        // Il nuovo livello (1,3) deve essere sbloccato perché Mondo 1 è in completedWorlds
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 3) == true)
+    }
+
+    // Scenario 5: migrazione da vecchio maxUnlockedLevel
+    @Test("migrazione: vecchio maxUnlockedLevel=3 → (1,1) e (1,2) completati, (1,3) corrente")
+    func migration_legacyProgress_convertedCorrectly() {
+        let vm = GameViewModel.makeForTesting()
+        // Simula vecchio progresso: livelli 1 e 2 completati, 3 = corrente
+        UserDefaults.standard.set(3, forKey: "maxUnlockedLevel")
+        UserDefaults.standard.removeObject(forKey: "hasCompletedMigration")
+
+        let world = makeWorld(stageNumber: 1, levelCount: 3)
+        vm.applyLevelCollection([world])
+
+        #expect(vm.completedLevels.contains(LevelCoordinate(stageNumber: 1, levelIndex: 1)) == true)
+        #expect(vm.completedLevels.contains(LevelCoordinate(stageNumber: 1, levelIndex: 2)) == true)
+        #expect(vm.completedLevels.contains(LevelCoordinate(stageNumber: 1, levelIndex: 3)) == false)
+        #expect(vm.isUnlocked(stageNumber: 1, levelIndex: 3) == true)
+
+        // Cleanup
+        UserDefaults.standard.removeObject(forKey: "maxUnlockedLevel")
+        UserDefaults.standard.removeObject(forKey: "hasCompletedMigration")
     }
 }

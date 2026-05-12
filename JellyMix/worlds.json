@@ -1,154 +1,1337 @@
 [
-  {
-    "id": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
-    "name": "Nuovo Mondo 2",
-    "description": null,
-    "stageNumber": 2,
-    "color": "blue",
-    "icon": "🌍",
-    "status": "DRAFT",
-    "isActive": true,
-    "createdAt": "2026-05-04T13:05:11.774Z",
-    "updatedAt": "2026-05-04T13:05:11.774Z",
-    "levels": [
-      {
-        "id": "72666736-173b-40a4-8fc3-f8a64d8da1d2",
-        "levelNumber": 4,
-        "movesLimit": 20,
-        "status": "DRAFT",
-        "objective": {
-          "type": "JELLY",
-          "required": 5,
-          "targetColor": "RED"
+    {
+      "status": "PUBLISHED",
+      "id": 1,
+      "name": "Mondo Fragoloso",
+      "color": "#FF4757",
+      "icon": "🍓",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 5,
+          "levelIndex": 5,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 15,
+          "grid": [
+            [
+              "ORANGE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ORANGE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ORANGE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ORANGE",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
         },
-        "grid": [
-          ["YELLOW", "ICE",    "ORANGE", "RED",    "EMPTY"],
-          ["ORANGE", "BLUE",   "YELLOW", "YELLOW", "ORANGE"],
-          ["ORANGE", "EMPTY",  "RED",    "YELLOW", "EMPTY"],
-          ["EMPTY",  "BLUE",   "BLUE",   "RED",    "ORANGE"],
-          ["RED",    "WAFFLE", "ICE",    "YELLOW", "ICE"]
-        ],
-        "availablePieces": [
-          { "type": "RED" },
-          { "type": "BLUE", "point": 200 }
-        ],
-        "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
-        "createdAt": "2026-05-04T13:05:11.786Z",
-        "updatedAt": "2026-05-04T13:05:11.786Z"
-      },
-      {
-        "id": "208c4530-ff0c-4417-84cd-32af0b7f9e24",
-        "levelNumber": 5,
-        "movesLimit": 20,
-        "status": "DRAFT",
-        "objective": {
-          "type": "JELLY",
-          "required": 8,
-          "targetColor": "BLUE"
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 20,
+          "levelIndex": 3,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 24,
+          "grid": [
+            [
+              "GREEN",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "GREEN",
+              "GREEN",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "GREEN",
+              "GREEN"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "GREEN"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 320
+            }
+          ]
         },
-        "grid": [
-          ["GREEN",  "WAFFLE", "BLUE",   "RED",    "ICE"],
-          ["YELLOW", "GREEN",  "ICE",    "RED",    "ICE"],
-          ["ORANGE", "BLUE",   "YELLOW", "YELLOW", "GREEN"],
-          ["ORANGE", "YELLOW", "GREEN",  "YELLOW", "EMPTY"],
-          ["BLUE",   "EMPTY",  "YELLOW", "BLUE",   "BLUE"]
-        ],
-        "availablePieces": [
-          { "type": "RED" },
-          { "type": "BLUE", "point": 200 }
-        ],
-        "worldId": "b1f12f91-e6aa-4b57-9316-668cda5bd785",
-        "createdAt": "2026-05-04T13:05:11.793Z",
-        "updatedAt": "2026-05-04T13:05:11.793Z"
-      }
-    ]
-  },
-  {
-    "id": "cc2f19e7-c870-4c8e-a947-75e21156f812",
-    "name": "Nuovo Mondo 1",
-    "description": null,
-    "stageNumber": 1,
-    "color": "red",
-    "icon": "🌍",
-    "status": "DRAFT",
-    "isActive": true,
-    "createdAt": "2026-05-04T13:04:00.501Z",
-    "updatedAt": "2026-05-04T13:05:35.036Z",
-    "levels": [
-      {
-        "id": "2ef723d9-9e28-49ea-b759-6782fae0f8f2",
-        "levelNumber": 1,
-        "movesLimit": 15,
-        "status": "DRAFT",
-        "objective": {
-          "type": "JELLY",
-          "required": 9,
-          "targetColor": "RED"
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 21,
+          "levelIndex": 4,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 15,
+          "grid": [
+            [
+              "YELLOW",
+              "YELLOW",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "YELLOW",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "YELLOW",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "YELLOW",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "YELLOW",
+              "YELLOW"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
         },
-        "grid": [
-          ["EMPTY",  "EMPTY",   "RED",    "GREEN",   "BLUE"],
-          ["EMPTY",  "BLUE",    "BLUE",   "BLUE",    "RED"],
-          ["YELLOW", "GREEN",   "BLUE",   "EMPTY",   "YELLOW"],
-          ["EMPTY",  "ORANGE",  "EMPTY",  "LICORICE","EMPTY"],
-          ["EMPTY",  "EMPTY",   "GREEN",  "ORANGE",  "EMPTY"]
-        ],
-        "availablePieces": [
-          { "type": "RED" },
-          { "type": "BLUE",  "point": 200 },
-          { "type": "GREEN", "point": 500 }
-        ],
-        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
-        "createdAt": "2026-05-04T13:04:20.331Z",
-        "updatedAt": "2026-05-04T13:05:11.749Z"
-      },
-      {
-        "id": "8f1f30c2-4cb1-45fe-abc9-cbc6fb99403c",
-        "levelNumber": 2,
-        "movesLimit": 25,
-        "status": "DRAFT",
-        "objective": {
-          "type": "JELLY",
-          "required": 9,
-          "targetColor": "RED"
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 1,
+          "levelIndex": 1,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 20,
+          "grid": [
+            [
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "BLUE",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
         },
-        "grid": [
-          ["EMPTY", "WAFFLE", "BLUE",  "BLUE",  "RED"],
-          ["BLUE",  "RED",    "GREEN", "RED",   "GREEN"],
-          ["BLUE",  "ICE",    "RED",   "EMPTY", "GREEN"],
-          ["BLUE",  "EMPTY",  "EMPTY", "BLUE",  "EMPTY"],
-          ["RED",   "GREEN",  "EMPTY", "EMPTY", "RED"]
-        ],
-        "availablePieces": [
-          { "type": "RED" }
-        ],
-        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
-        "createdAt": "2026-05-04T13:04:20.337Z",
-        "updatedAt": "2026-05-04T13:05:11.758Z"
-      },
-      {
-        "id": "d729c91f-09dd-470f-9f2a-09a8461ffa93",
-        "levelNumber": 3,
-        "movesLimit": 25,
-        "status": "DRAFT",
-        "objective": {
-          "type": "JELLY",
-          "required": 6,
-          "targetColor": "BLUE"
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 2,
+          "levelIndex": 2,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 7
+          },
+          "movesLimit": 25,
+          "grid": [
+            [
+              "RED",
+              "RED",
+              "BLUE",
+              "ICE",
+              "RED"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "BLUE",
+              "ICE",
+              "WAFFLE"
+            ],
+            [
+              "EMPTY",
+              "WAFFLE",
+              "BLUE",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "RED",
+              "RED",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "WAFFLE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 2,
+      "name": "Nuovo Mondo 2",
+      "color": "#FECA57",
+      "icon": "🍋",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 3,
+          "levelIndex": 1,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "ORANGE"
+          },
+          "movesLimit": 35,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "YELLOW"
+            ],
+            [
+              "BLUE",
+              "BLUE",
+              "GREEN",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "YELLOW"
+            ],
+            [
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "YELLOW",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "GREEN",
+              "GREEN",
+              "EMPTY",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 800
+            },
+            {
+              "type": "GREEN",
+              "point": 1200
+            }
+          ]
         },
-        "grid": [
-          ["EMPTY", "ICE",    "RED",   "GREEN", "RED"],
-          ["RED",   "RED",    "RED",   "RED",   "RED"],
-          ["BLUE",  "WAFFLE", "BLUE",  "ICE",   "BLUE"],
-          ["ICE",   "RED",    "BLUE",  "GREEN", "RED"],
-          ["EMPTY", "WAFFLE", "GREEN", "GREEN", "BLUE"]
-        ],
-        "availablePieces": [
-          { "type": "RED" }
-        ],
-        "worldId": "cc2f19e7-c870-4c8e-a947-75e21156f812",
-        "createdAt": "2026-05-04T13:04:03.346Z",
-        "updatedAt": "2026-05-04T13:05:11.768Z"
-      }
-    ]
-  }
-]
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 4,
+          "levelIndex": 2,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 7
+          },
+          "movesLimit": 37,
+          "grid": [
+            [
+              "BLUE",
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "BLUE",
+              "BLUE"
+            ],
+            [
+              "ICE",
+              "WAFFLE",
+              "BLUE",
+              "GREEN",
+              "HONEY"
+            ],
+            [
+              "RED",
+              "GREEN",
+              "RED",
+              "GREEN",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 800
+            },
+            {
+              "type": "GREEN",
+              "point": 1200
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 5,
+          "levelIndex": 3,
+          "objective": {
+            "type": "JELLY",
+            "required": 1,
+            "targetColor": "YELLOW"
+          },
+          "movesLimit": 20,
+          "grid": [
+            [
+              "YELLOW",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "GREEN",
+              "GREEN",
+              "BLUE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 140
+            },
+            {
+              "type": "GREEN",
+              "point": 220
+            },
+            {
+              "type": "ORANGE",
+              "point": 280
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 3,
+      "name": "Nuovo Mondo 3",
+      "color": "#FD79A8",
+      "icon": "🍒",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 3,
+          "levelIndex": 3,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 15,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "GREEN",
+              "EMPTY"
+            ],
+            [
+              "BLUE",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "BLUE"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "GREEN",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 6,
+          "levelIndex": 1,
+          "objective": {
+            "type": "JELLY",
+            "required": 5,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 35,
+          "grid": [
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "RED",
+              "RED",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 7,
+          "levelIndex": 2,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 35,
+          "grid": [
+            [
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "TREASURE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "ICE",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "TREASURE",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 4,
+      "name": "Nuovo Mondo 4",
+      "color": "#FF9F43",
+      "icon": "🍊",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 8,
+          "levelIndex": 1,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 5,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 37,
+          "grid": [
+            [
+              "TREASURE",
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "WAFFLE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "LICORICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "TREASURE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 9,
+          "levelIndex": 2,
+          "objective": {
+            "type": "JELLY",
+            "required": 2,
+            "targetColor": "ORANGE"
+          },
+          "movesLimit": 28,
+          "grid": [
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "BLUE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "ICE",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "GREEN",
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 240
+            },
+            {
+              "type": "GREEN",
+              "point": 360
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 5,
+      "name": "Nuovo Mondo 5",
+      "color": "#E84393",
+      "icon": "🍇",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 10,
+          "levelIndex": 1,
+          "objective": {
+            "type": "JELLY",
+            "required": 5,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 25,
+          "grid": [
+            [
+              "EMPTY",
+              "RED",
+              "RED",
+              "BLUE",
+              "RED"
+            ],
+            [
+              "EMPTY",
+              "BLUE",
+              "WAFFLE",
+              "BLUE",
+              "BLUE"
+            ],
+            [
+              "RED",
+              "WAFFLE",
+              "ICE",
+              "GREEN",
+              "BLUE"
+            ],
+            [
+              "RED",
+              "RED",
+              "GREEN",
+              "GREEN",
+              "RED"
+            ],
+            [
+              "ICE",
+              "GREEN",
+              "GREEN",
+              "BLUE",
+              "GREEN"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 11,
+          "levelIndex": 2,
+          "objective": {
+            "type": "JELLY",
+            "required": 7,
+            "targetColor": "GREEN"
+          },
+          "movesLimit": 37,
+          "grid": [
+            [
+              "WAFFLE",
+              "GREEN",
+              "BLUE",
+              "EMPTY",
+              "BLUE"
+            ],
+            [
+              "RED",
+              "GREEN",
+              "GREEN",
+              "BLUE",
+              "BLUE"
+            ],
+            [
+              "BLUE",
+              "GREEN",
+              "EMPTY",
+              "GREEN",
+              "BLUE"
+            ],
+            [
+              "BLUE",
+              "GREEN",
+              "GREEN",
+              "EMPTY",
+              "RED"
+            ],
+            [
+              "ICE",
+              "EMPTY",
+              "WAFFLE",
+              "RED",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 220
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 12,
+          "levelIndex": 3,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 4
+          },
+          "movesLimit": 45,
+          "grid": [
+            [
+              "WAFFLE",
+              "YELLOW",
+              "YELLOW",
+              "YELLOW",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "YELLOW",
+              "EMPTY",
+              "RED",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "LICORICE",
+              "YELLOW",
+              "ROCK",
+              "ORANGE"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "GREEN",
+              "RED",
+              "BLUE"
+            ],
+            [
+              "RED",
+              "WAFFLE",
+              "RED",
+              "EMPTY",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 200
+            },
+            {
+              "type": "GREEN",
+              "point": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 6,
+      "name": "Nuovo Mondo 6",
+      "color": "#BADC58",
+      "icon": "🐠",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 15,
+          "levelIndex": 3,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 22,
+          "grid": [
+            [
+              "ROCK",
+              "EMPTY",
+              "ROCK",
+              "ROCK",
+              "ROCK"
+            ],
+            [
+              "ROCK",
+              "RED",
+              "BLUE",
+              "RED",
+              "ROCK"
+            ],
+            [
+              "ROCK",
+              "RED",
+              "LICORICE",
+              "RED",
+              "ROCK"
+            ],
+            [
+              "ROCK",
+              "RED",
+              "RED",
+              "RED",
+              "ROCK"
+            ],
+            [
+              "ROCK",
+              "ROCK",
+              "ROCK",
+              "ROCK",
+              "ROCK"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 16,
+          "levelIndex": 4,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 11,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 18,
+          "grid": [
+            [
+              "ICE",
+              "RED",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "RED",
+              "ICE",
+              "BLUE",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "ICE",
+              "BLUE",
+              "ICE",
+              "BLUE",
+              "ICE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "BLUE",
+              "ICE",
+              "RED"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "RED",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 13,
+          "levelIndex": 1,
+          "objective": {
+            "type": "JELLY",
+            "required": 5,
+            "targetColor": "ORANGE"
+          },
+          "movesLimit": 32,
+          "grid": [
+            [
+              "BLUE",
+              "GREEN",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "GREEN",
+              "EMPTY",
+              "WAFFLE",
+              "GREEN"
+            ],
+            [
+              "EMPTY",
+              "BLUE",
+              "ROCK",
+              "EMPTY",
+              "GREEN"
+            ],
+            [
+              "ICE",
+              "BLUE",
+              "EMPTY",
+              "RED",
+              "WAFFLE"
+            ],
+            [
+              "EMPTY",
+              "RED",
+              "EMPTY",
+              "EMPTY",
+              "ICE"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            },
+            {
+              "type": "BLUE",
+              "point": 200
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 14,
+          "levelIndex": 2,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 5,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 33,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ROCK",
+              "WAFFLE",
+              "ROCK",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "ROCK",
+              "WAFFLE",
+              "ROCK",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "ICE",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "PUBLISHED",
+      "id": 7,
+      "name": "Nuovo Mondo 7",
+      "color": "#FF4757",
+      "icon": "🌋",
+      "levels": [
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 19,
+          "levelIndex": 3,
+          "objective": {
+            "type": "JELLY",
+            "required": 3,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 15,
+          "grid": [
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 17,
+          "levelIndex": 1,
+          "objective": {
+            "type": "OBSTACLE",
+            "required": 13,
+            "targetColor": "BLUE"
+          },
+          "movesLimit": 24,
+          "grid": [
+            [
+              "RED",
+              "EMPTY",
+              "WAFFLE",
+              "EMPTY",
+              "RED"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "ICE",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "WAFFLE",
+              "ICE",
+              "WAFFLE",
+              "ICE",
+              "WAFFLE"
+            ],
+            [
+              "EMPTY",
+              "ICE",
+              "ICE",
+              "ICE",
+              "EMPTY"
+            ],
+            [
+              "RED",
+              "EMPTY",
+              "WAFFLE",
+              "EMPTY",
+              "RED"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        },
+        {
+          "status": "PUBLISHED",
+          "levelNumber": 18,
+          "levelIndex": 2,
+          "objective": {
+            "type": "JELLY",
+            "required": 1,
+            "targetColor": "YELLOW"
+          },
+          "movesLimit": 28,
+          "grid": [
+            [
+              "RED",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "GREEN",
+              "BLUE",
+              "BLUE",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "GREEN",
+              "ORANGE",
+              "ORANGE",
+              "ORANGE",
+              "ORANGE"
+            ],
+            [
+              "GREEN",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ],
+            [
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY",
+              "EMPTY"
+            ]
+          ],
+          "availablePieces": [
+            {
+              "type": "RED"
+            }
+          ]
+        }
+      ]
+    }
+  ]

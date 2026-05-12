@@ -35,6 +35,10 @@ extension GameViewModel {
         vm.timeToNextLife   = 0
         vm.activePowerUp    = nil
         vm.powerUps = Dictionary(uniqueKeysWithValues: PowerUpType.allCases.map { ($0, 0) })
+        vm.completedLevels  = []
+        vm.completedWorlds  = []
+        vm.currentStageNumber = nil
+        vm.currentLevelIndex  = nil
         return vm
     }
 }

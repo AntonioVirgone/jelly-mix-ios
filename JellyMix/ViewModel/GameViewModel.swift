@@ -72,8 +72,22 @@ class GameViewModel: ObservableObject {
     @Published var cellTypes: [CellType] = []
     @Published var generatorCounters: [Int: Int] = [:]
 
+    // MARK: - Progress
+    @Published var completedLevels: Set<LevelCoordinate> = [] {
+        didSet {
+            if let data = try? JSONEncoder().encode(Array(completedLevels)) {
+                UserDefaults.standard.set(data, forKey: "completedLevels")
+            }
+        }
+    }
+    @Published var completedWorlds: Set<Int> = [] {
+        didSet { UserDefaults.standard.set(Array(completedWorlds), forKey: "completedWorlds") }
+    }
+
     // MARK: - Internal
     var currentLevelData: LevelData? = nil
+    var currentStageNumber: Int? = nil
+    var currentLevelIndex: Int? = nil
     var allLevels: [Int: LevelData] = [:]
     var licoriceDestroyedThisTurn: Bool = false
 
@@ -88,6 +102,13 @@ class GameViewModel: ObservableObject {
         coins = UserDefaults.standard.integer(forKey: "savedCoins")
         if let saved = UserDefaults.standard.array(forKey: "savedUnlockedJellies") as? [Int] {
             unlockedJellies = Set(saved.compactMap { ElementType(rawValue: $0) })
+        }
+        if let data = UserDefaults.standard.data(forKey: "completedLevels"),
+           let arr = try? JSONDecoder().decode([LevelCoordinate].self, from: data) {
+            completedLevels = Set(arr)
+        }
+        if let arr = UserDefaults.standard.array(forKey: "completedWorlds") as? [Int] {
+            completedWorlds = Set(arr)
         }
         loadPowerUps()
     }

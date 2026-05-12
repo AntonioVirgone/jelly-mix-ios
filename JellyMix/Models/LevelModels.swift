@@ -10,6 +10,11 @@ import Foundation
 // La root dell'API è un array diretto di WorldData
 typealias WorldCollection = [WorldData]
 
+struct LevelCoordinate: Hashable, Codable {
+    let stageNumber: Int
+    let levelIndex: Int
+}
+
 struct WorldData: Codable, Identifiable {
     let id: String
     let name: String
@@ -27,6 +32,7 @@ struct WorldData: Codable, Identifiable {
 struct LevelData: Codable {
     let id: String
     let levelNumber: Int
+    let levelIndex: Int
     let movesLimit: Int?
     let status: String?
     let objective: ObjectiveData

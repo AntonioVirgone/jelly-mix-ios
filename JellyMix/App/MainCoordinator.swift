@@ -17,7 +17,6 @@ enum AppScreen {
 
 struct MainCoordinator: View {
     @State private var currentScreen: AppScreen = .map
-    @State private var maxUnlockedLevel: Int = 1
     @State private var showNoLivesOverlay = false
     @State private var showMapUpdatedBanner = false
 
@@ -39,10 +38,10 @@ struct MainCoordinator: View {
             // ── Schermata di gioco (senza TabBar) ──────────────────────────
             if currentScreen == .game {
                 ContentView(viewModel: gameEngine) {
-                    maxUnlockedLevel = getMaxUnlockedLevel()
-                    if gameEngine.isLevelCompleted && gameEngine.currentLevel == maxUnlockedLevel {
-                        maxUnlockedLevel += 1
-                        UserDefaults.standard.set(maxUnlockedLevel, forKey: "maxUnlockedLevel")
+                    if gameEngine.isLevelCompleted,
+                       let stageNumber = gameEngine.currentStageNumber,
+                       let levelIndex  = gameEngine.currentLevelIndex {
+                        gameEngine.completeLevel(stageNumber: stageNumber, levelIndex: levelIndex)
                     }
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                         currentScreen = .map
@@ -77,7 +76,8 @@ struct MainCoordinator: View {
 
                             SagaMapView(
                                 worlds: gameEngine.worlds,
-                                maxUnlockedLevel: getMaxUnlockedLevel(),
+                                isLevelUnlocked: { gameEngine.isUnlocked(stageNumber: $0, levelIndex: $1) },
+                                isLevelCompleted: { gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: $0, levelIndex: $1)) },
                                 getColor: { gameEngine.getColor(from: $0) }
                             ) { levelToPlay in
                                 if gameEngine.lives > 0 {
@@ -152,12 +152,6 @@ struct MainCoordinator: View {
         }
     }
     
-    func getMaxUnlockedLevel() -> Int {
-        return UserDefaults.standard.integer(forKey: "maxUnlockedLevel") != 0
-                ? UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
-                : maxUnlockedLevel
-    }
-
     // MARK: - Banner helpers
 
     private func showBanner() {

@@ -10,35 +10,42 @@ import SwiftUI
 
 // MARK: - Vista Mappa Saga Verticale
 struct SagaMapView: View {
-    @State private var showNoLivesAlert = false
-    
+
     var worlds: [WorldData]
-    var maxUnlockedLevel: Int
+    var isLevelUnlocked: (Int, Int) -> Bool
+    var isLevelCompleted: (Int, Int) -> Bool
     var getColor: (String) -> Color
     var onPlayLevel: (Int) -> Void
 
+    // Primo nodo sbloccato ma non ancora completato (scroll target).
+    private var currentNodeId: String? {
+        for world in worlds.sorted(by: { $0.stageNumber < $1.stageNumber }) {
+            for level in world.levels.sorted(by: { $0.levelIndex < $1.levelIndex }) {
+                if isLevelUnlocked(world.stageNumber, level.levelIndex) &&
+                   !isLevelCompleted(world.stageNumber, level.levelIndex) {
+                    return "level_\(world.stageNumber)_\(level.levelIndex)"
+                }
+            }
+        }
+        return nil
+    }
+
     var body: some View {
         ZStack {
-            // ScrollViewReader permette di controllare programmaticamente lo scorrimento
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Spaziatore iniziale per non coprire il primo mondo con la UI superiore
                         Color.clear.frame(height: 50)
-                        
                         ForEach(worlds) { world in
                             renderWorldSection(world: world)
                         }
-                        
-                        // Spaziatore finale per permettere di scorrere oltre l'ultimo livello
                         Color.clear.frame(height: 100)
                     }
                     .onAppear {
-                        // All'apertura, scorriamo automaticamente verso il livello attuale (maxUnlockedLevel)
+                        guard let id = currentNodeId else { return }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             withAnimation(.easeInOut(duration: 0.5)) {
-                                // .center posiziona il livello target al centro dello schermo
-                                proxy.scrollTo("level_\(maxUnlockedLevel)", anchor: .center)
+                                proxy.scrollTo(id, anchor: .center)
                             }
                         }
                     }
@@ -58,12 +65,9 @@ struct SagaMapView: View {
     @ViewBuilder
     private func renderWorldSection(world: WorldData) -> some View {
         let worldColor = getColor(world.color)
-        
-        // MODIFICA: Ordiniamo i livelli del mondo prima della visualizzazione
-        let sortedLevels = world.levels.sorted { $0.levelNumber < $1.levelNumber }
+        let sortedLevels = world.levels.sorted { $0.levelIndex < $1.levelIndex }
 
         VStack(spacing: 0) {
-            // 1. Banner del Mondo
             HStack {
                 Text(world.icon)
                     .font(.title)
@@ -87,28 +91,21 @@ struct SagaMapView: View {
             .foregroundColor(.white)
             .padding(.horizontal)
             .padding(.bottom, 30)
-            
-            // 2. Il Percorso Tortuoso dei Livelli (Zig-Zag)
+
             LazyVStack(spacing: 30) {
-                ForEach(Array(sortedLevels.enumerated()), id: \.element.levelNumber) { index, levelData in
-                    let levelNum = levelData.levelNumber
-                    
-                    // Calcolo dell'offset per creare l'effetto zig-zag
+                ForEach(Array(sortedLevels.enumerated()), id: \.element.levelIndex) { index, levelData in
                     let isEven = index % 2 == 0
                     let horizontalOffset: CGFloat = isEven ? 80 : -80
-                    
+
                     HStack {
                         if !isEven { Spacer() }
-                        
-                        renderLevelNode(levelNum: levelNum)
+                        renderLevelNode(levelData: levelData, stageNumber: world.stageNumber)
                             .offset(x: horizontalOffset)
-                        
                         if isEven { Spacer() }
                     }
                     .padding(.horizontal, 40)
-                    .id("level_\(levelNum)")
-                    
-                    // Disegna la linea di connessione se non è l'ultimo livello del mondo
+                    .id("level_\(world.stageNumber)_\(levelData.levelIndex)")
+
                     if index < sortedLevels.count - 1 {
                         MapPathLineView(color: worldColor.opacity(0.6), horizontalOffset: horizontalOffset)
                     }
@@ -117,47 +114,47 @@ struct SagaMapView: View {
             .padding(.bottom, 50)
         }
     }
-    
+
     // Disegna il singolo nodo del livello
     @ViewBuilder
-    private func renderLevelNode(levelNum: Int) -> some View {
-        let isUnlocked = levelNum <= maxUnlockedLevel
-        let isCompleted = levelNum < maxUnlockedLevel
-        let isCurrent = levelNum == maxUnlockedLevel
-        
+    private func renderLevelNode(levelData: LevelData, stageNumber: Int) -> some View {
+        let unlocked  = isLevelUnlocked(stageNumber, levelData.levelIndex)
+        let completed = isLevelCompleted(stageNumber, levelData.levelIndex)
+        let isCurrent = unlocked && !completed
+
         Button(action: {
-            if isUnlocked {
-                onPlayLevel(levelNum)
-            }
+            if unlocked { onPlayLevel(levelData.levelNumber) }
         }) {
             ZStack {
                 Circle()
                     .fill(
-                        isCurrent ?
-                        LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
-                        :
-                        LinearGradient(colors: [isUnlocked ? .white : Color.gray.opacity(0.3), isUnlocked ? Color(white: 0.9) : Color.gray.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        isCurrent
+                        ? LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        : LinearGradient(
+                            colors: [unlocked ? .white : Color.gray.opacity(0.3),
+                                     unlocked ? Color(white: 0.9) : Color.gray.opacity(0.5)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
                     .frame(width: 70, height: 70)
                     .shadow(color: isCurrent ? .orange.opacity(0.5) : .black.opacity(0.1), radius: 10, y: 5)
-                
+
                 Circle()
-                    .stroke(isCurrent ? Color.orange : (isUnlocked ? Color.white : Color.gray.opacity(0.5)), lineWidth: 5)
+                    .stroke(isCurrent ? Color.orange : (unlocked ? Color.white : Color.gray.opacity(0.5)), lineWidth: 5)
                     .frame(width: 70, height: 70)
-                
+
                 Group {
-                    if isCompleted {
+                    if completed {
                         Image(systemName: "star.fill")
                             .font(.title)
                             .foregroundColor(.yellow)
                             .shadow(radius: 1)
                     } else if isCurrent {
-                        Text("\(levelNum)")
+                        Text("\(levelData.levelIndex)")
                             .font(.system(size: 32, weight: .black, design: .rounded))
                             .foregroundColor(.white)
                             .shadow(radius: 2)
-                    } else if isUnlocked {
-                        Text("\(levelNum)")
+                    } else if unlocked {
+                        Text("\(levelData.levelIndex)")
                             .font(.system(size: 32, weight: .black, design: .rounded))
                             .foregroundColor(.gray)
                     } else {
@@ -166,8 +163,7 @@ struct SagaMapView: View {
                             .foregroundColor(.gray.opacity(0.7))
                     }
                 }
-                
-                // Segnaposto animato sopra il livello attuale
+
                 if isCurrent {
                     ElementView(type: .red)
                         .frame(width: 30, height: 30)
@@ -177,7 +173,7 @@ struct SagaMapView: View {
                 }
             }
         }
-        .disabled(!isUnlocked)
+        .disabled(!unlocked)
     }
 }
 
@@ -211,15 +207,16 @@ struct MapPathLineView: View {
             WorldData(id: "preview-1", name: "Valle delle Gelatine", description: nil,
                       stageNumber: 1, color: "#007700", icon: "🍓", status: "ACTIVE",
                       isActive: true, createdAt: nil, updatedAt: nil, levels: [
-                LevelData(id: "l2", levelNumber: 2, movesLimit: 10, status: nil,
+                LevelData(id: "l1", levelNumber: 1, levelIndex: 1, movesLimit: 10, status: nil,
                           objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil),
-                LevelData(id: "l1", levelNumber: 1, movesLimit: 10, status: nil,
+                LevelData(id: "l2", levelNumber: 2, levelIndex: 2, movesLimit: 10, status: nil,
                           objective: ObjectiveData(type: "JELLY", targetColor: "BLUE", required: 5),
                           grid: [], availablePieces: [], worldId: nil, createdAt: nil, updatedAt: nil)
             ])
         ],
-        maxUnlockedLevel: 1,
+        isLevelUnlocked: { s, i in s == 1 && i == 1 },
+        isLevelCompleted: { _, _ in false },
         getColor: { _ in .pink },
         onPlayLevel: { _ in }
     )

@@ -29,21 +29,64 @@ extension GameViewModel {
     }
 
     func applyLevelCollection(_ collection: WorldCollection) {
-        // 1. Ordiniamo i mondi per stageNumber
         worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
-        
-        // 2. Puliamo la collezione esistente
         allLevels.removeAll()
-        
-        // 3. Estraiamo tutti i livelli da tutti i mondi, li "appiattiamo" (flatMap)
-        // e li ordiniamo globalmente per levelNumber
         let flattenedSortedLevels = collection
             .flatMap { $0.levels }
             .sorted { $0.levelNumber < $1.levelNumber }
-        
-        // 4. Popoliamo la collezione (sia essa un Dictionary o un Array)
         for lvl in flattenedSortedLevels {
             allLevels[lvl.levelNumber] = lvl
+        }
+        migrateProgressIfNeeded()
+    }
+
+    // MARK: - Unlock logic
+
+    func isUnlocked(stageNumber: Int, levelIndex: Int) -> Bool {
+        if stageNumber == 1 && levelIndex == 1 { return true }
+        if levelIndex == 1 {
+            return completedWorlds.contains(stageNumber - 1)
+        }
+        return completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex - 1))
+    }
+
+    func completeLevel(stageNumber: Int, levelIndex: Int) {
+        completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex))
+        if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
+           levelIndex == world.levels.count {
+            completedWorlds.insert(stageNumber)
+        }
+    }
+
+    func findCoordinate(forLevelNumber levelNumber: Int) -> (stageNumber: Int, levelIndex: Int)? {
+        for world in worlds {
+            if let level = world.levels.first(where: { $0.levelNumber == levelNumber }) {
+                return (world.stageNumber, level.levelIndex)
+            }
+        }
+        return nil
+    }
+
+    // MARK: - Migration (one-shot, da vecchio maxUnlockedLevel a Set<LevelCoordinate>)
+
+    func migrateProgressIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: "hasCompletedMigration") else { return }
+        defer { UserDefaults.standard.set(true, forKey: "hasCompletedMigration") }
+
+        let legacyMax = UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
+        guard legacyMax > 1 else { return }
+
+        let legacyCompleted = Set(1..<legacyMax)
+        for world in worlds {
+            for level in world.levels.sorted(by: { $0.levelIndex < $1.levelIndex }) {
+                if legacyCompleted.contains(level.levelNumber) {
+                    completedLevels.insert(LevelCoordinate(stageNumber: world.stageNumber, levelIndex: level.levelIndex))
+                }
+            }
+            let worldNums = Set(world.levels.map { $0.levelNumber })
+            if worldNums.isSubset(of: legacyCompleted) {
+                completedWorlds.insert(world.stageNumber)
+            }
         }
     }
 
@@ -54,6 +97,13 @@ extension GameViewModel {
 
     func resetGame(forLevel level: Int) {
         currentLevel = level
+        if let coord = findCoordinate(forLevelNumber: level) {
+            currentStageNumber = coord.stageNumber
+            currentLevelIndex  = coord.levelIndex
+        } else {
+            currentStageNumber = nil
+            currentLevelIndex  = nil
+        }
         score = 0
         keysCollected = 0
         holdPiece = nil
