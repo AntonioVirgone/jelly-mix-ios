@@ -79,9 +79,9 @@ struct MainCoordinator: View {
                                 isLevelUnlocked: { gameEngine.isUnlocked(stageNumber: $0, levelIndex: $1) },
                                 isLevelCompleted: { gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: $0, levelIndex: $1)) },
                                 getColor: { gameEngine.getColor(from: $0) }
-                            ) { levelToPlay in
+                            ) { stageNumber, levelIndex in
                                 if gameEngine.lives > 0 {
-                                    gameEngine.resetGame(forLevel: levelToPlay)
+                                    gameEngine.resetGame(stageNumber: stageNumber, levelIndex: levelIndex)
                                     withAnimation(.spring()) { currentScreen = .game }
                                 } else {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {

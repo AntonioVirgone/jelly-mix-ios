@@ -30,30 +30,44 @@ extension GameViewModel {
 
     func applyLevelCollection(_ collection: WorldCollection) {
         worlds = collection.sorted { $0.stageNumber < $1.stageNumber }
+
+        // Rebuild entrambi i lookup
         allLevels.removeAll()
-        let flattenedSortedLevels = collection
-            .flatMap { $0.levels }
-            .sorted { $0.levelNumber < $1.levelNumber }
-        for lvl in flattenedSortedLevels {
-            allLevels[lvl.levelNumber] = lvl
+        levelsByCoordinate.removeAll()
+
+        for world in worlds {
+            for lvl in world.levels {
+                // Lookup collision-free per il gameplay
+                let coord = LevelCoordinate(stageNumber: world.stageNumber, levelIndex: lvl.levelIndex)
+                levelsByCoordinate[coord] = lvl
+                // Lookup legacy per compatibilità test (last-write-wins se duplicate levelNumber)
+                allLevels[lvl.levelNumber] = lvl
+            }
         }
+
         migrateProgressIfNeeded()
     }
 
     // MARK: - Unlock logic
 
     func isUnlocked(stageNumber: Int, levelIndex: Int) -> Bool {
+        // Il primo livello del primo mondo è sempre sbloccato
         if stageNumber == 1 && levelIndex == 1 { return true }
+        // Il primo livello di un mondo richiede il completamento del mondo precedente
         if levelIndex == 1 {
             return completedWorlds.contains(stageNumber - 1)
         }
+        // Il mondo è già in completedWorlds → tutti i livelli (anche nuovi) sono sbloccati
+        if completedWorlds.contains(stageNumber) { return true }
+        // Altrimenti: il livello precedente deve essere completato
         return completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex - 1))
     }
 
     func completeLevel(stageNumber: Int, levelIndex: Int) {
         completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex))
+        // Controlla se tutti i livelli del mondo risultano completati
         if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
-           levelIndex == world.levels.count {
+           world.levels.allSatisfy({ completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: $0.levelIndex)) }) {
             completedWorlds.insert(stageNumber)
         }
     }
@@ -76,6 +90,7 @@ extension GameViewModel {
         let legacyMax = UserDefaults.standard.integer(forKey: "maxUnlockedLevel")
         guard legacyMax > 1 else { return }
 
+        // I levelNumber 1..<legacyMax erano completati nel vecchio modello
         let legacyCompleted = Set(1..<legacyMax)
         for world in worlds {
             for level in world.levels.sorted(by: { $0.levelIndex < $1.levelIndex }) {
@@ -83,6 +98,7 @@ extension GameViewModel {
                     completedLevels.insert(LevelCoordinate(stageNumber: world.stageNumber, levelIndex: level.levelIndex))
                 }
             }
+            // Se tutti i levelNumber del mondo erano completati, marca il mondo
             let worldNums = Set(world.levels.map { $0.levelNumber })
             if worldNums.isSubset(of: legacyCompleted) {
                 completedWorlds.insert(world.stageNumber)
@@ -90,20 +106,37 @@ extension GameViewModel {
         }
     }
 
-    // Mantenuto per compatibilità con i test esistenti.
-    func loadLevelsFromJSON() {
-        loadLevelsFromBundle()
+    // MARK: - Reset Game
+
+    /// Avvia una partita identificando il livello per coordinata (stageNumber, levelIndex).
+    /// Questo è il metodo preferito per il gameplay (collision-free).
+    func resetGame(stageNumber: Int, levelIndex: Int) {
+        currentStageNumber = stageNumber
+        currentLevelIndex  = levelIndex
+        let coord   = LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex)
+        let levelData = levelsByCoordinate[coord]
+        currentLevel = levelData?.levelNumber ?? levelIndex
+        _doResetGame(levelData: levelData)
     }
 
+    /// Avvia una partita per levelNumber (mantenuto per compatibilità test legacy).
+    /// Internamente risolve la coordinata tramite findCoordinate e usa levelsByCoordinate.
     func resetGame(forLevel level: Int) {
         currentLevel = level
         if let coord = findCoordinate(forLevelNumber: level) {
             currentStageNumber = coord.stageNumber
             currentLevelIndex  = coord.levelIndex
+            let lc = LevelCoordinate(stageNumber: coord.stageNumber, levelIndex: coord.levelIndex)
+            _doResetGame(levelData: levelsByCoordinate[lc])
         } else {
             currentStageNumber = nil
             currentLevelIndex  = nil
+            _doResetGame(levelData: nil)
         }
+    }
+
+    /// Logica di reset condivisa tra i due overload di resetGame.
+    private func _doResetGame(levelData: LevelData?) {
         score = 0
         keysCollected = 0
         holdPiece = nil
@@ -114,11 +147,11 @@ extension GameViewModel {
         isLevelCompleted = false
         objective.current = 0
 
-        if let levelData = allLevels[level] {
+        if let levelData = levelData {
             currentAvailablePieces = levelData.availablePieces
             currentLevelData = levelData
             movesLeft = levelData.movesLimit
-            maxMoves = levelData.movesLimit
+            maxMoves  = levelData.movesLimit
 
             let targetType = mapStringToElementType(levelData.objective.targetColor ?? "")
             let objType: ObjectiveType
@@ -157,7 +190,7 @@ extension GameViewModel {
         } else {
             currentLevelData = nil
             movesLeft = nil
-            maxMoves = nil
+            maxMoves  = nil
             grid = Array(repeating: Jelly(type: .empty), count: totalCells)
             cellTypes = Array(repeating: .normal, count: totalCells)
             generatorCounters = [:]
@@ -165,6 +198,11 @@ extension GameViewModel {
 
         nextJellyType = generaNuovoPezzo()
         nextJellyHasKey = shouldGenerateKeyPiece()
+    }
+
+    // Mantenuto per compatibilità con i test esistenti.
+    func loadLevelsFromJSON() {
+        loadLevelsFromBundle()
     }
 
     func mapStringToCellType(_ str: String) -> CellType? {

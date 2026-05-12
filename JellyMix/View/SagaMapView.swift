@@ -15,7 +15,7 @@ struct SagaMapView: View {
     var isLevelUnlocked: (Int, Int) -> Bool
     var isLevelCompleted: (Int, Int) -> Bool
     var getColor: (String) -> Color
-    var onPlayLevel: (Int) -> Void
+    var onPlayLevel: (Int, Int) -> Void  // (stageNumber, levelIndex)
 
     // Primo nodo sbloccato ma non ancora completato (scroll target).
     private var currentNodeId: String? {
@@ -123,7 +123,7 @@ struct SagaMapView: View {
         let isCurrent = unlocked && !completed
 
         Button(action: {
-            if unlocked { onPlayLevel(levelData.levelNumber) }
+            if unlocked { onPlayLevel(stageNumber, levelData.levelIndex) }
         }) {
             ZStack {
                 Circle()
@@ -218,6 +218,6 @@ struct MapPathLineView: View {
         isLevelUnlocked: { s, i in s == 1 && i == 1 },
         isLevelCompleted: { _, _ in false },
         getColor: { _ in .pink },
-        onPlayLevel: { _ in }
+        onPlayLevel: { _, _ in }
     )
 }

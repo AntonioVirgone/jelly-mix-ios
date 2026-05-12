@@ -88,7 +88,11 @@ class GameViewModel: ObservableObject {
     var currentLevelData: LevelData? = nil
     var currentStageNumber: Int? = nil
     var currentLevelIndex: Int? = nil
+    /// Lookup legacy: chiave = levelNumber. Mantenuto per compatibilità test.
+    /// Per il gameplay usa `levelsByCoordinate` (collision-free).
     var allLevels: [Int: LevelData] = [:]
+    /// Lookup primario per il gameplay: chiave = (stageNumber, levelIndex), nessuna collisione.
+    var levelsByCoordinate: [LevelCoordinate: LevelData] = [:]
     var licoriceDestroyedThisTurn: Bool = false
 
     // Impostato a true quando un refresh in background porta nuovi dati.
