@@ -15,7 +15,11 @@ struct SagaMapView: View {
     var isLevelUnlocked: (Int, Int) -> Bool
     var isLevelCompleted: (Int, Int) -> Bool
     var getColor: (String) -> Color
+    /// Increment this value whenever progress changes to trigger an automatic scroll.
+    var scrollTrigger: Int
     var onPlayLevel: (Int, Int) -> Void  // (stageNumber, levelIndex)
+
+    @State private var scrollPositionId: String?
 
     // Primo nodo sbloccato ma non ancora completato (scroll target).
     private var currentNodeId: String? {
@@ -31,43 +35,38 @@ struct SagaMapView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                    Color.clear.frame(height: 50)
-                    ForEach(worlds) { world in
-                        Section {
-                            renderWorldContent(world: world)
-                        } header: {
-                            WorldHeaderView(world: world, color: getColor(world.color))
-                        }
-                    }
-                    Color.clear.frame(height: 100)
-                }
-                .onAppear {
-                    guard let id = currentNodeId else { return }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            proxy.scrollTo(id, anchor: .center)
-                        }
+        ScrollView {
+            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                Color.clear.frame(height: 50)
+                ForEach(worlds) { world in
+                    Section {
+                        renderWorldContent(world: world)
+                    } header: {
+                        WorldHeaderView(world: world, color: getColor(world.color))
                     }
                 }
+                Color.clear.frame(height: 100)
             }
-            .scrollIndicators(.hidden)
+            .scrollTargetLayout()
         }
+        .scrollIndicators(.hidden)
+        .scrollPosition(id: $scrollPositionId, anchor: .center)
+        .onAppear { scrollPositionId = currentNodeId }
+        .onChange(of: scrollTrigger) { _, _ in scrollPositionId = currentNodeId }
     }
-        
+
+    // Ogni VStack è figlio diretto di LazyVStack (Section e ForEach sono trasparenti),
+    // quindi .scrollTargetLayout() può trovare correttamente gli ID per lo scroll.
     @ViewBuilder
     private func renderWorldContent(world: WorldData) -> some View {
         let worldColor = getColor(world.color)
         let sortedLevels = world.levels.sorted { $0.levelIndex < $1.levelIndex }
 
-        Color.clear.frame(height: 50)
-        VStack(spacing: 30) {
-            ForEach(Array(sortedLevels.enumerated()), id: \.element.levelIndex) { index, levelData in
-                let isEven = index % 2 == 0
-                let horizontalOffset: CGFloat = isEven ? 80 : -80
+        ForEach(Array(sortedLevels.enumerated()), id: \.element.levelIndex) { index, levelData in
+            let isEven = index % 2 == 0
+            let horizontalOffset: CGFloat = isEven ? 80 : -80
 
+            VStack(spacing: 0) {
                 HStack {
                     if !isEven { Spacer() }
                     renderLevelNode(levelData: levelData, stageNumber: world.stageNumber)
@@ -75,14 +74,15 @@ struct SagaMapView: View {
                     if isEven { Spacer() }
                 }
                 .padding(.horizontal, 40)
-                .id("level_\(world.stageNumber)_\(levelData.levelIndex)")
 
                 if index < sortedLevels.count - 1 {
                     MapPathLineView(color: worldColor.opacity(0.6), horizontalOffset: horizontalOffset)
                 }
             }
+            .padding(.top, index == 0 ? 50 : 30)
+            .padding(.bottom, index == sortedLevels.count - 1 ? 50 : 0)
+            .id("level_\(world.stageNumber)_\(levelData.levelIndex)")
         }
-        .padding(.bottom, 50)
     }
 
     // Disegna il singolo nodo del livello
@@ -221,6 +221,7 @@ struct WorldHeaderView: View {
         isLevelUnlocked: { s, i in s == 1 && i == 1 },
         isLevelCompleted: { _, _ in false },
         getColor: { _ in .pink },
+        scrollTrigger: 0,
         onPlayLevel: { _, _ in }
     )
 }
