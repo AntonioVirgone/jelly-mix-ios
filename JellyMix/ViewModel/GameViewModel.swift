@@ -51,6 +51,7 @@ class GameViewModel: ObservableObject {
     struct MergeEvent: Equatable {
         let focusIndex: Int
         let color: Color
+        let scoreGain: Int
         private let token = UUID()
         static func == (lhs: Self, rhs: Self) -> Bool { lhs.token == rhs.token }
     }

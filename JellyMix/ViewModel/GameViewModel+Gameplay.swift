@@ -124,8 +124,11 @@ extension GameViewModel {
                     let nextLevelRaw = mergeBaseType.rawValue + 1
                     if let nextType = ElementType(rawValue: nextLevelRaw) {
                         grid[currentIndex].type = nextType
-                        mergeEvent = MergeEvent(focusIndex: currentIndex, color: nextType.config.color)
-                        score += (mergeBaseType.rawValue * 10) * connectedCells.count
+                        let gain = (mergeBaseType.rawValue * 10) * connectedCells.count
+                        score += gain
+                        mergeEvent = MergeEvent(focusIndex: currentIndex,
+                                                color: nextType.config.color,
+                                                scoreGain: gain)
 
                         if objective.type == .jelly && nextType == objective.targetColor {
                             objective.current += 1
