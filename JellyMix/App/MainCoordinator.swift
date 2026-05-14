@@ -11,8 +11,9 @@ import SwiftUI
 enum AppScreen {
     case map
     case game
+    case events
     case shop
-    case collection // <-- Nuovo
+    case collection
 }
 
 struct MainCoordinator: View {
@@ -34,6 +35,11 @@ struct MainCoordinator: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             ).ignoresSafeArea()
+            
+            // Floating decorative dots
+            DecorativeDotsLayer()
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
 
             // ── Schermata di gioco (senza TabBar) ──────────────────────────
             if currentScreen == .game {
@@ -78,7 +84,8 @@ struct MainCoordinator: View {
                                 worlds: gameEngine.worlds,
                                 isLevelUnlocked: { gameEngine.isUnlocked(stageNumber: $0, levelIndex: $1) },
                                 isLevelCompleted: { gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: $0, levelIndex: $1)) },
-                                getColor: { gameEngine.getColor(from: $0) }
+                                getColor: { gameEngine.getColor(from: $0) },
+                                scrollTrigger: gameEngine.completedLevels.count + gameEngine.completedWorlds.count * 1000
                             ) { stageNumber, levelIndex in
                                 if gameEngine.lives > 0 {
                                     gameEngine.resetGame(stageNumber: stageNumber, levelIndex: levelIndex)
@@ -93,11 +100,16 @@ struct MainCoordinator: View {
                         .opacity(currentScreen == .map ? 1 : 0)
                         .allowsHitTesting(currentScreen == .map)
 
+                        // Eventi
+                        EventsView(viewModel: gameEngine)
+                            .opacity(currentScreen == .events ? 1 : 0)
+                            .allowsHitTesting(currentScreen == .events)
+
                         // Negozio
                         ShopView(viewModel: gameEngine)
                             .opacity(currentScreen == .shop ? 1 : 0)
                             .allowsHitTesting(currentScreen == .shop)
-                        
+
                         CollectionBookView(viewModel: gameEngine)
                             .opacity(currentScreen == .collection ? 1 : 0)
                             .allowsHitTesting(currentScreen == .collection)
@@ -175,9 +187,10 @@ struct AppTabBar: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            tabItem(icon: "map.fill",  label: "MAPPA", screen: .map)
-            tabItem(icon: "bag.fill",  label: "NEGOZIO", screen: .shop)
-            tabItem(icon: "book.fill",  label: "COLLEZIONE", screen: .collection)
+            tabItem(icon: "map.fill",            label: "MAPPA",       screen: .map)
+            tabItem(icon: "target",              label: "EVENTI",      screen: .events)
+            tabItem(icon: "bag.fill",            label: "NEGOZIO",     screen: .shop)
+            tabItem(icon: "book.fill",           label: "COLLEZIONE",  screen: .collection)
         }
         .padding(8)
         .background(
@@ -185,7 +198,7 @@ struct AppTabBar: View {
                 .fill(.ultraThinMaterial)
                 .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
         )
-        .padding(.horizontal, 60)
+        .padding(.horizontal, 30)
         .padding(.bottom, 24)
     }
 
@@ -202,7 +215,7 @@ struct AppTabBar: View {
                 Image(systemName: icon)
                     .font(.system(size: 22, weight: .bold))
                 Text(label)
-                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .font(.system(size: 8, weight: .black, design: .rounded))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
