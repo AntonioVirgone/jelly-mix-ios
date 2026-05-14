@@ -133,6 +133,10 @@ struct ElementView: View {
     }
 }
 
+#Preview {
+    ElementView(type: ElementType.blue)
+}
+
 // MARK: - Forme Vettoriali e Sub-Views
 // Una forma arrotondata speciale, leggermente più "morbida" di un semplice RoundedRectangle
 struct JellyBodyShape: Shape {

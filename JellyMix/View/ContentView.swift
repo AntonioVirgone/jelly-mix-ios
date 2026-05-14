@@ -83,14 +83,6 @@ struct ContentView: View {
                     required: viewModel.objective.required
                 )
 
-                // ── Score / jelly-unlock progress bar ──────────────────────
-                ScoreProgressBar(
-                    score: viewModel.score,
-                    availablePieces: viewModel.currentAvailablePieces
-                )
-                .frame(height: 70)
-                .padding(.horizontal)
-
                 // ── Game grid + power-ups ──────────────────────────────────
                 VStack(spacing: 0) {
                     LazyVGrid(columns: columns, spacing: 8) {
@@ -129,6 +121,16 @@ struct ContentView: View {
                     PowerUpBarView(viewModel: viewModel)
                         .padding(.top, 8)
                         .padding(.horizontal, 20)
+                    
+                    Spacer()
+                    
+                    // ── Score / jelly-unlock progress bar ──────────────────────
+                    ScoreProgressBar(
+                        score: viewModel.score,
+                        availablePieces: viewModel.currentAvailablePieces
+                    )
+                    .frame(height: 70)
+                    .padding(.horizontal)
                 }
                 .blur(radius: gridBlurRadius)
                 .onChange(of: viewModel.mergeEvent) { _, event in
@@ -236,38 +238,65 @@ private struct GameTopBar: View {
             }
             .buttonStyle(.plain)
 
-            // Moves remaining
-            if let moves = viewModel.movesLeft {
-                StatPill(text: "Mosse: \(moves)", colors: movesColors)
+            VStack {
+                // Moves remaining
+                if let moves = viewModel.movesLeft {
+                    StatPill(text: "Mosse: \(moves)", colors: movesColors)
+                }
+                
+                // Objective
+                StatPill(
+                    text: objectiveLabel,
+                    colors: [Color(hex: "#a23ad6"), Color(hex: "#ef3f6e")]
+                )
             }
-
-            // Objective
-            StatPill(
-                text: objectiveLabel,
-                colors: [Color(hex: "#a23ad6"), Color(hex: "#ef3f6e")]
-            )
-
             Spacer()
 
-            // Coin pill
-            HStack(spacing: 4) {
-                Image(systemName: "dollarsign.circle.fill")
-                    .font(.system(size: 14, weight: .bold))
-                Text("\(viewModel.coins)")
-                    .font(.system(size: 14, weight: .black, design: .rounded))
-            }
-            .foregroundColor(.white)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 7)
-            .background(
-                Capsule().fill(
-                    LinearGradient(
-                        colors: [Color(hex: "#ffb31a"), Color(hex: "#f4a020")],
-                        startPoint: .leading, endPoint: .trailing
+            VStack {
+                // Coin pill
+                HStack(spacing: 4) {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .font(.system(size: 14, weight: .bold))
+                    Text("\(viewModel.coins)")
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 11)
+                .padding(.vertical, 7)
+                .background(
+                    Capsule().fill(
+                        LinearGradient(
+                            colors: [Color(hex: "#ffb31a"), Color(hex: "#f4a020")],
+                            startPoint: .leading, endPoint: .trailing
+                        )
                     )
                 )
-            )
-            .shadow(color: Color(hex: "#c97a00").opacity(0.3), radius: 4, y: 2)
+                .shadow(color: Color(hex: "#c97a00").opacity(0.3), radius: 4, y: 2)
+                
+                VStack {
+                    Text("Score")
+                        .font(.system(.caption, design: .rounded))
+                        .fontWeight(.black)
+                        .foregroundColor(.white)
+                    // Testo punteggio corrente sotto
+                    Text("\(viewModel.score)")
+                        .font(.system(.caption, design: .rounded))
+                        .fontWeight(.black)
+                        .foregroundColor(.white)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 15)
+                .background(
+                    Capsule().fill(
+                        LinearGradient(
+                            colors: [Color(hex: "#aa00aa"), Color(hex: "#aa00aa")],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                )
+                .shadow(color: Color(hex: "#c97a00").opacity(0.3), radius: 4, y: 2)
+            }
         }
         .padding(.horizontal, 16)
     }
@@ -276,16 +305,27 @@ private struct GameTopBar: View {
 private struct StatPill: View {
     let text: String
     let colors: [Color]
+    var width: CGFloat? = nil // Se nil, userà maxWidth: .infinity
 
     var body: some View {
         Text(text)
-            .font(.system(size: 11, weight: .bold, design: .rounded))
+            .font(.system(size: 22, weight: .heavy, design: .rounded))
             .foregroundColor(.white)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(Capsule().fill(
-                LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing)
-            ))
+            .padding(.vertical, 12)
+            .padding(.horizontal, 30)
+            .frame(maxWidth: width == nil ? .infinity : nil) // Blocca la dimensione
+            .frame(width: width)
+            .background(
+                Capsule().fill(
+                    LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing)
+                    // 4. Aggiungiamo un leggero bordo interno per dare profondità (opzionale)
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+            )
+            .shadow(color: colors.last?.opacity(0.4) ?? .black.opacity(0.2), radius: 8, x: 0, y: 4)
             .lineLimit(1)
             .minimumScaleFactor(0.75)
     }
@@ -333,10 +373,13 @@ private struct GlassPieceBox: View {
 }
 
 // MARK: - Objective progress bar
-
 private struct ObjectiveProgressBar: View {
     let current: Int
     let required: Int
+
+    // Nuovi parametri per differenziare le due barre
+    var colors: [Color] = [Color(hex: "#a23ad6"), Color(hex: "#ef3f6e")]
+    var iconName: String? = nil
 
     private var progress: CGFloat {
         guard required > 0 else { return 1 }
@@ -344,55 +387,109 @@ private struct ObjectiveProgressBar: View {
     }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 8) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(Color.black.opacity(0.08))
-                        .frame(height: 11)
+                        .overlay(
+                            Capsule().stroke(Color.white.opacity(0.8), lineWidth: 1.5)
+                        )
                     Capsule()
                         .fill(LinearGradient(
-                            colors: [Color(hex: "#a23ad6"), Color(hex: "#ef3f6e")],
+                            colors: colors,
                             startPoint: .leading, endPoint: .trailing
                         ))
-                        .frame(width: geo.size.width * progress, height: 11)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.75), value: current)
+                        .overlay(
+                            Capsule()
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.white.opacity(0.8), .clear],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    ),
+                                    lineWidth: 2
+                                )
+                                .padding(1)
+                        )
+                        .frame(width: geo.size.width * progress)
+                        .shadow(color: colors.last?.opacity(0.4) ?? .clear, radius: 4, x: 0, y: 2)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.75, blendDuration: 0), value: progress)
                 }
             }
-            .frame(height: 11)
+            .frame(height: 22)
 
-            Text("\(current) / \(required)")
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                .foregroundColor(Color(hex: "#8a7a8e"))
+            HStack(spacing: 6) {
+                if let icon = iconName {
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                        .foregroundColor(colors.last)
+                }
+                Text("\(current) / \(required)")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundColor(Color(hex: "#8a7a8e"))
+            }
         }
         .padding(.horizontal, 20)
     }
 }
 
 // MARK: - Floating score label
-
 private struct FloatingScoreView: View {
     let value: Int
     @State private var offsetY: CGFloat = 0
     @State private var opacity: Double = 1
+    @State private var scale: CGFloat = 0.2 // Partiamo piccolissimi per l'effetto pop
 
     var body: some View {
         Text("+\(value)")
-            .font(.system(size: 18, weight: .black, design: .rounded))
+            // 1. Font più grande e spesso
+            .font(.system(size: 28, weight: .black, design: .rounded))
+            
+            // 2. Bordo bianco simulato con ombre (fondamentale per contrastare lo sfondo colorato)
+            .shadow(color: .white, radius: 0.5, x: -1.5, y: -1.5)
+            .shadow(color: .white, radius: 0.5, x: 1.5, y: 1.5)
+            .shadow(color: .white, radius: 0.5, x: -1.5, y: 1.5)
+            .shadow(color: .white, radius: 0.5, x: 1.5, y: -1.5)
+            
             .foregroundStyle(
                 LinearGradient(
                     colors: [Color(hex: "#a23ad6"), Color(hex: "#ef3f6e")],
-                    startPoint: .leading, endPoint: .trailing
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
-            .shadow(color: .black.opacity(0.12), radius: 2)
+            // 4. Ombra morbida per profondità 3D
+            .shadow(color: Color(hex: "#a23ad6").opacity(0.5), radius: 5, x: 0, y: 5)
+                                .offset(y: offsetY)
+            // Modificatori di stato
+            .scaleEffect(scale)
             .offset(y: offsetY)
             .opacity(opacity)
+            
+            // 5. Animazioni concatenate per massima "Juiciness"
             .onAppear {
-                withAnimation(.easeOut(duration: 0.9)) { offsetY = -52 }
-                withAnimation(.easeIn(duration: 0.3).delay(0.55)) { opacity = 0 }
+                // FASE 1: "Pop" iniziale (rimbalzo elastico)
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0)) {
+                    scale = 1.2
+                }
+                
+                // FASE 2: Ritorno alla dimensione normale
+                withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
+                    scale = 1.0
+                }
+                
+                // FASE 3: Fluttuazione verso l'alto morbida e prolungata
+                withAnimation(.easeOut(duration: 1.0)) {
+                    offsetY = -80
+                }
+                
+                // FASE 4: Dissolvenza ritardata
+                withAnimation(.easeIn(duration: 0.3).delay(0.7)) {
+                    opacity = 0
+                }
             }
-            .allowsHitTesting(false)
+            .allowsHitTesting(false) // Ignora i tocchi
     }
 }
 
@@ -766,7 +863,9 @@ private struct CellBackgroundView: View {
     ContentView(
         viewModel: {
             let vm = GameViewModel()
+            vm.movesLeft = 10
             vm.coins = 120
+            vm.score = 2500
             return vm
         }(),
         onReturnToMap: {}
