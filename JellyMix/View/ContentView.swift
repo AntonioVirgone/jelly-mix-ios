@@ -83,6 +83,14 @@ struct ContentView: View {
                     required: viewModel.objective.required
                 )
 
+                // ── Score / jelly-unlock progress bar ──────────────────────
+                ScoreProgressBar(
+                    score: viewModel.score,
+                    availablePieces: viewModel.currentAvailablePieces
+                )
+                .frame(height: 70)
+                .padding(.horizontal)
+
                 // ── Game grid + power-ups ──────────────────────────────────
                 VStack(spacing: 0) {
                     LazyVGrid(columns: columns, spacing: 8) {
