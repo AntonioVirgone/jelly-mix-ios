@@ -69,17 +69,42 @@ struct JellyMixApp: App {
             gameEngine.resetGame(forLevel: 1)
         }
 
-        // 2. Durata minima splash: 1 secondo.
+        // 2. Bootstrap utente (non bloccante: il gioco funziona anche offline)
+        await bootstrapUser()
+
+        // 3. Durata minima splash: 1 secondo.
         let elapsed = Date().timeIntervalSince(startTime)
         if elapsed < 1.0 {
             try? await Task.sleep(nanoseconds: UInt64((1.0 - elapsed) * 1_000_000_000))
         }
 
-        // 3. Mostra la schermata principale.
+        // 4. Mostra la schermata principale.
         withAnimation(.easeOut(duration: 0.5)) { showSplash = false }
 
-        // 4. Avvia il refresh in background senza aspettarne il risultato.
+        // 5. Avvia il refresh in background senza aspettarne il risultato.
         Task { await backgroundRefresh() }
+    }
+
+    // Sequenza: Firebase auth → GET /users/me → GET /app-config/hearts → registra FCM.
+    // Ogni step è indipendente: un fallimento non blocca i successivi.
+    private func bootstrapUser() async {
+        do { try await AuthService.shared.signInIfNeeded() }
+        catch { print("[Auth] signInIfNeeded fallito: \(error.localizedDescription)"); return }
+
+        async let profileTask = DataUserService.getMe()
+        async let configTask  = DataUserService.getHeartsConfig()
+
+        let profile = try? await profileTask
+        let config  = try? await configTask
+
+        if let profile, let config {
+            await gameEngine.applyServerUserData(profile: profile, config: config)
+        }
+
+        // Registra FCM token salvato (se disponibile) con auth attiva
+        if let savedToken = UserDefaults.standard.string(forKey: "fcmDeviceToken") {
+            await NotificationService.registerFCMToken(savedToken)
+        }
     }
 
     // MARK: - Background refresh

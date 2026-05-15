@@ -14,6 +14,7 @@ enum AppScreen {
     case events
     case shop
     case collection
+    case profile
 }
 
 struct MainCoordinator: View {
@@ -113,6 +114,10 @@ struct MainCoordinator: View {
                         CollectionBookView(viewModel: gameEngine)
                             .opacity(currentScreen == .collection ? 1 : 0)
                             .allowsHitTesting(currentScreen == .collection)
+
+                        ProfileView(viewModel: gameEngine)
+                            .opacity(currentScreen == .profile ? 1 : 0)
+                            .allowsHitTesting(currentScreen == .profile)
                     }
                     .animation(.easeInOut(duration: 0.2), value: currentScreen)
 
@@ -191,6 +196,7 @@ struct AppTabBar: View {
             tabItem(icon: "target",              label: "EVENTI",      screen: .events)
             tabItem(icon: "bag.fill",            label: "NEGOZIO",     screen: .shop)
             tabItem(icon: "book.fill",           label: "COLLEZIONE",  screen: .collection)
+            tabItem(icon: "person.fill",         label: "PROFILO",     screen: .profile)
         }
         .padding(8)
         .background(

@@ -65,8 +65,14 @@ class GameViewModel: ObservableObject {
         didSet { UserDefaults.standard.set(timeToNextLife, forKey: "lastTimeToNextLife") }
     }
 
-    let maxLives: Int = 5
-    let secondsPerLife: Int = 300
+    // Valori di default usati quando il server non è raggiungibile (offline/primo avvio).
+    // Vengono sovrascritti da applyServerUserData() non appena l'API risponde.
+    var maxLives: Int = 5
+    var secondsPerLife: Int = 300   // 5 minuti per cuore (in sync con heartRechargeMinutes * 60)
+
+    // MARK: - User (Step 1)
+    @Published var userProfile: UserProfile? = nil   // nil finché l'API non risponde
+    @Published var heartsConfig: HeartsConfig? = nil // nil finché l'API non risponde
     var livesTimer: Timer?
 
     // MARK: - Special Cells

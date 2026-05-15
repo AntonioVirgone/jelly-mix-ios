@@ -8,6 +8,48 @@ import SwiftUI
 
 extension GameViewModel {
 
+    // MARK: - Server sync (Step 1)
+
+    /// Aggiorna maxLives, secondsPerLife e il conteggio cuori usando i dati del server.
+    ///
+    /// Strategia fonte di verità:
+    /// - I parametri di configurazione (maxHearts, heartRechargeMinutes) vengono sempre aggiornati.
+    /// - Il conteggio cuori viene aggiornato **solo al primo avvio del giorno** (chiave "lastLaunchDay").
+    ///   Durante la sessione il valore locale prevale, per evitare reset inattesi.
+    ///   In Step 4, POST /hearts/consume sincronizzerà il server ad ogni perdita.
+    @MainActor
+    func applyServerUserData(profile: UserProfile, config: HeartsConfig) {
+        // Salva profilo e config per la ProfileView
+        self.userProfile = profile
+        self.heartsConfig = config
+
+        // Aggiorna i parametri di ricarica (rimpiazza i valori hardcoded)
+        self.maxLives = config.maxHearts
+        self.secondsPerLife = config.heartRechargeMinutes * 60
+
+        // Controlla se è il primo avvio del giorno (formato YYYY-MM-DD)
+        let lastLaunchDay = UserDefaults.standard.string(forKey: "lastLaunchDay") ?? ""
+        let today = ISO8601DateFormatter().string(from: Date()).prefix(10).description
+        guard lastLaunchDay != today else { return }
+
+        // Primo avvio del giorno: il server è fonte di verità per il conteggio cuori.
+        // Calcolo lato client: cuori attuali = heartsCount + cuori ricaricati da lastHeartConsumedAt.
+        UserDefaults.standard.set(today, forKey: "lastLaunchDay")
+        let currentHearts: Int
+        if let lastConsumed = profile.lastHeartConsumedAt {
+            let minutesPassed = Int(Date().timeIntervalSince(lastConsumed) / 60)
+            let recharged = minutesPassed / config.heartRechargeMinutes
+            currentHearts = min(config.maxHearts, profile.heartsCount + recharged)
+        } else {
+            // Nessun cuore mai consumato: usa direttamente il valore del server
+            currentHearts = profile.heartsCount
+        }
+        self.lives = currentHearts
+        if currentHearts < config.maxHearts {
+            self.timeToNextLife = config.heartRechargeMinutes * 60
+        }
+    }
+
     func setupLivesSystem() {
         if UserDefaults.standard.object(forKey: "savedLives") != nil {
             self.lives = UserDefaults.standard.integer(forKey: "savedLives")

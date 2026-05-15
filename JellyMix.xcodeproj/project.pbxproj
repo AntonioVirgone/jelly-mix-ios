@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EC33E7762FADC75E006E53E2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = EC33E7752FADC75E006E53E2 /* FirebaseMessaging */; };
+		EC33E7772FADC75E006E53E2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EC33E7782FADC75E006E53E2 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC33E7762FADC75E006E53E2 /* FirebaseMessaging in Frameworks */,
+				EC33E7772FADC75E006E53E2 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +111,7 @@
 			name = JellyMix;
 			packageProductDependencies = (
 				EC33E7752FADC75E006E53E2 /* FirebaseMessaging */,
+				EC33E7782FADC75E006E53E2 /* FirebaseAuth */,
 			);
 			productName = JellyMix;
 			productReference = EC23A52A2F97B39B006E9590 /* JellyMix.app */;
@@ -521,6 +524,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC33E7742FADC75E006E53E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		EC33E7782FADC75E006E53E2 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC33E7742FADC75E006E53E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
