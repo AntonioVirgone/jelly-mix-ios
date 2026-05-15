@@ -86,7 +86,11 @@ struct MainCoordinator: View {
                                 isLevelUnlocked: { gameEngine.isUnlocked(stageNumber: $0, levelIndex: $1) },
                                 isLevelCompleted: { gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: $0, levelIndex: $1)) },
                                 getColor: { gameEngine.getColor(from: $0) },
-                                scrollTrigger: gameEngine.completedLevels.count + gameEngine.completedWorlds.count * 1000
+                                // progressVersion garantisce un singolo trigger atomico dopo ogni
+                                // aggiornamento di completedLevels+completedWorlds (fix double-publish bug).
+                                // worlds.count gestisce il caricamento asincrono iniziale dei livelli.
+                                scrollTrigger: gameEngine.progressVersion
+                                             + gameEngine.worlds.flatMap(\.levels).count * 1000
                             ) { stageNumber, levelIndex in
                                 if gameEngine.lives > 0 {
                                     gameEngine.resetGame(stageNumber: stageNumber, levelIndex: levelIndex)

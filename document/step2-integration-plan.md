@@ -1,277 +1,376 @@
 # Piano di Integrazione — Step 2: Progresso di Gioco
-> JellyMix iOS · Analisi e piano di lavoro  
+> JellyMix iOS · Piano aggiornato dopo swagger-spec-step2.json  
 > Data: 2026-05-15
 
 ---
 
-## Stato attuale del codebase
+## Stato attuale — cosa c'è già
 
-### Progresso locale — come funziona oggi
+| Elemento | File | Stato |
+|---|---|---|
+| `LevelData.id: String` | `Models/LevelModels.swift` | ✅ già presente |
+| `WorldData.id: String` | `Models/LevelModels.swift` | ✅ già presente |
+| `completedLevels: Set<LevelCoordinate>` | `GameViewModel.swift` | ✅ funzionante, UserDefaults |
+| `completedWorlds: Set<Int>` | `GameViewModel.swift` | ✅ funzionante, UserDefaults |
+| `completeLevel(stageNumber:levelIndex:)` | `GameViewModel+Levels.swift` | ✅ logica locale — da estendere con server |
+| `bootstrapUser()` | `JellyMixApp.swift` | ✅ Step 1 attivo — da estendere con GET /progress/me |
+| `isWorldComplete` lato client | nessuno | ❌ mancante — deve essere calcolato |
 
-Il progresso è interamente gestito via **UserDefaults**, senza sincronizzazione server.
-
-| Dato                  | Tipo Swift                  | Chiave UserDefaults        | Descrizione                                          |
-|-----------------------|-----------------------------|----------------------------|------------------------------------------------------|
-| `completedLevels`     | `Set<LevelCoordinate>`      | `"completedLevels"` (JSON) | Set di livelli completati, identificati per coord.   |
-| `completedWorlds`     | `Set<Int>`                  | `"completedWorlds"` ([Int])| Set di stageNumber dei mondi interamente completati  |
-| `score`               | `Int` (in GameViewModel)    | non persistito             | Solo durante la partita, si azzera al reset          |
-| best score per livello| —                           | **non esiste**             | Non tracciato né localmente né su server             |
-
-**`LevelCoordinate`** è il tipo chiave del progresso locale:
-```swift
-struct LevelCoordinate: Hashable, Codable {
-    let stageNumber: Int   // Numero del mondo (1, 2, 3…)
-    let levelIndex: Int    // Posizione del livello nel mondo (1-based)
-}
-```
-
-### Flusso di sblocco livelli (`isUnlocked`)
-
-```
-stageNumber=1, levelIndex=1  → sempre sbloccato
-levelIndex=1 (primo di un mondo) → richiede completedWorlds.contains(stageNumber-1)
-completedWorlds.contains(stageNumber) → tutti i livelli del mondo sbloccati
-altrimenti → completedLevels.contains(coord con levelIndex-1)
-```
-
-### Flusso di completamento livello (`completeLevel`)
-
-```
-completedLevels.insert(coord)
-se tutti i livelli del mondo sono in completedLevels → completedWorlds.insert(stageNumber)
-```
-
-Tutto avviene in locale. In Step 2 dobbiamo aggiungere la sincronizzazione server.
+**Buona notizia:** `LevelData.id` e `WorldData.id` (UUID server) sono già presenti nel modello locale. Non è necessario modificare `LevelModels.swift`.
 
 ---
 
-## Analisi endpoint
+## Nuovi endpoint disponibili (da swagger-spec-step2.json)
 
-### ⚠️ Problema critico: endpoint non presenti nello swagger
+| Metodo | Path | Auth | Descrizione |
+|---|---|---|---|
+| `POST` | `/api/v1/progress` | ✅ | Salva il progresso dopo ogni livello completato |
+| `GET` | `/api/v1/progress/me` | ✅ | Recupera il progresso completo dell'utente |
+| `GET` | `/api/v1/users/me/friends-progress` | ✅ | Stub (Step 3): restituisce `{ friends: [] }` |
 
-Lo swagger attuale (`swagger-spec.json`) **non contiene alcun endpoint `/progress`**.
-
-Gli endpoint citati nella roadmap dello Step 1 sono:
-
-```
-POST /api/v1/progress         ← non esiste nello swagger
-GET  /api/v1/progress/me      ← non esiste nello swagger
-```
-
-Questo blocca la pianificazione precisa dei modelli e del flusso. Vedi sezione **Domande aperte**.
-
-### Endpoint esistenti utilizzabili
-
-Il server fornisce gli ID UUID dei livelli tramite `GET /api/v1/worlds`:
-
+### Body POST /progress (`ReportProgressDto`)
 ```json
-// LevelResponseDto (da swagger)
 {
-  "id": "uuid-1234",          // ID server univoco del livello
-  "levelNumber": 1,           // Numero assoluto del livello
-  "levelIndex": 1,            // Posizione nel mondo (1-based)
-  "worldId": "uuid-world-5678" // ID del mondo padre
+  "worldId": "uuid-del-mondo",      // obbligatorio
+  "levelId": "uuid-del-livello",    // obbligatorio
+  "isWorldComplete": false          // opzionale, default false
 }
 ```
 
-Questo è importante perché la chiave di progresso lato server sarà quasi certamente l'`id` UUID del livello, **non** `stageNumber + levelIndex`.
-
----
-
-## Architettura proposta (da confermare con backend)
-
-### Modello dati ipotizzato
-
-```swift
-// Body per POST /progress (da confermare)
-struct ProgressUpdateBody: Encodable {
-    let levelId: String     // UUID del livello completato
-    let score: Int          // Punteggio ottenuto in questa partita
-    let starsEarned: Int?   // Stelle (se il sistema stelle esiste)
-}
-
-// Risposta di GET /progress/me (da confermare)
-struct UserProgress: Codable {
-    let completedLevels: [LevelProgressEntry]
-}
-
-struct LevelProgressEntry: Codable {
-    let levelId: String     // UUID del livello
-    let bestScore: Int
-    let completedAt: Date
+### Risposta GET /progress/me
+```json
+{
+  "currentStageNumber": 2,
+  "worlds": [
+    {
+      "worldId": "uuid", "worldName": "...", "stageNumber": 1,
+      "worldIcon": "🌊", "worldColor": "#4FC3F7",
+      "isWorldComplete": true, "completedAt": "2026-...",
+      "currentLevel": { "levelId": "uuid", "levelNumber": 3, "levelIndex": 2 }
+    }
+  ]
 }
 ```
 
-### Mapping UUID ↔ LevelCoordinate
-
-Il problema principale del design è che il progresso locale usa `LevelCoordinate(stageNumber, levelIndex)`, mentre il server usa UUID. 
-
-Soluzione: quando i livelli sono caricati da `GET /api/v1/worlds`, `LevelData` contiene già l'`id` UUID (campo `id` nel `LevelResponseDto`). Dobbiamo aggiungere questo campo al modello locale `LevelData`:
-
-```swift
-// In LevelModels.swift — aggiungere campo id
-struct LevelData: Codable {
-    let id: String          // ← nuovo campo, UUID server
-    let levelNumber: Int
-    let levelIndex: Int
-    // …resto invariato
-}
-```
-
-Con questo campo disponibile, `completeLevel(stageNumber:levelIndex:)` può recuperare l'UUID e chiamare `POST /progress`.
+**`currentLevel`** = ultimo livello completato nel mondo. `null` se nessun livello completato.  
+**L'endpoint è idempotente** — retry su errore di rete è sicuro (il server usa `levelIndex` per non tornare indietro mai).
 
 ---
 
 ## Piano di lavoro
 
-### Task 1 — Ricevere swagger aggiornato con endpoint progress
+### Task 1 — Modelli `ProgressModels.swift` (nuovo file)
 
-**Dipendenza bloccante.** Senza la specifica degli endpoint non si può procedere con gli altri task. Serve conoscere:
-- Struttura esatta di `POST /progress` (body e risposta)
-- Struttura esatta di `GET /progress/me` (risposta)
-- Se il server traccia best score o solo "completato/non completato"
-- Se esiste il concetto di "stelle" (1-3 stelle per livello)
-
----
-
-### Task 2 — Aggiungere `id: String` a `LevelData`
-
-**File:** `Models/LevelModels.swift`
-
-Aggiungere `id: String` al modello `LevelData` per avere l'UUID disponibile durante il gameplay.
+**File:** `Models/ProgressModels.swift`
 
 ```swift
-struct LevelData: Codable {
-    let id: String   // UUID server — usato per POST /progress
+// Body per POST /api/v1/progress
+struct ReportProgressBody: Encodable {
+    let worldId: String
+    let levelId: String
+    let isWorldComplete: Bool
+}
+
+// Elemento mondo nella risposta di GET /progress/me
+struct WorldProgressEntry: Codable {
+    let worldId: String
+    let worldName: String
+    let stageNumber: Int
+    let worldIcon: String
+    let worldColor: String
+    let isWorldComplete: Bool
+    let completedAt: Date?
+    let currentLevel: LevelProgressCursor?
+}
+
+// Puntatore all'ultimo livello completato
+struct LevelProgressCursor: Codable {
+    let levelId: String
     let levelNumber: Int
     let levelIndex: Int
-    // …resto invariato
+}
+
+// Risposta di GET /progress/me
+struct MyProgressResponse: Codable {
+    let currentStageNumber: Int?
+    let worlds: [WorldProgressEntry]
 }
 ```
 
-Nessun impatto sui test esistenti (campo aggiuntivo opzionale in JSON).
-
 ---
 
-### Task 3 — Modelli progresso
+### Task 2 — `ProgressService.swift` (nuovo file)
 
-**File:** `Models/ProgressModels.swift` (nuovo)
-
-Implementare i modelli Codable per request/response degli endpoint progress, sulla base della specifica ricevuta dal backend.
-
----
-
-### Task 4 — `ProgressService`
-
-**File:** `Services/ProgressService.swift` (nuovo)
+**File:** `Services/ProgressService.swift`
 
 ```swift
 enum ProgressService {
-    // POST /api/v1/progress ✅
-    static func reportLevelCompleted(levelId: String, score: Int) async throws -> ...
+    // POST /api/v1/progress ✅ — autenticato, idempotente
+    static func reportLevelCompleted(
+        worldId: String,
+        levelId: String,
+        isWorldComplete: Bool
+    ) async throws {
+        let body = ReportProgressBody(worldId: worldId, levelId: levelId, isWorldComplete: isWorldComplete)
+        let _: EmptyResponse = try await CommonService.request(
+            from: "progress",
+            method: .post,
+            body: body,
+            authenticated: true
+        )
+    }
 
-    // GET /api/v1/progress/me ✅
-    static func getMyProgress() async throws -> UserProgress
+    // GET /api/v1/progress/me ✅ — autenticato
+    static func getMyProgress() async throws -> MyProgressResponse {
+        try await CommonService.request(from: "progress/me", authenticated: true)
+    }
+
+    // GET /api/v1/users/me/friends-progress ✅ — stub per Step 3
+    static func getFriendsProgress() async throws -> FriendsProgressResponse {
+        try await CommonService.request(from: "users/me/friends-progress", authenticated: true)
+    }
+}
+
+// Modello stub per Step 3 — contiene sempre friends: []
+struct FriendsProgressResponse: Codable {
+    let friends: [String]   // placeholder, tipizzare in Step 3
 }
 ```
 
-Entrambi autenticati (richiedono Bearer token, come in Step 1).
-
 ---
 
-### Task 5 — Aggiornare `completeLevel()` per sincronizzare il server
+### Task 3 — Aggiornare `completeLevel()` con sync server
 
 **File:** `ViewModel/GameViewModel+Levels.swift`
 
-Dopo l'aggiornamento locale, inviare il progresso al server in background (fire-and-forget):
+Aggiungere la chiamata a `ProgressService.reportLevelCompleted()` dopo l'aggiornamento locale. Fire-and-forget: la logica locale non dipende dalla risposta del server.
 
 ```swift
 func completeLevel(stageNumber: Int, levelIndex: Int) {
-    // Aggiornamento locale — invariato
-    completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex))
+    let coord = LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex)
+    completedLevels.insert(coord)
+
+    // Verifica se il mondo è ora completato
+    var worldCompleted = false
     if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
-       world.levels.allSatisfy({ completedLevels.contains(...) }) {
+       world.levels.allSatisfy({ completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: $0.levelIndex)) }) {
         completedWorlds.insert(stageNumber)
+        worldCompleted = true
     }
 
-    // Sincronizzazione server in background — fire and forget
-    let levelId = levelsByCoordinate[coord]?.id
-    let currentScore = self.score
-    if let levelId {
+    // Incrementa il trigger scroll DOPO entrambi gli aggiornamenti (fix bug mappa — vedi sezione sotto)
+    progressVersion += 1
+
+    // Sincronizza il server in background — fire and forget
+    if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
+       let level = world.levels.first(where: { $0.levelIndex == levelIndex }) {
+        let worldId = world.id
+        let levelId = level.id
+        let isLast  = worldCompleted
         Task {
-            try? await ProgressService.reportLevelCompleted(levelId: levelId, score: currentScore)
+            try? await ProgressService.reportLevelCompleted(
+                worldId: worldId,
+                levelId: levelId,
+                isWorldComplete: isLast
+            )
         }
     }
 }
 ```
 
-**Strategia:** locale prima, server dopo. Il gioco non aspetta la risposta del server.
+**Importante:** `progressVersion` viene incrementato come ultima operazione sullo stato locale, garantendo che `currentNodeId` in `SagaMapView` venga calcolato quando sia `completedLevels` che `completedWorlds` sono già aggiornati. Questo risolve il bug della mappa (vedi sezione dedicata).
 
 ---
 
-### Task 6 — Sincronizzazione progresso all'avvio
+### Task 4 — Aggiungere `progressVersion` a `GameViewModel`
 
-**File:** `App/JellyMixApp.swift` — aggiungere a `bootstrapUser()`
+**File:** `ViewModel/GameViewModel.swift`
 
-Al primo avvio (o dopo installazione su nuovo device), il server potrebbe avere un progresso più avanzato di quello locale (es. reinstallazione dell'app). Strategia:
-
+```swift
+// Trigger atomico per lo scroll della mappa: incrementato DOPO che sia
+// completedLevels che completedWorlds sono aggiornati in completeLevel().
+@Published var progressVersion: Int = 0
 ```
-GET /progress/me
-    ↓
-Merge con completedLevels locale: locale ∪ server
-    ↓
-Non si toglie mai un livello completato già presente in locale
-```
-
-Questo garantisce che:
-- Il progresso non regredisce mai (locale o server, vince il più avanzato)
-- Il progresso recuperato da un altro device viene acquisito
 
 ---
 
-## Strategia offline-first
+### Task 5 — Merge progresso server in `bootstrapUser()`
 
-| Situazione | Comportamento |
-|---|---|
-| Server non raggiungibile al completamento | Il progresso locale viene salvato normalmente; la chiamata al server fallisce silenziosamente; non c'è retry automatico (Step 2) |
-| Reconnessione dopo offline | Il progresso locale non viene rischedulato automaticamente (da valutare in Step 4 con la coda eventi offline) |
-| GET /progress/me fallisce all'avvio | Usa solo il progresso locale; nessun blocco |
-| Server ha progresso > locale (nuovo device) | Il merge in Task 6 recupera il progresso del server |
+**File:** `App/JellyMixApp.swift`
+
+Aggiungere `GET /progress/me` come chiamata parallela alle esistenti in `bootstrapUser()`. La risposta server viene usata per recuperare il progresso su un nuovo device (reinstallazione).
+
+```swift
+private func bootstrapUser() async {
+    // --- Step 1: Firebase auth (invariato) ---
+    do { try await AuthService.shared.signInIfNeeded() }
+    catch { print("[Auth] fallito: \(error)"); return }
+
+    // --- Step 1+2: chiamate parallele ---
+    async let profileTask  = DataUserService.getMe()
+    async let configTask   = DataUserService.getHeartsConfig()
+    async let progressTask = ProgressService.getMyProgress()   // ← nuovo Step 2
+
+    let profile  = try? await profileTask
+    let config   = try? await configTask
+    let progress = try? await progressTask
+
+    if let profile, let config {
+        await gameEngine.applyServerUserData(profile: profile, config: config)
+    }
+    if let progress {
+        await gameEngine.mergeServerProgress(progress)         // ← nuovo Task 5
+    }
+    if let savedToken = UserDefaults.standard.string(forKey: "fcmDeviceToken") {
+        await NotificationService.registerFCMToken(savedToken)
+    }
+}
+```
+
+---
+
+### Task 6 — `mergeServerProgress()` in `GameViewModel+Levels.swift`
+
+Strategia di merge: **locale ∪ server, vince sempre il più avanzato** (nessun progresso può regredire).
+
+```swift
+@MainActor
+func mergeServerProgress(_ response: MyProgressResponse) {
+    // Per ogni mondo nel progresso server: confronta con il progresso locale.
+    // Si considera il levelIndex del currentLevel come indice di avanzamento.
+    for worldEntry in response.worlds {
+        guard let serverCurrentLevel = worldEntry.currentLevel else { continue }
+
+        let stageNumber = worldEntry.stageNumber
+        let serverLevelIndex = serverCurrentLevel.levelIndex
+
+        // Trova il massimo levelIndex locale per questo mondo
+        let localMax = completedLevels
+            .filter { $0.stageNumber == stageNumber }
+            .map { $0.levelIndex }
+            .max() ?? 0
+
+        if serverLevelIndex > localMax {
+            // Il server è più avanzato: aggiungiamo tutti i livelli fino al serverLevelIndex
+            guard let world = worlds.first(where: { $0.stageNumber == stageNumber }) else { continue }
+            for level in world.levels where level.levelIndex <= serverLevelIndex {
+                completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: level.levelIndex))
+            }
+        }
+
+        // Marca il mondo come completato se il server lo dice e il locale non lo sa ancora
+        if worldEntry.isWorldComplete && !completedWorlds.contains(stageNumber) {
+            completedWorlds.insert(stageNumber)
+        }
+    }
+    // Segnala che il progresso è stato aggiornato (aggiorna scrollTrigger mappa)
+    progressVersion += 1
+}
+```
+
+---
+
+### Task 7 — Aggiornare `scrollTrigger` in `MainCoordinator`
+
+**File:** `App/MainCoordinator.swift`
+
+Sostituire il trigger attuale con `progressVersion` (che viene incrementato atomicamente dopo ogni cambiamento al progresso), più `worlds.flatMap(\.levels).count` per gestire il caricamento iniziale dei livelli.
+
+```swift
+// Prima (bug):
+scrollTrigger: gameEngine.completedLevels.count + gameEngine.completedWorlds.count * 1000
+
+// Dopo (fix):
+scrollTrigger: gameEngine.progressVersion + gameEngine.worlds.flatMap(\.levels).count * 1000
+```
+
+---
+
+## Bug della mappa — analisi e fix
+
+### Descrizione del bug
+
+L'utente è al mondo 3 livello 2 (il livello corrente, non ancora completato). Dopo un aggiornamento, la mappa si centra sul mondo 4 livello 1 invece che sul nodo corretto.
+
+### Causa principale — Double publish race condition
+
+Il `scrollTrigger` attuale dipende da **due `@Published` separati**:
+
+```swift
+scrollTrigger: gameEngine.completedLevels.count + gameEngine.completedWorlds.count * 1000
+```
+
+Quando `completeLevel()` viene chiamato sull'ultimo livello di un mondo, aggiorna prima `completedLevels`, poi `completedWorlds`. SwiftUI emette due notifiche distinte (non le coalizza perché sono due variabili `@Published` separate).
+
+**Timeline del problema:**
+
+```
+1. completeLevel(stageNumber: 3, levelIndex: 2)          ← ultimo livello del mondo 3
+2. completedLevels.insert((3,2))                         ← @Published triggera
+3. SwiftUI notifica il cambiamento di scrollTrigger
+4. onChange(of: scrollTrigger) → currentNodeId calcolato
+   - completedLevels ha (3,2) ✓
+   - completedWorlds NON ha ancora 3
+   - → isUnlocked(4,1) = completedWorlds.contains(3) = FALSE
+   - → currentNodeId = "level_3_X" (prossimo livello del mondo 3, se esiste)
+5. completedWorlds.insert(3)                             ← @Published triggera di nuovo
+6. SwiftUI notifica il cambiamento di scrollTrigger
+7. onChange(of: scrollTrigger) → currentNodeId calcolato di nuovo
+   - completedWorlds ha ora 3
+   - → isUnlocked(4,1) = completedWorlds.contains(3) = TRUE
+   - → currentNodeId = "level_4_1" ← la mappa scorre qui!
+```
+
+L'utente vede la mappa centrata su (4,1) ma il nodo potrebbe ancora mostrare il lucchetto se il rendering della UI del nodo non è ancora aggiornato (il secondo @Published non ha ancora propagato il rendering dei `LevelNodeView`).
+
+### Causa secondaria — Worlds non ancora caricati all'onAppear
+
+`SagaMapView.onAppear` viene chiamato al primo rendering, quando `gameEngine.worlds` potrebbe essere ancora `[]` (caricamento asincrono dal server). In quel momento `currentNodeId` restituisce `nil` e nessun scroll avviene.
+
+Quando i worlds arrivano, `scrollTrigger` non cambia (i `completedLevels/completedWorlds` sono invariati) → nessun `onChange` → la mappa rimane in cima.
+
+### Fix
+
+**Fix 1 — `progressVersion` come trigger atomico (Task 4 + Task 7)**
+
+Usare `progressVersion: Int` come unico trigger per lo scroll. Viene incrementato come ultima operazione in `completeLevel()`, dopo che sia `completedLevels` che `completedWorlds` sono aggiornati. SwiftUI riceve una sola notifica quando il progresso è coerente.
+
+**Fix 2 — worlds.flatMap in scrollTrigger (Task 7)**
+
+Aggiungere `gameEngine.worlds.flatMap(\.levels).count * 1000` al trigger: quando i worlds vengono caricati, il trigger cambia e `currentNodeId` viene ricalcolato con i dati corretti.
 
 ---
 
 ## Domande aperte
 
-### 1. ⚠️ Endpoint progress non nello swagger — quando saranno disponibili?
-`POST /progress` e `GET /progress/me` non esistono nel `swagger-spec.json` allegato. Prima di iniziare il Task 3+ serve lo swagger aggiornato o la specifica del contratto API.
+### 1. Risposta di POST /progress
+Lo swagger indica `201` ma non mostra il body della risposta. La guida mostra un corpo con `currentLevel` e `isWorldComplete`. Come gestiamo la risposta? Per ora il client la ignora (fire-and-forget) — da confermare.
+ho aggiornato swagger e guida.
 
-### 2. Il server traccia il best score o solo completato/non completato?
-Attualmente il client non persiste i punteggi (solo durante la partita). Se il server vuole il best score, dobbiamo aggiungere la persistenza locale in UserDefaults prima di inviarlo.
+### 2. Score — il server lo traccia?
+Attualmente il punteggio è solo locale e volatile (si azzera a ogni partita). Non è nel body di `POST /progress`. Confermare che il backend non vuole ricevere lo score in questa versione.
+confermo, al momento lo score non viene elaborato dal server.
 
-### 3. Esiste il sistema stelle (1-3 stelle per livello)?
-Se sì, i criteri per le stelle (punteggio minimo?) devono essere forniti dal backend o sono già nei dati di `LevelData`.
+### 3. `GET /progress/me` — cosa succede se un livello completato non esiste più nel catalogo?
+Se il server restituisce un `levelId` UUID che non corrisponde ad alcun livello nel `levelsByCoordinate` locale (es. livello rimosso dal catalogo), il merge deve ignorarlo silenziosamente.
+esatto, l'applicazione deve essere sempre fruibie per l'utente. quindi in caso un livello viene rimosso il merge deve ignorarlo
 
-### 4. `POST /progress` viene chiamato ad ogni completamento o in batch?
-- **Singolo:** più semplice, ma richiede rete per ogni livello completato
-- **Batch:** più robusto offline, ma più complesso
-
-### 5. Conflict resolution — se server e locale divergono, quale vince?
-Proposta: unione (∪) senza mai rimuovere progress già acquisito. Il progresso non può essere revocato.
-
-### 6. Il campo `id` (UUID) è già presente nella risposta di `GET /api/v1/worlds`?
-Dal swagger il campo `id` è in `LevelResponseDto`, ma il `WorldResponseDto` mostra `levels` come `array of string` (placeholder?). Confermare che i livelli restituiti in `GET /worlds` contengono effettivamente l'`id` UUID.
+### 4. Ordine operazioni nel bootstrap
+Nella nuova sequenza parallela, `mergeServerProgress()` viene chiamato con `worlds` che potrebbe non essere ancora caricato (il GET /worlds avviene in `loadLevels()`, separato da `bootstrapUser()`). Serve coordinare i due flussi. Proposta: chiamare `mergeServerProgress()` solo dopo che `worlds` è caricato.
+direi di si, non possiamo metterle in parallelo.
 
 ---
 
-## Impatto su codice esistente
+## File da creare / modificare
 
-| File | Modifica richiesta | Rischio |
-|---|---|---|
-| `Models/LevelModels.swift` | Aggiungere `id: String` a `LevelData` | Basso — campo aggiuntivo in JSON |
-| `ViewModel/GameViewModel+Levels.swift` | Modificare `completeLevel()` per inviare al server | Basso — aggiunta non invasiva |
-| `App/JellyMixApp.swift` | Aggiungere `GET /progress/me` in `bootstrapUser()` | Basso — step aggiuntivo nella sequenza di avvio |
-| `Services/ProgressService.swift` | Nuovo file | Nessuno |
-| `Models/ProgressModels.swift` | Nuovo file | Nessuno |
+| Operazione | File |
+|---|---|
+| Crea | `Models/ProgressModels.swift` |
+| Crea | `Services/ProgressService.swift` |
+| Modifica | `ViewModel/GameViewModel.swift` — aggiungere `progressVersion` |
+| Modifica | `ViewModel/GameViewModel+Levels.swift` — `completeLevel()` + `mergeServerProgress()` |
+| Modifica | `App/JellyMixApp.swift` — `bootstrapUser()` |
+| Modifica | `App/MainCoordinator.swift` — `scrollTrigger` |
 
 ---
 

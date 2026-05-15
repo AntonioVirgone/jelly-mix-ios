@@ -80,6 +80,11 @@ class GameViewModel: ObservableObject {
     @Published var generatorCounters: [Int: Int] = [:]
 
     // MARK: - Progress
+    /// Trigger atomico per lo scroll della mappa.
+    /// Viene incrementato in completeLevel() DOPO che sia completedLevels che
+    /// completedWorlds sono aggiornati, evitando la double-publish race condition.
+    @Published var progressVersion: Int = 0
+
     @Published var completedLevels: Set<LevelCoordinate> = [] {
         didSet {
             if let data = try? JSONEncoder().encode(Array(completedLevels)) {

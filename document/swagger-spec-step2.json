@@ -858,8 +858,15 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Progresso aggiornato (stato server, può non avanzare se levelIndex non è maggiore)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressEntryDto"
+                }
+              }
+            }
           }
         },
         "summary": "Salva il progresso dell'utente (chiamato a ogni livello completato)",
@@ -874,7 +881,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyProgressResponseDto"
+                }
+              }
+            }
           }
         },
         "summary": "Progresso completo dell'utente corrente",
@@ -1245,6 +1259,87 @@
         "required": [
           "worldId",
           "levelId"
+        ]
+      },
+      "CurrentLevelDto": {
+        "type": "object",
+        "properties": {
+          "levelId": {
+            "type": "string"
+          },
+          "levelNumber": {
+            "type": "number"
+          },
+          "levelIndex": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "levelId",
+          "levelNumber",
+          "levelIndex"
+        ]
+      },
+      "ProgressEntryDto": {
+        "type": "object",
+        "properties": {
+          "worldId": {
+            "type": "string"
+          },
+          "worldName": {
+            "type": "string"
+          },
+          "stageNumber": {
+            "type": "number"
+          },
+          "worldIcon": {
+            "type": "string"
+          },
+          "worldColor": {
+            "type": "string"
+          },
+          "isWorldComplete": {
+            "type": "boolean"
+          },
+          "completedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentLevel": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentLevelDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "worldId",
+          "worldName",
+          "stageNumber",
+          "worldIcon",
+          "worldColor",
+          "isWorldComplete"
+        ]
+      },
+      "MyProgressResponseDto": {
+        "type": "object",
+        "properties": {
+          "currentStageNumber": {
+            "type": "number",
+            "nullable": true
+          },
+          "worlds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgressEntryDto"
+            }
+          }
+        },
+        "required": [
+          "worlds"
         ]
       }
     }

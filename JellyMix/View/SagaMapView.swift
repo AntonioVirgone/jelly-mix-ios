@@ -36,35 +36,52 @@ struct SagaMapView: View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                Color.clear.frame(height: 16)
-                ForEach(worlds) { world in
-                    let worldColor = getColor(world.color)
-                    let isWorldUnlocked = world.levels.contains {
-                        isLevelUnlocked(world.stageNumber, $0.levelIndex)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                    Color.clear.frame(height: 16)
+                    ForEach(worlds) { world in
+                        let worldColor = getColor(world.color)
+                        let isWorldUnlocked = world.levels.contains {
+                            isLevelUnlocked(world.stageNumber, $0.levelIndex)
+                        }
+                        Section {
+                            renderWorldContent(world: world, worldColor: worldColor)
+                        } header: {
+                            WorldCardView(
+                                world: world,
+                                color: worldColor,
+                                isUnlocked: isWorldUnlocked
+                            )
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 8)
+                            .background(Color(UIColor.systemBackground).opacity(0.001))
+                        }
                     }
-                    Section {
-                        renderWorldContent(world: world, worldColor: worldColor)
-                    } header: {
-                        WorldCardView(
-                            world: world,
-                            color: worldColor,
-                            isUnlocked: isWorldUnlocked
-                        )
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 8)
-                        .background(Color(UIColor.systemBackground).opacity(0.001))
-                    }
+                    Color.clear.frame(height: 100)
                 }
-                Color.clear.frame(height: 100)
+                .scrollTargetLayout()
             }
-            .scrollTargetLayout()
+            .scrollIndicators(.hidden)
+            .onAppear            { scheduleScroll(proxy) }
+            .onChange(of: scrollTrigger) { _, _ in scheduleScroll(proxy) }
+            // 🔧 catch-all: anche se scrollTrigger non cambia, una variazione
+            // strutturale dei mondi deve riposizionare la mappa.
+            .onChange(of: worlds.map(\.id)) { _, _ in scheduleScroll(proxy) }
         }
-        .scrollIndicators(.hidden)
-        .scrollPosition(id: $scrollPositionId, anchor: .center)
-        .onAppear { scrollPositionId = currentNodeId }
-        .onChange(of: scrollTrigger) { _, _ in scrollPositionId = currentNodeId }
+    }
+    
+    /// Posticipa di un run-loop tick + frame: dà al LazyVStack
+    /// il tempo di costruire i nodi prima di chiamare scrollTo.
+    private func scheduleScroll(_ proxy: ScrollViewProxy) {
+        guard let target = currentNodeId else { return }
+        DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                withAnimation(.easeInOut(duration: 0.45)) {
+                    proxy.scrollTo(target, anchor: .center)
+                }
+            }
+        }
     }
 
     // Ogni VStack è figlio diretto di LazyVStack (Section e ForEach sono trasparenti),
