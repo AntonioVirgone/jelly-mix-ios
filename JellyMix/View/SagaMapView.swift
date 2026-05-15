@@ -89,7 +89,7 @@ struct SagaMapView: View {
                     ) {
                         onPlayLevel(world.stageNumber, levelData.levelIndex)
                     }
-                    .offset(x: horizontalOffset)
+                    .offset(x: horizontalOffset * 0.5)
                     if isEven { Spacer() }
                 }
                 .padding(.horizontal, 40)
@@ -97,7 +97,8 @@ struct SagaMapView: View {
                 if index < sortedLevels.count - 1 {
                     MapPathLineView(
                         color: worldColor.opacity(0.5),
-                        horizontalOffset: horizontalOffset
+                        startOffset: (-1) * horizontalOffset,
+                        endOffset: (-1) * (isEven ? -80 : 80)
                     )
                 }
             }
@@ -356,25 +357,35 @@ private struct Triangle: Shape {
 
 struct MapPathLineView: View {
     var color: Color
-    var horizontalOffset: CGFloat
+    var startOffset: CGFloat
+    var endOffset: CGFloat
 
     var body: some View {
         GeometryReader { geometry in
             Path { path in
                 let midX = geometry.size.width / 2
-                let startY: CGFloat = -15
-                let endY: CGFloat = 15
+                
+                // Questi valori controllano l'altezza della curva. Aumentarli per curve più ampie
+                let startY: CGFloat = 0
+                let endY: CGFloat = geometry.size.height
 
-                path.move(to: CGPoint(x: midX + horizontalOffset, y: startY))
-                path.addQuadCurve(
-                    to: CGPoint(x: midX - horizontalOffset, y: endY),
-                    control: CGPoint(x: midX, y: (startY + endY) / 2)
-                )
+                let startPoint = CGPoint(x: midX + startOffset, y: startY)
+                let endPoint = CGPoint(x: midX + endOffset, y: endY)
+                
+                path.move(to: startPoint)
+                
+                // Usare una curva cubica per una forma a S più morbida.
+                // I punti di controllo guidano la curva orizzonrake prima di scendere
+                let control1 = CGPoint(x: startPoint.x, y: startY + (endY - startY) * 0.5)
+                let control2 = CGPoint(x: endPoint.x, y: startY + (endY - startY) * 0.5)
+                
+                path.addCurve(to: endPoint, control1: control1, control2: control2)
             }
             .stroke(color, style: StrokeStyle(lineWidth: 5, lineCap: .round, dash: [8, 10]))
         }
-        .frame(height: 30)
-        .offset(y: -15)
+        .frame(height: 70)
+        .offset(y: -5)
+        .zIndex(-1)
     }
 }
 
