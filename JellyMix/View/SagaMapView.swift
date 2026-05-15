@@ -20,8 +20,6 @@ struct SagaMapView: View {
     var scrollTrigger: Int
     var onPlayLevel: (Int, Int) -> Void  // (stageNumber, levelIndex)
 
-    @State private var scrollPositionId: String?
-
     // Primo nodo sbloccato ma non ancora completato (scroll target).
     private var currentNodeId: String? {
         for world in worlds.sorted(by: { $0.stageNumber < $1.stageNumber }) {
