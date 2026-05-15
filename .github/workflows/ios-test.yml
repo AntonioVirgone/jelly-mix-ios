@@ -45,7 +45,7 @@ jobs:
           xcodebuild test \
             -project JellyMix.xcodeproj \
             -scheme JellyMix \
-            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device,OS=latest' \
+            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
