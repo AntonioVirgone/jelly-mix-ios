@@ -98,11 +98,12 @@ enum NotificationService {
             let _: EmptyResponse = try await CommonService.request(
                 from: "notifications/register",
                 method: .post,
-                body: body
+                body: body,
+                authenticated: true
             )
             print("[FCM] Token registrato (tentativo \(attempt)).")
         } catch {
-            let delaySec = pow(2.0, Double(attempt)) // 2s → 4s → 8s
+            let delaySec = pow(2.0, Double(attempt))
             print("[FCM] Tentativo \(attempt) fallito, retry tra \(Int(delaySec))s.")
             try? await Task.sleep(nanoseconds: UInt64(delaySec * 1_000_000_000))
             await registerWithBackoff(token: token, attempt: attempt + 1)
