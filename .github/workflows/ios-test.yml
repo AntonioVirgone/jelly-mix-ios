@@ -39,13 +39,17 @@ jobs:
       - name: Installa xcpretty
         run: gem install xcpretty --no-document
 
+      - name: Elenca simulatori disponibili
+        run: xcrun simctl list devices available --json | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; [print(k,v[0]['name']) for k,v in d.items() if v and 'iPhone' in v[0].get('name','')]" 2>/dev/null || true
+
       - name: Esegui Unit Test
         run: |
           set -o pipefail
           xcodebuild test \
             -project JellyMix.xcodeproj \
             -scheme JellyMix \
-            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
