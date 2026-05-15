@@ -62,8 +62,13 @@ struct MainCoordinator: View {
             }
 
             // ── Schermate con TabBar ────────────────────────────────────────
-            if currentScreen != .game {
-                VStack(spacing: 0) {
+            // NOTA: la VStack è sempre montata (non condizionale) per evitare
+            // che SagaMapView venga smontata/rimontata durante il gioco.
+            // Quando rimontata, LazyVStack riparte da zero e proxy.scrollTo()
+            // fallisce silenziosamente perché i nodi distanti non sono ancora
+            // renderizzati. Con always-mounted il LazyVStack mantiene lo stato
+            // e lo scroll funziona correttamente al ritorno dal gioco.
+            VStack(spacing: 0) {
                     // Barra vite — sempre visibile su tutte le tab
                     LivesBarView(viewModel: gameEngine)
                         .padding(.top, 12)
@@ -84,9 +89,20 @@ struct MainCoordinator: View {
                             SagaMapView(
                                 worlds: gameEngine.worlds,
                                 isLevelUnlocked: { gameEngine.isUnlocked(stageNumber: $0, levelIndex: $1) },
-                                isLevelCompleted: { gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: $0, levelIndex: $1)) },
+                                isLevelCompleted: { stageNumber, levelIndex in
+                                    // Un livello è "completato" se è in completedLevels OPPURE se il
+                                    // suo intero mondo è già in completedWorlds (fix mergeServerProgress gap:
+                                    // il server può marcare un mondo come complete senza inserire ogni
+                                    // singolo levelIndex in completedLevels, causando currentNodeId errato).
+                                    gameEngine.completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex))
+                                    || gameEngine.completedWorlds.contains(stageNumber)
+                                },
                                 getColor: { gameEngine.getColor(from: $0) },
-                                scrollTrigger: gameEngine.completedLevels.count + gameEngine.completedWorlds.count * 1000
+                                // progressVersion garantisce un singolo trigger atomico dopo ogni
+                                // aggiornamento di completedLevels+completedWorlds (fix double-publish bug).
+                                // worlds.count gestisce il caricamento asincrono iniziale dei livelli.
+                                scrollTrigger: gameEngine.progressVersion
+                                             + gameEngine.worlds.flatMap(\.levels).count * 1000
                             ) { stageNumber, levelIndex in
                                 if gameEngine.lives > 0 {
                                     gameEngine.resetGame(stageNumber: stageNumber, levelIndex: levelIndex)
@@ -124,9 +140,10 @@ struct MainCoordinator: View {
                     // TabBar
                     AppTabBar(currentScreen: $currentScreen)
                 }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                // Nasconde l'interfaccia durante il gioco senza smontarla.
+                .opacity(currentScreen != .game ? 1 : 0)
+                .allowsHitTesting(currentScreen != .game)
                 .zIndex(0)
-            }
         }
         .animation(.spring(response: 0.45, dampingFraction: 0.8), value: currentScreen)
         .onAppear {

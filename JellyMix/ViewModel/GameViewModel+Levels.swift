@@ -46,6 +46,10 @@ extension GameViewModel {
         }
 
         migrateProgressIfNeeded()
+        
+        // 🔧 Notifica la mappa anche se il numero totale di livelli non è cambiato
+        // (es. solo il contenuto è stato aggiornato dal server).
+        progressVersion &+= 1
     }
 
     // MARK: - Unlock logic
@@ -64,12 +68,79 @@ extension GameViewModel {
     }
 
     func completeLevel(stageNumber: Int, levelIndex: Int) {
-        completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex))
-        // Controlla se tutti i livelli del mondo risultano completati
+        let coord = LevelCoordinate(stageNumber: stageNumber, levelIndex: levelIndex)
+        completedLevels.insert(coord)
+
+        // Controlla se tutti i livelli del mondo risultano ora completati
+        var worldCompleted = false
         if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
            world.levels.allSatisfy({ completedLevels.contains(LevelCoordinate(stageNumber: stageNumber, levelIndex: $0.levelIndex)) }) {
             completedWorlds.insert(stageNumber)
+            worldCompleted = true
         }
+
+        // Incrementa il trigger DOPO entrambi gli aggiornamenti: risolve la race condition
+        // di double-publish che causava lo scroll al nodo sbagliato nella mappa.
+        progressVersion += 1
+
+        // Sincronizza il server in background (fire-and-forget, idempotente).
+        // Cattura gli UUID prima del Task per evitare catture di self.
+        if let world = worlds.first(where: { $0.stageNumber == stageNumber }),
+           let level = world.levels.first(where: { $0.levelIndex == levelIndex }) {
+            let worldId = world.id
+            let levelId = level.id
+            let isLast  = worldCompleted
+            Task {
+                try? await ProgressService.reportLevelCompleted(
+                    worldId: worldId,
+                    levelId: levelId,
+                    isWorldComplete: isLast
+                )
+            }
+        }
+    }
+
+    // MARK: - Server progress merge (Step 2)
+
+    /// Riconcilia il progresso server con quello locale al primo avvio o dopo reinstallazione.
+    /// Strategia: unione (locale ∪ server), nessun progresso può mai regredire.
+    /// I levelId non trovati nel catalogo locale vengono ignorati silenziosamente.
+    @MainActor
+    func mergeServerProgress(_ response: MyProgressResponse) {
+        var didChange = false
+
+        for worldEntry in response.worlds {
+            let stageNumber = worldEntry.stageNumber
+
+            // Recupera il livello più avanzato registrato dal server per questo mondo
+            guard let serverCursor = worldEntry.currentLevel else { continue }
+            let serverLevelIndex = serverCursor.levelIndex
+
+            // Confronta con il massimo levelIndex locale per lo stesso mondo
+            let localMax = completedLevels
+                .filter { $0.stageNumber == stageNumber }
+                .map { $0.levelIndex }
+                .max() ?? 0
+
+            if serverLevelIndex > localMax {
+                // Il server è più avanzato: inserisce tutti i livelli fino al serverLevelIndex.
+                // Ignora levelId non trovati nel catalogo locale (livelli rimossi).
+                guard let world = worlds.first(where: { $0.stageNumber == stageNumber }) else { continue }
+                for level in world.levels where level.levelIndex <= serverLevelIndex {
+                    completedLevels.insert(LevelCoordinate(stageNumber: stageNumber, levelIndex: level.levelIndex))
+                }
+                didChange = true
+            }
+
+            // Marca il mondo come completato se il server lo dice e il locale non lo sa
+            if worldEntry.isWorldComplete && !completedWorlds.contains(stageNumber) {
+                completedWorlds.insert(stageNumber)
+                didChange = true
+            }
+        }
+
+        // Aggiorna il trigger scroll solo se il progresso è effettivamente cambiato
+        if didChange { progressVersion += 1 }
     }
 
     func findCoordinate(forLevelNumber levelNumber: Int) -> (stageNumber: Int, levelIndex: Int)? {

@@ -60,7 +60,7 @@ struct ProfileView: View {
                     .frame(width: 90, height: 90)
                     .overlay(Circle().stroke(Color.indigo.opacity(0.3), lineWidth: 2))
 
-                Image("AppIcon")
+                Image("Avatar")
                     .resizable()
                     .scaledToFill()
                     .frame(width: 70, height: 70)

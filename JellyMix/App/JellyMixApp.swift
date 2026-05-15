@@ -85,20 +85,34 @@ struct JellyMixApp: App {
         Task { await backgroundRefresh() }
     }
 
-    // Sequenza: Firebase auth → GET /users/me → GET /app-config/hearts → registra FCM.
+    // Sequenza: Firebase auth → GET /users/me + hearts + progress (parallelo) → registra FCM.
+    // GET /progress/me viene chiamato DOPO che i worlds sono già caricati da cache (step 1
+    // di prepareAppData), così mergeServerProgress() ha il catalogo livelli disponibile.
     // Ogni step è indipendente: un fallimento non blocca i successivi.
     private func bootstrapUser() async {
         do { try await AuthService.shared.signInIfNeeded() }
         catch { print("[Auth] signInIfNeeded fallito: \(error.localizedDescription)"); return }
 
-        async let profileTask = DataUserService.getMe()
-        async let configTask  = DataUserService.getHeartsConfig()
+        // Chiamate parallele: profilo, config cuori e progresso di gioco
+        async let profileTask  = DataUserService.getMe()
+        async let configTask   = DataUserService.getHeartsConfig()
+        async let progressTask = ProgressService.getMyProgress()
 
-        let profile = try? await profileTask
-        let config  = try? await configTask
+        let profile  = try? await profileTask
+        let config   = try? await configTask
+        let progress = try? await progressTask
 
+        // Applica profilo e parametri cuori (Step 1)
         if let profile, let config {
             await gameEngine.applyServerUserData(profile: profile, config: config)
+        }
+
+        // Merge progresso server con stato locale (Step 2).
+        // I worlds sono già in gameEngine (caricati da cache nel passo precedente).
+        // Se nessuna cache era disponibile (primo avvio fresh), worlds è vuoto e
+        // il merge non fa nulla — il progresso verrà riconciliato al prossimo avvio.
+        if let progress {
+            await gameEngine.mergeServerProgress(progress)
         }
 
         // Registra FCM token salvato (se disponibile) con auth attiva

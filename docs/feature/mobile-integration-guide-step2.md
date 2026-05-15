@@ -23,7 +23,7 @@ Aggiunto anche lo stub che verrà completato allo Step 3:
 
 ## 1. POST /api/v1/progress ✅
 
-Da chiamare ogni volta che l'utente **completa un livello**.
+Da chiamare ogni volta che l'utente **completa un livello**. La risposta `200` contiene lo stato aggiornato dal punto di vista del server — **va letta**, non ignorata (vedi §1.3).
 
 ### Request
 
@@ -65,6 +65,12 @@ Content-Type: application/json
   }
 }
 ```
+
+### §1.3 — Perché leggere la risposta
+
+Il body `200` riflette lo stato **autoritativo del server** dopo l'upsert. In particolare:
+- Se il `levelIndex` inviato è **minore o uguale** a quello già salvato (chiamata in ritardo / retry), il server restituisce il progresso corrente **senza arretrare** — il client deve allinearsi al valore della risposta, non a quello che ha inviato.
+- Se `isWorldComplete: true` viene ricevuto, il client ottiene `completedAt` compilato, utile per mostrare l'animazione di completamento mondo.
 
 ### Comportamento idempotente — importante per il client
 
