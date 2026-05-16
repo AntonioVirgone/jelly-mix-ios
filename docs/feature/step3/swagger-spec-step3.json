@@ -1,0 +1,1731 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/worlds": {
+      "get": {
+        "operationId": "WorldsController_findAll",
+        "parameters": [
+          {
+            "name": "includeDraft",
+            "required": false,
+            "in": "query",
+            "description": "Se true, include anche i mondi in bozza",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorldResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista tutti i mondi attivi",
+        "tags": [
+          "worlds"
+        ]
+      },
+      "post": {
+        "operationId": "WorldsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorldDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorldResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        },
+        "summary": "Crea un nuovo mondo",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/worlds/{id}": {
+      "get": {
+        "operationId": "WorldsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorldResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Recupera un mondo per ID",
+        "tags": [
+          "worlds"
+        ]
+      },
+      "put": {
+        "operationId": "WorldsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorldDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorldResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Aggiorna un mondo esistente",
+        "tags": [
+          "worlds"
+        ]
+      },
+      "delete": {
+        "operationId": "WorldsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "World disattivato"
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Soft-delete di un mondo",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/worlds/bulk": {
+      "post": {
+        "operationId": "WorldsController_createWorlds",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorldRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorldResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        },
+        "summary": "Crea multipli mondi (e i loro livelli) in blocco come bozza",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/worlds/bulk/publish": {
+      "patch": {
+        "operationId": "WorldsController_publishBulk",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishBulkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorldResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        },
+        "summary": "Pubblica più mondi e i loro livelli; invia una notifica",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/worlds/{id}/publish": {
+      "patch": {
+        "operationId": "WorldsController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorldResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Pubblica un mondo e tutti i suoi livelli; invia una notifica",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/worlds/{id}/unpublish": {
+      "patch": {
+        "operationId": "WorldsController_unpublish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorldResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Rimette in bozza un mondo e tutti i suoi livelli",
+        "tags": [
+          "worlds"
+        ]
+      }
+    },
+    "/api/v1/notifications/register": {
+      "post": {
+        "operationId": "NotificationsController_registerToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Token registrato"
+          }
+        },
+        "summary": "Registra un device token FCM",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/token/{token}": {
+      "delete": {
+        "operationId": "NotificationsController_removeToken",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "description": "FCM device token",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Token rimosso"
+          }
+        },
+        "summary": "Rimuovi un device token (es. al logout)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/test": {
+      "post": {
+        "operationId": "NotificationsController_sendTest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTestNotificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Risultato invio notifica di test"
+          }
+        },
+        "summary": "Invia una notifica push di test a un device specifico",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/levels": {
+      "get": {
+        "operationId": "LevelsController_findAll",
+        "parameters": [
+          {
+            "name": "includeDraft",
+            "required": false,
+            "in": "query",
+            "description": "Se true, include anche i livelli in bozza",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LevelResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista tutti i livelli",
+        "tags": [
+          "levels"
+        ]
+      },
+      "post": {
+        "operationId": "LevelsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLevelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LevelResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        },
+        "summary": "Crea un nuovo mondo",
+        "tags": [
+          "levels"
+        ]
+      }
+    },
+    "/api/v1/levels/{id}": {
+      "get": {
+        "operationId": "LevelsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LevelResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Recupera un mondo per ID",
+        "tags": [
+          "levels"
+        ]
+      },
+      "put": {
+        "operationId": "LevelsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLevelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LevelResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Aggiorna un mondo esistente",
+        "tags": [
+          "levels"
+        ]
+      },
+      "delete": {
+        "operationId": "LevelsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "uuid-1234",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "World disattivato"
+          },
+          "404": {
+            "description": "World not found"
+          }
+        },
+        "summary": "Soft-delete di un mondo",
+        "tags": [
+          "levels"
+        ]
+      }
+    },
+    "/api/v1/data-logger": {
+      "post": {
+        "operationId": "DataLoggerController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDataLoggerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "data-logger"
+        ]
+      },
+      "get": {
+        "operationId": "DataLoggerController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataLoggerResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista tutti i log",
+        "tags": [
+          "data-logger"
+        ]
+      }
+    },
+    "/api/v1/data-logger/{id}": {
+      "get": {
+        "operationId": "DataLoggerController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "data-logger"
+        ]
+      },
+      "delete": {
+        "operationId": "DataLoggerController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "data-logger"
+        ]
+      }
+    },
+    "/api/v1/app-config/hearts": {
+      "get": {
+        "operationId": "AppConfigController_getHeartsConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Parametri cuori (pubblico)",
+        "tags": [
+          "app-config"
+        ]
+      }
+    },
+    "/api/v1/app-config": {
+      "get": {
+        "operationId": "AppConfigController_findAll",
+        "parameters": [
+          {
+            "name": "x-admin-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lista tutti i parametri (admin)",
+        "tags": [
+          "app-config"
+        ]
+      }
+    },
+    "/api/v1/app-config/{key}": {
+      "put": {
+        "operationId": "AppConfigController_update",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-admin-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Aggiorna un parametro (admin)",
+        "tags": [
+          "app-config"
+        ]
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "operationId": "UsersController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Profilo completo utente corrente",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_updateMe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Aggiorna profilo utente",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/search": {
+      "get": {
+        "operationId": "UsersController_searchByUsername",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cerca utenti per username",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/me/friends-progress": {
+      "get": {
+        "operationId": "UsersController_getFriendsProgress",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendsProgressResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Progressi degli amici confermati",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/profile": {
+      "get": {
+        "operationId": "UsersController_getPublicProfile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Profilo pubblico utente (no auth)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/progress": {
+      "post": {
+        "operationId": "ProgressController_reportProgress",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportProgressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Progresso aggiornato (stato server, può non avanzare se levelIndex non è maggiore)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressEntryDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Salva il progresso dell'utente (chiamato a ogni livello completato)",
+        "tags": [
+          "progress"
+        ]
+      }
+    },
+    "/api/v1/progress/me": {
+      "get": {
+        "operationId": "ProgressController_getMyProgress",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyProgressResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Progresso completo dell'utente corrente",
+        "tags": [
+          "progress"
+        ]
+      }
+    },
+    "/api/v1/friendships/invite": {
+      "post": {
+        "operationId": "FriendshipsController_createInvite",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Genera un codice invito (scadenza 7 giorni)",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/accept-invite/{code}": {
+      "post": {
+        "operationId": "FriendshipsController_acceptInvite",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "description": "Codice cuid dal deep link",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendshipResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Accetta un invito tramite codice — crea amicizia ACCEPTED direttamente",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/request/{userId}": {
+      "post": {
+        "operationId": "FriendshipsController_sendRequest",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "ID utente destinatario",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendshipResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Invia richiesta amicizia a un utente (crea PENDING)",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/accept/{id}": {
+      "post": {
+        "operationId": "FriendshipsController_acceptRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID della Friendship",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendshipResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Accetta una richiesta PENDING ricevuta",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/reject/{id}": {
+      "post": {
+        "operationId": "FriendshipsController_rejectRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID della Friendship",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Rifiuta una richiesta PENDING ricevuta",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships": {
+      "get": {
+        "operationId": "FriendshipsController_listFriends",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FriendshipResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista amici confermati (ACCEPTED)",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/pending": {
+      "get": {
+        "operationId": "FriendshipsController_listPending",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FriendshipResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Richieste di amicizia ricevute in attesa (PENDING)",
+        "tags": [
+          "friendships"
+        ]
+      }
+    },
+    "/api/v1/friendships/{id}": {
+      "delete": {
+        "operationId": "FriendshipsController_removeFriend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID della Friendship",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Rimuovi un amico (cancella la Friendship ACCEPTED)",
+        "tags": [
+          "friendships"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Game Backend API",
+    "description": "REST API per app di gioco e dashboard di gestione livelli/mondi",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "worlds",
+      "description": "Gestione mondi di gioco"
+    },
+    {
+      "name": "levels",
+      "description": "Gestione livelli"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "WorldResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-1234"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ice Kingdom"
+          },
+          "description": {
+            "type": "string",
+            "example": "Un regno ghiacciato con 10 livelli"
+          },
+          "stageNumber": {
+            "type": "number",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "levels": {
+            "example": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "stageNumber",
+          "status",
+          "isActive",
+          "levels",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateLevelDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateWorldDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ice Kingdom",
+            "description": "Nome univoco del mondo",
+            "minLength": 3
+          },
+          "color": {
+            "type": "string",
+            "example": "RED",
+            "description": "Colore del mondo"
+          },
+          "icon": {
+            "type": "string",
+            "example": "🍓",
+            "description": "Icona del mondo"
+          },
+          "description": {
+            "type": "string",
+            "example": "Un regno ghiacciato con 10 livelli",
+            "description": "Descrizione opzionale del mondo"
+          },
+          "stageNumber": {
+            "type": "number",
+            "example": 1,
+            "description": "Numero del mondo"
+          },
+          "levels": {
+            "description": "Lista dei livelli associati a questo mondo (creazione opzionale)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateLevelDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "stageNumber"
+        ]
+      },
+      "WorldRequestDto": {
+        "type": "object",
+        "properties": {
+          "worlds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateWorldDto"
+            }
+          }
+        },
+        "required": [
+          "worlds"
+        ]
+      },
+      "PublishBulkDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "example": [
+              "uuid-1",
+              "uuid-2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "UpdateWorldDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RegisterTokenDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "fcm-device-token-xyz"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "ios",
+              "android"
+            ],
+            "example": "android"
+          }
+        },
+        "required": [
+          "token",
+          "platform"
+        ]
+      },
+      "SendTestNotificationDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "fcm-device-token-xyz"
+          },
+          "title": {
+            "type": "string",
+            "example": "Titolo test"
+          },
+          "body": {
+            "type": "string",
+            "example": "Messaggio di test"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "LevelResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-1234"
+          },
+          "levelNumber": {
+            "type": "number",
+            "example": 1
+          },
+          "levelIndex": {
+            "type": "number",
+            "example": 1
+          },
+          "worldId": {
+            "type": "string",
+            "example": "uuid-world-5678"
+          },
+          "movesLimit": {
+            "type": "number",
+            "example": 10
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "objective": {
+            "type": "object",
+            "example": {
+              "type": "JELLY",
+              "required": 5
+            }
+          },
+          "grid": {
+            "example": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availablePieces": {
+            "example": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "levelNumber",
+          "levelIndex",
+          "movesLimit",
+          "status",
+          "objective",
+          "grid",
+          "availablePieces",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateLevelDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateDataLoggerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DataLoggerResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-1234"
+          },
+          "type": {
+            "type": "string",
+            "example": "GAME"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "Nome visualizzato (max 30 caratteri)"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username univoco: lowercase, lettere/numeri/underscore, 3-20 caratteri"
+          },
+          "avatarCode": {
+            "type": "string",
+            "description": "Codice preset avatar"
+          }
+        }
+      },
+      "FriendCurrentLevelDto": {
+        "type": "object",
+        "properties": {
+          "levelNumber": {
+            "type": "number"
+          },
+          "levelIndex": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "levelNumber",
+          "levelIndex"
+        ]
+      },
+      "FriendProgressEntryDto": {
+        "type": "object",
+        "properties": {
+          "worldId": {
+            "type": "string"
+          },
+          "worldName": {
+            "type": "string"
+          },
+          "stageNumber": {
+            "type": "number"
+          },
+          "worldIcon": {
+            "type": "string"
+          },
+          "isWorldComplete": {
+            "type": "boolean"
+          },
+          "currentLevel": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FriendCurrentLevelDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "worldId",
+          "worldName",
+          "stageNumber",
+          "worldIcon",
+          "isWorldComplete"
+        ]
+      },
+      "FriendProgressDto": {
+        "type": "object",
+        "properties": {
+          "friendId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "avatarCode": {
+            "type": "object",
+            "nullable": true
+          },
+          "currentStageNumber": {
+            "type": "number",
+            "nullable": true
+          },
+          "worlds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FriendProgressEntryDto"
+            }
+          }
+        },
+        "required": [
+          "friendId",
+          "displayName",
+          "worlds"
+        ]
+      },
+      "FriendsProgressResponseDto": {
+        "type": "object",
+        "properties": {
+          "friends": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FriendProgressDto"
+            }
+          }
+        },
+        "required": [
+          "friends"
+        ]
+      },
+      "ReportProgressDto": {
+        "type": "object",
+        "properties": {
+          "worldId": {
+            "type": "string",
+            "description": "ID del mondo corrente"
+          },
+          "levelId": {
+            "type": "string",
+            "description": "ID del livello appena completato"
+          },
+          "isWorldComplete": {
+            "type": "boolean",
+            "description": "true se l'utente ha completato l'ultimo livello del mondo",
+            "default": false
+          }
+        },
+        "required": [
+          "worldId",
+          "levelId"
+        ]
+      },
+      "CurrentLevelDto": {
+        "type": "object",
+        "properties": {
+          "levelId": {
+            "type": "string"
+          },
+          "levelNumber": {
+            "type": "number"
+          },
+          "levelIndex": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "levelId",
+          "levelNumber",
+          "levelIndex"
+        ]
+      },
+      "ProgressEntryDto": {
+        "type": "object",
+        "properties": {
+          "worldId": {
+            "type": "string"
+          },
+          "worldName": {
+            "type": "string"
+          },
+          "stageNumber": {
+            "type": "number"
+          },
+          "worldIcon": {
+            "type": "string"
+          },
+          "worldColor": {
+            "type": "string"
+          },
+          "isWorldComplete": {
+            "type": "boolean"
+          },
+          "completedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentLevel": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentLevelDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "worldId",
+          "worldName",
+          "stageNumber",
+          "worldIcon",
+          "worldColor",
+          "isWorldComplete"
+        ]
+      },
+      "MyProgressResponseDto": {
+        "type": "object",
+        "properties": {
+          "currentStageNumber": {
+            "type": "number",
+            "nullable": true
+          },
+          "worlds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgressEntryDto"
+            }
+          }
+        },
+        "required": [
+          "worlds"
+        ]
+      },
+      "InviteResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Codice da inserire nel deep link jellymix://invite/:code"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "expiresAt"
+        ]
+      },
+      "FriendProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "playerNumber": {
+            "type": "number"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "avatarCode": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "playerNumber",
+          "displayName"
+        ]
+      },
+      "FriendshipResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "friend": {
+            "$ref": "#/components/schemas/FriendProfileDto"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "createdAt",
+          "friend"
+        ]
+      }
+    }
+  }
+}
