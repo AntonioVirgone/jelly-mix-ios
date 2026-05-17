@@ -58,20 +58,38 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     // Unico punto in cui viene interpretato il payload FCM.
     // Posta le notifiche interne che JellyMixApp e MainCoordinator ascoltano.
     func handleWorldUpdatePayload(_ userInfo: [AnyHashable: Any], navigateToMap: Bool) {
-        guard let type = userInfo["type"] as? String,
-              type == "WORLD_CREATED" || type == "WORLD_UPDATED" else { return }
+        guard let type = userInfo["type"] as? String else { return }
 
-        NotificationCenter.default.post(
-            name: .mapUpdatePushReceived,
-            object: nil,
-            userInfo: [
-                "type": type,
-                "worldName": userInfo["worldName"] as? String ?? ""
-            ]
-        )
+        switch type {
+        case "WORLD_CREATED", "WORLD_UPDATED":
+            // Aggiornamento mappa: triggera backgroundRefresh e naviga se richiesto
+            NotificationCenter.default.post(
+                name: .mapUpdatePushReceived,
+                object: nil,
+                userInfo: ["type": type, "worldName": userInfo["worldName"] as? String ?? ""]
+            )
+            if navigateToMap {
+                NotificationCenter.default.post(name: .openMapFromNotification, object: nil)
+            }
 
-        if navigateToMap {
-            NotificationCenter.default.post(name: .openMapFromNotification, object: nil)
+        case "FRIEND_REQUEST":
+            // Nuova richiesta di amicizia ricevuta — aggiorna il badge del tab Amici
+            NotificationCenter.default.post(
+                name: .friendRequestReceived,
+                object: nil,
+                userInfo: ["friendshipId": userInfo["friendshipId"] as? String ?? ""]
+            )
+
+        case "FRIEND_ACCEPTED":
+            // La nostra richiesta è stata accettata — aggiorna lista amici
+            NotificationCenter.default.post(
+                name: .friendAccepted,
+                object: nil,
+                userInfo: ["friendshipId": userInfo["friendshipId"] as? String ?? ""]
+            )
+
+        default:
+            break
         }
     }
 }
@@ -123,4 +141,8 @@ extension Notification.Name {
     static let mapUpdatePushReceived = Notification.Name("mapUpdatePushReceived")
     /// Postata al tap di una notifica: MainCoordinator naviga a .map.
     static let openMapFromNotification = Notification.Name("openMapFromNotification")
+    /// Postata quando arriva una push FRIEND_REQUEST: ricarica richieste pendenti.
+    static let friendRequestReceived = Notification.Name("friendRequestReceived")
+    /// Postata quando arriva una push FRIEND_ACCEPTED: ricarica amici e feed progressi.
+    static let friendAccepted = Notification.Name("friendAccepted")
 }

@@ -75,6 +75,15 @@ class GameViewModel: ObservableObject {
     @Published var heartsConfig: HeartsConfig? = nil // nil finché l'API non risponde
     var livesTimer: Timer?
 
+    // MARK: - Friends (Step 3)
+    @Published var friends: [Friendship] = []               // Amici confermati (ACCEPTED)
+    @Published var pendingFriendships: [Friendship] = []    // Richieste ricevute in attesa
+    @Published var friendsProgress: [FriendProgress] = []  // Feed progressi amici
+    @Published var isLoadingFriends: Bool = false
+
+    // Badge count per il tab amici — numero di richieste in attesa
+    var pendingFriendshipsCount: Int { pendingFriendships.count }
+
     // MARK: - Special Cells
     @Published var cellTypes: [CellType] = []
     @Published var generatorCounters: [Int: Int] = [:]
