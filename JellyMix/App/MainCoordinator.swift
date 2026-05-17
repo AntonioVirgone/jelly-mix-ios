@@ -15,6 +15,7 @@ enum AppScreen {
     case shop
     case collection
     case profile
+    case friends    // Step 3: sistema amicizie
 }
 
 struct MainCoordinator: View {
@@ -134,11 +135,19 @@ struct MainCoordinator: View {
                         CollectionBookView(viewModel: gameEngine)
                             .opacity(currentScreen == .collection ? 1 : 0)
                             .allowsHitTesting(currentScreen == .collection)
+
+                        // Amici (Step 3)
+                        FriendsView(viewModel: gameEngine)
+                            .opacity(currentScreen == .friends ? 1 : 0)
+                            .allowsHitTesting(currentScreen == .friends)
                     }
                     .animation(.easeInOut(duration: 0.2), value: currentScreen)
 
-                    // TabBar
-                    AppTabBar(currentScreen: $currentScreen)
+                    // TabBar — passa il badge delle richieste pendenti al tab Amici
+                    AppTabBar(
+                        currentScreen: $currentScreen,
+                        pendingFriendshipsCount: gameEngine.pendingFriendshipsCount
+                    )
                 }
                 // Nasconde l'interfaccia durante il gioco senza smontarla.
                 .opacity(currentScreen != .game ? 1 : 0)
@@ -206,14 +215,19 @@ struct MainCoordinator: View {
 
 struct AppTabBar: View {
     @Binding var currentScreen: AppScreen
+    // Badge count richieste amicizia pendenti — passato dall'esterno
+    var pendingFriendshipsCount: Int = 0
 
     var body: some View {
         HStack(spacing: 8) {
-            tabItem(icon: "map.fill",            label: "MAPPA",       screen: .map)
-            tabItem(icon: "target",              label: "EVENTI",      screen: .events)
-            tabItem(icon: "person.fill",         label: "PROFILO",     screen: .profile)
-            tabItem(icon: "bag.fill",            label: "NEGOZIO",     screen: .shop)
-            tabItem(icon: "book.fill",           label: "COLLEZIONE",  screen: .collection)
+            tabItem(icon: "map.fill",       label: "MAPPA",      screen: .map)
+            tabItem(icon: "target",         label: "EVENTI",     screen: .events)
+            tabItem(icon: "person.fill",    label: "PROFILO",    screen: .profile)
+            // Tab amici con badge per richieste pendenti
+            tabItemWithBadge(icon: "person.2.fill", label: "AMICI", screen: .friends,
+                             badgeCount: pendingFriendshipsCount)
+            tabItem(icon: "bag.fill",       label: "NEGOZIO",    screen: .shop)
+            tabItem(icon: "book.fill",      label: "COLLEZIONE", screen: .collection)
         }
         .padding(8)
         .background(
@@ -221,8 +235,49 @@ struct AppTabBar: View {
                 .fill(.ultraThinMaterial)
                 .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
         )
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 20)
         .padding(.bottom, 24)
+    }
+
+    // Tab item con badge numerico rosso (usato per le richieste di amicizia pendenti)
+    @ViewBuilder
+    private func tabItemWithBadge(icon: String, label: String, screen: AppScreen, badgeCount: Int) -> some View {
+        let isSelected = currentScreen == screen
+        Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { currentScreen = screen }
+        } label: {
+            VStack(spacing: 4) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: icon)
+                        .font(.system(size: 22, weight: .bold))
+                    if badgeCount > 0 {
+                        // Badge rosso con il contatore richieste
+                        Text("\(badgeCount)")
+                            .font(.system(size: 9, weight: .black))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(Capsule().fill(Color.red))
+                            .offset(x: 10, y: -8)
+                    }
+                }
+                Text(label)
+                    .font(.system(size: 8, weight: .black, design: .rounded))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .foregroundColor(isSelected ? .white : .gray)
+            .background {
+                if isSelected {
+                    Capsule()
+                        .fill(LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing))
+                        .shadow(color: .purple.opacity(0.35), radius: 8, y: 3)
+                }
+            }
+            .scaleEffect(isSelected ? 1.05 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.65), value: isSelected)
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder

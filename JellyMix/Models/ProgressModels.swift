@@ -40,8 +40,4 @@ struct MyProgressResponse: Codable {
     let worlds: [WorldProgressEntry]     // Ordinati per stageNumber crescente
 }
 
-// Risposta di GET /api/v1/users/me/friends-progress — stub per Step 3
-// Attualmente restituisce sempre { friends: [] }
-struct FriendsProgressResponse: Codable {
-    let friends: [String]    // Placeholder — verrà tipizzato in Step 3
-}
+// FriendsProgressResponse è definita in FriendshipModels.swift (Step 3)

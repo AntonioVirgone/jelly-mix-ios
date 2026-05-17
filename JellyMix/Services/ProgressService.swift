@@ -44,12 +44,5 @@ enum ProgressService {
         try await CommonService.request(from: "progress/me", authenticated: true)
     }
 
-    // MARK: - Friends progress (stub Step 3)
-
-    /// GET /api/v1/users/me/friends-progress ✅
-    /// Stub: restituisce sempre { friends: [] } fino allo Step 3.
-    /// Integrato ora così quando lo Step 3 sarà live non serve cambiare il path.
-    static func getFriendsProgress() async throws -> FriendsProgressResponse {
-        try await CommonService.request(from: "users/me/friends-progress", authenticated: true)
-    }
+    // getFriendsProgress() è stato spostato in FriendshipService (Step 3)
 }

@@ -35,6 +35,30 @@ struct JellyMixApp: App {
                 guard !showSplash else { return }
                 Task { await backgroundRefresh() }
             }
+            // Push sociale FRIEND_REQUEST: ricarica richieste pendenti e aggiorna badge tab.
+            .onReceive(NotificationCenter.default.publisher(for: .friendRequestReceived)) { _ in
+                guard !showSplash else { return }
+                Task { await gameEngine.reloadPendingFriendships() }
+            }
+            // Push sociale FRIEND_ACCEPTED: ricarica amici confermati e feed progressi.
+            .onReceive(NotificationCenter.default.publisher(for: .friendAccepted)) { _ in
+                guard !showSplash else { return }
+                Task { await gameEngine.reloadFriendsAndProgress() }
+            }
+            // Deep link jellymix://invite/:code — accetta l'invito di un amico
+            .onOpenURL { url in
+                guard !showSplash,
+                      url.scheme == "jellymix",
+                      url.host == "invite",
+                      let code = url.pathComponents.last, !code.isEmpty else { return }
+                Task {
+                    do {
+                        try await gameEngine.acceptInviteCode(code)
+                    } catch {
+                        print("[Friends] Accettazione invito fallita: \(error.localizedDescription)")
+                    }
+                }
+            }
         }
         // Quando l'app torna in foreground (dopo essere stata in background)
         // avvia subito un refresh silenzioso della mappa.
@@ -85,15 +109,14 @@ struct JellyMixApp: App {
         Task { await backgroundRefresh() }
     }
 
-    // Sequenza: Firebase auth → GET /users/me + hearts + progress (parallelo) → registra FCM.
-    // GET /progress/me viene chiamato DOPO che i worlds sono già caricati da cache (step 1
-    // di prepareAppData), così mergeServerProgress() ha il catalogo livelli disponibile.
+    // Sequenza: Firebase auth → dati utente (parallelo) → amici (parallelo) → FCM.
+    // Il progresso viene caricato DOPO i worlds (da cache, passo precedente).
     // Ogni step è indipendente: un fallimento non blocca i successivi.
     private func bootstrapUser() async {
         do { try await AuthService.shared.signInIfNeeded() }
         catch { print("[Auth] signInIfNeeded fallito: \(error.localizedDescription)"); return }
 
-        // Chiamate parallele: profilo, config cuori e progresso di gioco
+        // Step 1+2: profilo, config cuori e progresso in parallelo
         async let profileTask  = DataUserService.getMe()
         async let configTask   = DataUserService.getHeartsConfig()
         async let progressTask = ProgressService.getMyProgress()
@@ -107,13 +130,13 @@ struct JellyMixApp: App {
             await gameEngine.applyServerUserData(profile: profile, config: config)
         }
 
-        // Merge progresso server con stato locale (Step 2).
-        // I worlds sono già in gameEngine (caricati da cache nel passo precedente).
-        // Se nessuna cache era disponibile (primo avvio fresh), worlds è vuoto e
-        // il merge non fa nulla — il progresso verrà riconciliato al prossimo avvio.
+        // Merge progresso server (Step 2) — i worlds sono già in gameEngine da cache
         if let progress {
             await gameEngine.mergeServerProgress(progress)
         }
+
+        // Step 3: amici, richieste pendenti e feed progressi in parallelo
+        await gameEngine.loadFriendsData()
 
         // Registra FCM token salvato (se disponibile) con auth attiva
         if let savedToken = UserDefaults.standard.string(forKey: "fcmDeviceToken") {
